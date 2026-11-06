@@ -9,9 +9,11 @@ import { useFavoritos } from '../../favoritos/context/FavoritosContext';
 import { instalar } from '../../pwa/estadoPwa';
 import { usePwa } from '../../pwa/usePwa';
 import Encabezado from '../../layout/Encabezado';
+import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
+import SelectorRol from '../components/SelectorRol';
 import { useSesion } from '../context/SesionContext';
+import { datosRol } from '../roles';
 
-const NOMBRE_ROL = { ADMIN: 'Administrador', VENDEDOR: 'Vendedor', CLIENTE: 'Cliente' };
 
 const ACCESOS = [
   { a: '/panel/muebles', texto: 'Mis muebles', detalle: 'Crea, sube modelos y publica', Icono: Package, permiso: 'MUEBLE_CREAR' },
@@ -38,7 +40,8 @@ function Fila({ a, Icono, texto, detalle, i }) {
 }
 
 export default function CuentaPage() {
-  const { usuario, tienePermiso, salir } = useSesion();
+  const { usuario, tienePermiso, salir, roles, multiRol, rolActivo, cambiarRol } = useSesion();
+  const { notificar } = useNotificaciones();
   const { favoritos, enCuenta } = useFavoritos();
   const { instalable } = usePwa();
   const navegar = useNavigate();
@@ -57,6 +60,11 @@ export default function CuentaPage() {
   }
 
   const accesos = ACCESOS.filter((x) => tienePermiso(x.permiso));
+
+  function elegirRol(rol) {
+    cambiarRol(rol);
+    notificar({ tipo: 'exito', titulo: `Ahora estás como ${datosRol(rol).nombre}`, texto: datosRol(rol).detalle, guardar: false });
+  }
 
   async function cerrarSesion() {
     const texto = enCuenta ? 'Tus favoritos se quedan guardados en tu cuenta.' : 'Tus favoritos se quedan guardados en este dispositivo.';
@@ -79,12 +87,19 @@ export default function CuentaPage() {
             <p className="truncate text-[13px] text-crema/60">{usuario.email}</p>
           </div>
         </div>
+        {multiRol && (
+          <div className="relative mt-4">
+            <p className="mb-1.5 text-[11.5px] font-semibold uppercase tracking-wider text-crema/55">Entrar como</p>
+            <SelectorRol variante="pildoras" roles={roles} activo={rolActivo} alElegir={elegirRol} />
+          </div>
+        )}
         <div className="relative mt-4 flex flex-wrap gap-2">
-          {usuario.roles?.map((r) => (
-            <span key={r} className="rounded-full bg-white/10 px-3 py-1 text-[12px] font-semibold">
-              {NOMBRE_ROL[r] ?? r}
-            </span>
-          ))}
+          {!multiRol &&
+            roles.map((r) => (
+              <span key={r} className="rounded-full bg-white/10 px-3 py-1 text-[12px] font-semibold">
+                {datosRol(r).nombre}
+              </span>
+            ))}
           {usuario.verificado && (
             <span className="inline-flex items-center gap-1 rounded-full bg-salvia px-3 py-1 text-[12px] font-semibold">
               <BadgeCheck className="size-3.5" /> Verificado
