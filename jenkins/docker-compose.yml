@@ -1,0 +1,36 @@
+# Jenkins local para GC-Confort. Desde la raíz del repositorio:
+#   docker compose -f jenkins/docker-compose.yml --env-file .env up -d --build
+# Abre http://localhost:${JENKINS_PORT} con JENKINS_ADMIN_USER / JENKINS_ADMIN_PASSWORD del .env.
+
+name: gc-jenkins
+
+services:
+  jenkins:
+    build: .
+    image: gc-confort/jenkins:local
+    environment:
+      JENKINS_ADMIN_USER: ${JENKINS_ADMIN_USER:-admin}
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?Falta JENKINS_ADMIN_PASSWORD en el .env}
+      JENKINS_PORT: ${JENKINS_PORT:-8090}
+    ports:
+      - "${JENKINS_PORT:-8090}:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # Docker de la laptop: Jenkins construye y levanta los ambientes con él.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # El .env del proyecto, solo lectura; JCasC lo guarda como credencial "gc-env".
+      - ../.env:/run/secrets/gc.env:ro
+    # Grupo dueño del socket de Docker (root en Docker Desktop).
+    group_add:
+      - "0"
+    networks:
+      - gc-ci
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
+
+networks:
+  # Red fija: el pipeline levanta aquí el MySQL de pruebas y Jenkins lo alcanza por nombre.
+  gc-ci:
+    name: gc-ci
