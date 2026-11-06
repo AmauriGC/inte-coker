@@ -1,0 +1,73 @@
+# GC-Confort completo en Docker: MySQL + back (Spring Boot) + front (nginx con la PWA).
+# Uso (desde la raíz, con el .env lleno):  docker compose up -d --build
+# Front: http://localhost:${FRONT_PORT}   Back (Swagger, health): http://localhost:${BACK_PORT}
+# Jenkins usa este mismo archivo con otro nombre de proyecto y otros puertos por ambiente.
+
+name: gc-confort
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD en el .env}
+      MYSQL_DATABASE: ${DB_NAME:-catalogo_muebles}
+    volumes:
+      - datos:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  back:
+    build: ./back
+    image: gc-confort/back:${TAG:-local}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-catalogo_muebles}
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET en el .env}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-3600000}
+      JWT_REFRESH_EXPIRATION_MS: ${JWT_REFRESH_EXPIRATION_MS:-604800000}
+      MAIL_ENABLED: ${MAIL_ENABLED:-false}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@catalogo.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Falta ADMIN_PASSWORD en el .env}
+      SEMILLA_CATALOGO: ${SEMILLA_CATALOGO:-true}
+      # Los enlaces de los correos apuntan al front de este ambiente.
+      FRONTEND_URL: http://localhost:${FRONT_PORT:-8088}
+    volumes:
+      - archivos:/app/uploads
+    ports:
+      - "${BACK_PORT:-8089}:8080"
+    restart: unless-stopped
+
+  front:
+    build:
+      context: ./front
+      args:
+        VITE_API_URL: /api
+    image: gc-confort/front:${TAG:-local}
+    depends_on:
+      back:
+        condition: service_healthy
+    environment:
+      BACK_URL: http://back:8080
+    ports:
+      - "${FRONT_PORT:-8088}:80"
+    restart: unless-stopped
+
+volumes:
+  datos:
+  archivos:
