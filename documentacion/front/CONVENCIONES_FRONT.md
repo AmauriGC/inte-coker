@@ -33,6 +33,7 @@ Módulos: `auth`, `catalogo`, `favoritos`, `notificaciones`, `vendedor`, `admin`
 | Respuestas | `obtener()` devuelve `datos`; `peticion()` el `ApiResponse` completo. Los errores llegan como `ApiError` con `mensaje`, `estado` y `errores` (campo → mensaje). |
 | Sesión | Tokens en `localStorage` (`gc.sesion`). Un 401 intenta un solo refresh compartido; si falla, se cierra la sesión y aparece un toast. |
 | Permisos | La UI se filtra con `tienePermiso('MUEBLE_CREAR')`; el back sigue siendo quien decide. Rutas del panel envueltas en `RutaProtegida`. |
+| Varios roles | Si la cuenta tiene más de un rol, se elige el activo al entrar (hoja `SelectorRol`) y se cambia en Cuenta o en la sidebar del panel. Se guarda en `gc.rol` por usuario. `tienePermiso` usa solo los permisos del rol activo (`permisosPorRol` del back); `cuentaTienePermiso` usa todos (los favoritos son de la cuenta). Es solo interfaz: el back valida con todos los permisos. |
 | Carga de datos | `useConsulta(fn, deps)`: conserva los datos al recargar, cancela con `AbortController`, `mutar()` para cambios locales. |
 | Formularios | `useEnvio(accion)`; los mensajes de campo vienen del back (Bean Validation) y se muestran bajo cada `Campo`. |
 | Contextos | `createContext` y el hook en `.js`; el Provider en `.jsx` (Fast Refresh solo admite componentes por archivo). |
