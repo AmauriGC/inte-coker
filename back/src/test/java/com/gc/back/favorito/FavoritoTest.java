@@ -5,19 +5,13 @@ import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -83,16 +77,16 @@ class FavoritoTest extends PruebaIntegracion {
     void muebleOcultoNoSeListaYBorradoSeVaDeFavoritos() throws Exception {
         String vendedor = usuarioConRoles("vende.cascada@prueba.com", "VENDEDOR");
         String cliente = usuarioConRoles("cliente.cascada@prueba.com", "CLIENTE");
-        Integer id = muebleListo("Banco Cascada", vendedor);
+        Integer id = muebleListo("Banco Cascada", 3, vendedor);
 
         guardar(id, cliente).andExpect(status().isOk());
 
-        publicar(id, vendedor, false);
+        publicarMueble(id, vendedor, false);
         mvc.perform(get("/api/favoritos").header(HttpHeaders.AUTHORIZATION, cliente))
                 .andExpect(jsonPath("$.datos.contenido", empty()));
         guardar(id, cliente).andExpect(status().isNotFound());
 
-        publicar(id, vendedor, true);
+        publicarMueble(id, vendedor, true);
         mvc.perform(get("/api/favoritos").header(HttpHeaders.AUTHORIZATION, cliente))
                 .andExpect(jsonPath("$.datos.contenido", hasSize(1)));
 
@@ -109,43 +103,5 @@ class FavoritoTest extends PruebaIntegracion {
     private Integer idMueble(String slug) throws Exception {
         String respuesta = mvc.perform(get("/api/muebles/{slug}", slug)).andReturn().getResponse().getContentAsString();
         return JsonPath.read(respuesta, "$.datos.id");
-    }
-
-    /** Crea un mueble con modelo e imagen y lo publica. */
-    private Integer muebleListo(String nombre, String vendedor) throws Exception {
-        String categorias = mvc.perform(get("/api/categorias").param("buscar", "Mesas"))
-                .andReturn().getResponse().getContentAsString();
-        Integer categoriaId = JsonPath.read(categorias, "$.datos.contenido[0].id");
-        String creado = mvc.perform(post("/api/muebles").header(HttpHeaders.AUTHORIZATION, vendedor)
-                        .contentType(MediaType.APPLICATION_JSON).content("""
-                                {"nombre":"%s","precio":999.00,"anchoCm":100,"fondoCm":40,"altoCm":45,"existencias":3,"categoriaId":%d}
-                                """.formatted(nombre, categoriaId)))
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-        Integer id = JsonPath.read(creado, "$.datos.id");
-        subir(id, "modelo", "banco.glb", firma("glTF"), vendedor);
-        subir(id, "imagen", "banco.png",
-                new byte[]{(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n', 0, 0, 0, 0}, vendedor);
-        publicar(id, vendedor, true);
-        return id;
-    }
-
-    private void publicar(Integer id, String token, boolean valor) throws Exception {
-        mvc.perform(patch("/api/muebles/{id}/publicacion", id).header(HttpHeaders.AUTHORIZATION, token)
-                        .contentType(MediaType.APPLICATION_JSON).content("{\"publicado\":" + valor + "}"))
-                .andExpect(status().isOk());
-    }
-
-    private void subir(Integer id, String tipo, String nombre, byte[] contenido, String token) throws Exception {
-        mvc.perform(multipart("/api/muebles/{id}/{tipo}", id, tipo)
-                        .file(new MockMultipartFile("archivo", nombre, MediaType.APPLICATION_OCTET_STREAM_VALUE, contenido))
-                        .header(HttpHeaders.AUTHORIZATION, token))
-                .andExpect(status().isOk());
-    }
-
-    private static byte[] firma(String inicio) {
-        byte[] datos = Arrays.copyOf(inicio.getBytes(StandardCharsets.US_ASCII), 64);
-        datos[4] = 2;
-        return datos;
     }
 }

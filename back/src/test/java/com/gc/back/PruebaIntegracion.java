@@ -8,14 +8,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,6 +79,46 @@ public abstract class PruebaIntegracion {
                         .contentType(MediaType.APPLICATION_JSON).content("{\"roles\":[\"%s\"]}".formatted(lista)))
                 .andExpect(status().isOk());
         return "Bearer " + accessToken(email, PASSWORD);
+    }
+
+
+    /** Crea un mueble en "Mesas" con modelo e imagen, lo publica y devuelve su id. */
+    protected Integer muebleListo(String nombre, int existencias, String vendedor) throws Exception {
+        String categorias = mvc.perform(get("/api/categorias").param("buscar", "Mesas"))
+                .andReturn().getResponse().getContentAsString();
+        Integer categoriaId = JsonPath.read(categorias, "$.datos.contenido[0].id");
+        String creado = mvc.perform(post("/api/muebles").header(HttpHeaders.AUTHORIZATION, vendedor)
+                        .contentType(MediaType.APPLICATION_JSON).content("""
+                                {"nombre":"%s","precio":999.00,"anchoCm":100,"fondoCm":40,"altoCm":45,
+                                 "existencias":%d,"categoriaId":%d}
+                                """.formatted(nombre, existencias, categoriaId)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Integer id = JsonPath.read(creado, "$.datos.id");
+        subir(id, "modelo", "mueble.glb", firma("glTF"), vendedor);
+        subir(id, "imagen", "mueble.png",
+                new byte[]{(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n', 0, 0, 0, 0}, vendedor);
+        publicarMueble(id, vendedor, true);
+        return id;
+    }
+
+    protected void publicarMueble(Integer id, String token, boolean valor) throws Exception {
+        mvc.perform(patch("/api/muebles/{id}/publicacion", id).header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"publicado\":" + valor + "}"))
+                .andExpect(status().isOk());
+    }
+
+    private void subir(Integer id, String tipo, String nombre, byte[] contenido, String token) throws Exception {
+        mvc.perform(multipart("/api/muebles/{id}/{tipo}", id, tipo)
+                        .file(new MockMultipartFile("archivo", nombre, MediaType.APPLICATION_OCTET_STREAM_VALUE, contenido))
+                        .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().isOk());
+    }
+
+    private static byte[] firma(String inicio) {
+        byte[] datos = Arrays.copyOf(inicio.getBytes(StandardCharsets.US_ASCII), 64);
+        datos[4] = 2;
+        return datos;
     }
 
     protected ResultActions enviar(String ruta, String json) throws Exception {
