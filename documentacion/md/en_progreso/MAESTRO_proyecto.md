@@ -46,7 +46,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 4 — Front base: Vite, Tailwind, rutas, sesión, alertas
 - [x] Fase 5 — Front catálogo: listado, detalle, visor 3D y AR, panel del vendedor y del admin
 - [x] Fase 6 — PWA: manifest, service worker, instalación y modo sin conexión
-- [ ] Fase 7 — Modelos 3D en Blender y exportación optimizada (4 muebles hechos: ver `blender/README.md`)
+- [x] Fase 7 — Modelos 3D en Blender y exportación optimizada (8 muebles: ver `blender/README.md`)
 - [ ] Fase 8 — Docker: Dockerfile del back y del front, docker-compose con MySQL
 - [ ] Fase 9 — Jenkins: pipeline y despliegue automático de `test` y `main`
 
@@ -61,7 +61,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 4 | `md/hechos/FASE_04_front_base.md` | hecho |
 | 5 | `md/hechos/FASE_05_front_catalogo.md` | hecho |
 | 6 | `md/hechos/FASE_06_pwa.md` | hecho |
-| 7 | `blender/README.md` | en progreso |
+| 7 | `md/hechos/FASE_07_modelos.md` | hecho |
 
 ## Diseño
 
