@@ -23,7 +23,7 @@ front/src/
     pages/          una pantalla por archivo, nombre terminado en Page
 ```
 
-Módulos: `auth`, `catalogo`, `favoritos`, `notificaciones`, `vendedor`, `admin`.
+Módulos: `auth`, `catalogo`, `favoritos`, `pedidos`, `notificaciones`, `vendedor`, `admin`.
 
 ## Reglas
 
@@ -33,11 +33,12 @@ Módulos: `auth`, `catalogo`, `favoritos`, `notificaciones`, `vendedor`, `admin`
 | Respuestas | `obtener()` devuelve `datos`; `peticion()` el `ApiResponse` completo. Los errores llegan como `ApiError` con `mensaje`, `estado` y `errores` (campo → mensaje). |
 | Sesión | Tokens en `localStorage` (`gc.sesion`). Un 401 intenta un solo refresh compartido; si falla, se cierra la sesión y aparece un toast. |
 | Permisos | La UI se filtra con `tienePermiso('MUEBLE_CREAR')`; el back sigue siendo quien decide. Rutas del panel envueltas en `RutaProtegida`. |
-| Varios roles | Si la cuenta tiene más de un rol, se elige el activo al entrar (hoja `SelectorRol`) y se cambia en Cuenta o en la sidebar del panel. Se guarda en `gc.rol` por usuario. `tienePermiso` usa solo los permisos del rol activo (`permisosPorRol` del back); `cuentaTienePermiso` usa todos (los favoritos son de la cuenta). Es solo interfaz: el back valida con todos los permisos. |
+| Varios roles | Si la cuenta tiene más de un rol, se elige el activo al entrar (hoja `SelectorRol`) y se cambia en Cuenta o en la sidebar del panel. Se guarda en `gc.rol` por usuario. `tienePermiso` usa solo los permisos del rol activo (`permisosPorRol` del back); `cuentaTienePermiso` usa todos (los favoritos y las compras son de la cuenta). Es solo interfaz: el back valida con todos los permisos. |
 | Carga de datos | `useConsulta(fn, deps)`: conserva los datos al recargar, cancela con `AbortController`, `mutar()` para cambios locales. |
 | Formularios | `useEnvio(accion)`; los mensajes de campo vienen del back (Bean Validation) y se muestran bajo cada `Campo`. |
 | Contextos | `createContext` y el hook en `.js`; el Provider en `.jsx` (Fast Refresh solo admite componentes por archivo). |
-| Alertas | Confirmaciones y éxitos importantes con SweetAlert2 (`common/alertas`). Avisos breves con `notificar()` (toast). |
+| Alertas | Confirmaciones y éxitos importantes con SweetAlert2 (`common/alertas`); `pedirTexto()` para pedir un motivo. Avisos breves con `notificar()` (toast). |
+| Datos que cambian | Sin WebSocket: consulta periódica solo con la pestaña visible (chat del pedido cada 10 s, `/pedidos/resumen` cada 30 s en `PedidosProvider`). Los botones de un pedido salen de `pedido.acciones` del back. |
 | Animaciones | `motion/react`. Cada pantalla va dentro de `<Pagina>`; `MotionConfig reducedMotion="user"` respeta la preferencia del sistema. |
 | Estilos | Tokens en `@theme` de `index.css` (`bg-crema`, `text-tinta`, `bg-terracota`...). Nada de colores sueltos salvo estados (error). |
 | 3D | `@google/model-viewer` se importa bajo demanda en `Visor3D`; `ar-scale="fixed"` para escala real. |
