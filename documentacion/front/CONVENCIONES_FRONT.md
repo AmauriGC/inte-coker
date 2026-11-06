@@ -41,7 +41,7 @@ Módulos: `auth`, `catalogo`, `favoritos`, `notificaciones`, `vendedor`, `admin`
 | Estilos | Tokens en `@theme` de `index.css` (`bg-crema`, `text-tinta`, `bg-terracota`...). Nada de colores sueltos salvo estados (error). |
 | 3D | `@google/model-viewer` se importa bajo demanda en `Visor3D`; `ar-scale="fixed"` para escala real. |
 | Archivos | `urlArchivo(ruta)` antepone el origen del back a `/uploads/...`. |
-| Variables | Solo `VITE_API_URL`, leída del `.env` de la raíz (`envDir: '..'`). En desarrollo no se usa directo: el front llama a `/api` y `/uploads` de su propia dirección y el proxy de Vite los reenvía al back. |
+| Variables | Solo `VITE_API_URL`, leída del `.env` de la raíz (`envDir: '..'`). En desarrollo no se usa directo: el front llama a `/api` y `/uploads` de su propia dirección y el proxy de Vite los reenvía al back. Puede ser relativa (`/api`): en Docker la imagen se compila así y nginx reenvía al back desde el mismo origen. |
 
 ## PWA
 
