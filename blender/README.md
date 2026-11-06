@@ -7,7 +7,7 @@ MCP de Blender.
 |---|---|
 | `muebles.blend` | Archivo fuente: una colección por mueble, materiales y estudio de render |
 | `export/*.glb` | Modelos para el visor 3D y la realidad aumentada (`<model-viewer>`) |
-| `renders/*.png` | Renders de producto 1200 × 1200, fondo transparente con sombra |
+| `renders/*.png` | Renders de producto con fondo transparente, sin sombra y recortados al mueble |
 
 ## Convenciones (obligatorias para que la AR mida bien)
 
@@ -32,3 +32,13 @@ El estudio (colección `Estudio`) tiene luces de área, piso atrapa-sombras y c�
 con objetivo. Los textos internos `mueble_utils` y `render_utils` del `.blend` tienen
 las funciones `solo(nombre)` y `encuadre(nombre)`. Ajustes ligeros para laptop:
 Cycles en CPU, 32–64 muestras con denoising, exposición −0.6, vista AgX.
+
+### Sombra
+
+Los renders salen **sin sombra**: el piso `Piso_Sombra` tiene `hide_render = True`.
+Una sombra horneada choca con los fondos de color y se ve cortada al recortar la
+imagen. La sombra la pone el front con CSS (una elipse difuminada bajo el mueble),
+así se adapta a cualquier fondo y tamaño.
+
+Después de renderizar, cada PNG se recorta a su contenido visible (canal alfa) más
+12 px de margen, para que `object-fit: contain` no deje aire de más.
