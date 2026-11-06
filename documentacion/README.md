@@ -33,5 +33,5 @@ AGENTS.md -> ESTANDAR.md -> git/FLUJO_GIT.md -> md/analisis/
 | `historias_de_usuario/` | Historias por rol (pendiente) |
 | `md/pendientes/` | Fases por iniciar |
 | `md/en_progreso/` | `MAESTRO_proyecto.md` |
-| `md/hechos/` | Fases terminadas (`FASE_01` a `FASE_08`) |
+| `md/hechos/` | Fases terminadas (`FASE_01` a `FASE_09`) |
 | `md/analisis/` | Hallazgos por revisar |
