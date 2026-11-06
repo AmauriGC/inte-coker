@@ -8,10 +8,21 @@ const ENV_DIR = '..';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ENV_DIR, 'VITE_');
+  const apiUrl = env.VITE_API_URL ?? 'http://localhost:8080/api';
+  const origenBack = new URL(apiUrl).origin;
+
+  // En desarrollo el front llama a /api y /uploads de su propia dirección y Vite los reenvía al back.
+  // Se quita la cabecera Origin para que el back no lo trate como petición CORS de otra IP.
+  const alBack = {
+    target: origenBack,
+    changeOrigin: true,
+    configure: (proxy) => proxy.on('proxyReq', (peticion) => peticion.removeHeader('origin')),
+  };
+
   return {
     envDir: ENV_DIR,
-    plugins: [react(), tailwindcss(), pluginSw({ apiUrl: env.VITE_API_URL ?? 'http://localhost:8080/api' })],
-    server: { port: 5173 },
+    plugins: [react(), tailwindcss(), pluginSw({ apiUrl })],
+    server: { port: 5173, proxy: { '/api': alBack, '/uploads': alBack } },
     preview: { port: 5173 },
     build: { chunkSizeWarningLimit: 1200 },
   };
