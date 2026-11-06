@@ -1,8 +1,8 @@
-# MAESTRO · Proyecto (Catálogo de muebles 3D)
+# MAESTRO · Proyecto GC-Confort (Catálogo de muebles 3D)
 
 - Estado: En progreso
 - Responsable: Cristian Amauri Gonzaga Castañeda
-- Creado: 05/11/2026 · Actualizado: 05/11/2026
+- Creado: 05/11/2026 · Actualizado: 06/11/2026
 
 ## Objetivo
 
@@ -64,10 +64,11 @@ https://claude.ai/artifact/2ouk8qCM5BmS6n2W5EiKiL
 
 | Decisión | Valor |
 |---|---|
-| Nombre provisional | Morada |
+| Nombre | GC-Confort |
 | Fondo / tinta | `#F3F0EA` / `#1D1B18` |
 | Acento | Terracota `#A8461F` (acciones principales) |
 | Secundario | Salvia `#2E4A3B` (3D, AR, éxito) |
 | Tipografía | Space Grotesk (títulos), Inter (texto) |
 | Radios | 12–14 px campos, 20–28 px tarjetas, botones en píldora |
 | Filtros | Siempre `<select>` |
+| Imágenes de producto | PNG sin sombra, `object-fit: contain`; la sombra es una elipse CSS difuminada |
