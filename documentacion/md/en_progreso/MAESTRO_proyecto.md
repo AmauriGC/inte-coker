@@ -50,6 +50,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 8 — Docker: Dockerfile del back y del front, docker-compose con MySQL
 - [x] Fase 9 — Jenkins: pipeline y despliegue automático de `test` y `main`
 - [x] Fase 10 — Favoritos en el back: guardados en la cuenta y sincronizados al entrar
+- [ ] Fase 11 — Pedidos: comprar, preguntar, existencias y conversación cliente-vendedor
 
 ## Fases documentadas
 
@@ -66,6 +67,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 8 | `md/hechos/FASE_08_docker.md` | hecho |
 | 9 | `md/hechos/FASE_09_jenkins.md` | hecho |
 | 10 | `md/hechos/FASE_10_favoritos.md` | hecho |
+| 11 | `md/pendientes/FASE_11_pedidos.md` | pendiente |
 
 ## Pendientes después de las fases
 

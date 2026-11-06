@@ -1,6 +1,6 @@
 # ANÁLISIS · Compra de muebles y comunicación cliente-vendedor
 
-- Estado: Por decidir
+- Estado: Decidido (se implementa en la fase 11)
 - Fecha: 06/11/2026
 - Relacionado: `MAESTRO_proyecto.md` (fase 11 propuesta), `back/CONVENCIONES_BACK.md`
 
@@ -144,27 +144,44 @@ y el administrador. El service worker **no** guarda `/api/pedidos` (no es públi
 - Pago en línea (pasarela). Se puede agregar después con una pasarela en modo prueba.
 - Carrito con varios muebles: cada pedido es un mueble con cantidad (los muebles pueden
   ser de vendedores distintos).
-- Inventario o existencias.
 - Chat en tiempo real con WebSocket y notificaciones push: se usa consulta periódica.
 - Reseñas y calificaciones.
 
-## 10. Decisiones que necesita el dueño del proyecto
+## 10. Decisiones (tomadas el 06/11/2026)
 
-| # | Decisión | Opciones | Recomendación |
-|---|---|---|---|
-| D1 | ¿Cómo se paga? | a) Se acuerda fuera de la app · b) Pasarela en modo prueba | a) |
-| D2 | ¿Se puede preguntar sin comprar? | a) Sí, estado `CONSULTA` · b) Solo mensajes dentro de un pedido | a) |
-| D3 | ¿Inventario? | a) Sin existencias (bajo pedido) · b) Campo de existencias que baja al aceptar | a) |
-| D4 | ¿Tipos de entrega? | a) Domicilio y recoger · b) Solo domicilio | a) |
-| D5 | ¿Mensajes en tiempo real? | a) Consulta cada 10 s · b) WebSocket | a) |
+| # | Decisión | Elegido |
+|---|---|---|
+| D1 | ¿Cómo se paga? | Se acuerda fuera de la app (transferencia o efectivo); el pedido registra lo acordado |
+| D2 | ¿Se puede preguntar sin comprar? | Sí: botón "Preguntar", estado `CONSULTA` que se convierte en pedido |
+| D3 | ¿Inventario? | **Con existencias** (ver §10.1) |
+| D4 | ¿Tipos de entrega? | Domicilio y recoger |
+| D5 | ¿Mensajes en tiempo real? | Consulta periódica (10 s en el chat, 30 s para contadores); WebSocket queda para después |
+
+### 10.1 Existencias
+
+- `Mueble.existencias` (entero, 0 a 9999). Obligatorio en el formulario del vendedor.
+- Al agregar la columna, los muebles que ya existían quedan con **5** (valor por defecto
+  de la columna), para que la demo no amanezca agotada. La semilla trae existencias propias.
+- **Al pedir** (`SOLICITADO`): la cantidad no puede pasar de las existencias (400 "Solo
+  quedan N"). No se aparta nada todavía.
+- **Al aceptar** (`ACEPTADO`): se descuentan con una actualización condicionada
+  (`existencias = existencias - n` solo si alcanzan). Si otro pedido se las ganó, 400
+  "Ya no hay existencias suficientes" y el pedido sigue `SOLICITADO`.
+- **Al cancelar un pedido aceptado**: se devuelven (si el mueble sigue existiendo).
+  Rechazar o cancelar antes de aceptar no mueve existencias.
+- Catálogo y detalle: etiqueta "Agotado" con 0 y "Quedan N" con 3 o menos. Con 0, el
+  botón "Comprar" se desactiva; "Preguntar" sigue disponible.
+- Panel: campo "Existencias" en el formulario y columna en la tabla.
+- Impacto: `MuebleRequest`, `MuebleResponse`, formulario del panel, semilla y las pruebas
+  que crean muebles.
 
 ## 11. Plan de trabajo (fase 11)
 
 | Parte | Contenido | Pruebas |
 |---|---|---|
-| 11a · Back | Permisos nuevos (con el arreglo del §6), módulo `pedido`, mensajes, resumen, regla de borrado de muebles, correos asíncronos | `PedidoTest`: flujo completo, transiciones inválidas, privacidad (404 a terceros), permisos, no leídos, borrado de mueble |
+| 11a · Back | Existencias en muebles (§10.1), permisos nuevos (arreglo del §6), módulo `pedido`, mensajes, resumen, regla de borrado de muebles, correos asíncronos | `PedidoTest`: flujo completo, transiciones inválidas, privacidad (404 a terceros), permisos, no leídos, borrado de mueble |
 | 11b · Front cliente | Comprar y Preguntar, Mis pedidos, detalle con chat, contador | lint + build; revisión en navegador |
-| 11c · Front vendedor y admin | Sección Pedidos del panel, acciones por estado, contador en la sidebar | lint + build; revisión en navegador |
+| 11c · Front vendedor y admin | Existencias en el formulario y la tabla, sección Pedidos del panel, acciones por estado, contador en la sidebar | lint + build; revisión en navegador |
 | 11d · Docs | `FASE_11_pedidos.md`, maestro, guía | — |
 
 Cada parte va en su propia rama y PR hacia `develop`.
