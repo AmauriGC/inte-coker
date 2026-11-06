@@ -40,6 +40,15 @@ public class SecurityConfig {
             "/error"
     };
 
+    /** Catálogo y archivos: cualquiera puede leer (GET); escribir pide token y permiso. */
+    private static final String[] LECTURAS_PUBLICAS = {
+            "/api/muebles",
+            "/api/muebles/*",
+            "/api/categorias",
+            "/api/categorias/*",
+            "/uploads/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            JwtService jwtService,
@@ -57,6 +66,8 @@ public class SecurityConfig {
                         .accessDeniedHandler(manejadorErrores))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/muebles/gestion").authenticated()
+                        .requestMatchers(HttpMethod.GET, LECTURAS_PUBLICAS).permitAll()
                         .requestMatchers(RUTAS_PUBLICAS).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService),
