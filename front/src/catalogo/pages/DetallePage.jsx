@@ -31,7 +31,11 @@ function Cota({ etiqueta, valor, i }) {
   );
 }
 
-export default function DetallePage() {
+/**
+ * Detalle con visor 3D y AR. enPanel: se muestra dentro del panel (con la sidebar) y
+ * "volver" lleva a Mis muebles en vez del catálogo.
+ */
+export default function DetallePage({ enPanel = false }) {
   const { slug } = useParams();
   const navegar = useNavigate();
   const visor = useRef(null);
@@ -39,7 +43,8 @@ export default function DetallePage() {
   const { notificar } = useNotificaciones();
   const { datos: mueble, error, cargando } = useConsulta((s) => catalogoApi.mueble(slug, s), [slug]);
 
-  const volver = () => (window.history.length > 1 ? navegar(-1) : navegar('/catalogo'));
+  const salida = enPanel ? '/panel/muebles' : '/catalogo';
+  const volver = () => (enPanel || window.history.length <= 1 ? navegar(salida) : navegar(-1));
 
   async function copiarEnlace() {
     try {
@@ -81,8 +86,8 @@ export default function DetallePage() {
           titulo={error.estado === 404 ? 'Este mueble ya no está' : error.estado === 503 || error.estado === 0 ? 'Sin conexión' : 'No pudimos cargarlo'}
           texto={error.message}
         >
-          <Boton a="/catalogo" icono={ArrowLeft}>
-            Volver al catálogo
+          <Boton a={salida} icono={ArrowLeft}>
+            {enPanel ? 'Volver a mis muebles' : 'Volver al catálogo'}
           </Boton>
         </EstadoVacio>
       </Pagina>
