@@ -14,7 +14,8 @@ pipeline {
 
     environment {
         // MySQL desechable para las pruebas, en la red gc-ci (la misma de Jenkins).
-        MYSQL_CI = "gc-ci-mysql-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+        // Docker no acepta "/" en nombres: feat/x -> feat-x.
+        MYSQL_CI = "gc-ci-mysql-${env.BRANCH_NAME.replaceAll('[^A-Za-z0-9_.-]', '-')}-${env.BUILD_NUMBER}"
     }
 
     stages {
