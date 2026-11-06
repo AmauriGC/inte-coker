@@ -12,6 +12,7 @@
 | 4 | `git/CONVENCION_COMMITS.md` | Cómo escribir commits |
 | 5 | `git/REGLAS_IGNORE.md` | Qué no subir |
 | 6 | `back/CONVENCIONES_BACK.md` | Paquetes por módulo, capas, respuestas, errores y pruebas del back |
+| 7 | `front/CONVENCIONES_FRONT.md` | Módulos, API, sesión, hooks, alertas y estilos del front |
 | 7 | `md/analisis/` | Decisiones pendientes |
 | 8 | `md/en_progreso/MAESTRO_proyecto.md` | Objetivo, stack, roles y fases |
 
@@ -28,6 +29,7 @@ AGENTS.md -> ESTANDAR.md -> git/FLUJO_GIT.md -> md/analisis/
 |---|---|
 | `git/` | Reglas de Git |
 | `back/` | Convenciones del back |
+| `front/` | Convenciones del front |
 | `historias_de_usuario/` | Historias por rol (pendiente) |
 | `md/pendientes/` | Fases por iniciar |
 | `md/en_progreso/` | `MAESTRO_proyecto.md` |
