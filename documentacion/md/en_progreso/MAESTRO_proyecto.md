@@ -40,7 +40,7 @@ el JWT y se validan con `@PreAuthorize`.
 ## Fases
 
 - [x] Fase 0 — Repositorio, ramas y documentación
-- [ ] Fase 1 — Back base: paquetes, `ApiResponse`, `GlobalExceptionHandler`, CORS
+- [x] Fase 1 — Back base: paquetes, `ApiResponse`, `GlobalExceptionHandler`, CORS
 - [ ] Fase 2 — Seguridad: usuario, rol, permiso, JWT, registro, verificación por correo, recuperar contraseña, datos iniciales
 - [ ] Fase 3 — Catálogo: categorías y muebles (CRUD paginado), subida de `.glb` e imágenes
 - [ ] Fase 4 — Front base: Vite, Tailwind, rutas, sesión, alertas
@@ -55,6 +55,7 @@ el JWT y se validan con `@PreAuthorize`.
 | Fase | Archivo | Estado |
 |---|---|---|
 | 0 | (este maestro) | hecho |
+| 1 | `md/hechos/FASE_01_back_base.md` | hecho |
 | 7 | `blender/README.md` | en progreso |
 
 ## Diseño
