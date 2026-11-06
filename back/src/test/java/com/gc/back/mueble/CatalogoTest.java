@@ -1,8 +1,10 @@
 package com.gc.back.mueble;
 
 import com.gc.back.PruebaIntegracion;
+import com.gc.back.mueble.service.SemillaCatalogoService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -33,6 +35,9 @@ class CatalogoTest extends PruebaIntegracion {
     private static final byte[] GLB = firma("glTF");
     private static final byte[] PNG = {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n', 0, 0, 0, 0};
 
+    @Autowired
+    private SemillaCatalogoService semillaCatalogoService;
+
     @Test
     void catalogoPublicoTraeLosMueblesDeEjemploYSusArchivos() throws Exception {
         String lista = mvc.perform(get("/api/muebles").param("buscar", "nube"))
@@ -52,7 +57,7 @@ class CatalogoTest extends PruebaIntegracion {
                 .andExpect(header().string(HttpHeaders.CACHE_CONTROL, containsString("max-age=2592000")));
 
         mvc.perform(get("/api/muebles"))
-                .andExpect(jsonPath("$.datos.totalElementos", greaterThanOrEqualTo(4)));
+                .andExpect(jsonPath("$.datos.totalElementos", greaterThanOrEqualTo(8)));
 
         mvc.perform(get("/api/categorias"))
                 .andExpect(status().isOk())
@@ -66,6 +71,21 @@ class CatalogoTest extends PruebaIntegracion {
         mvc.perform(get("/api/muebles/lampara-faro"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.datos.altoCm").value(160));
+    }
+
+    @Test
+    void semillaAgregaSoloLosEjemplosQueFaltan() throws Exception {
+        mvc.perform(get("/api/muebles/mesa-taller"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.datos.anchoCm").value(180))
+                .andExpect(jsonPath("$.datos.categoria.nombre").value("Mesas"))
+                .andExpect(jsonPath("$.datos.modeloUrl", startsWith("/uploads/muebles/")));
+
+        semillaCatalogoService.sembrarFaltantes(ADMIN_EMAIL);
+
+        mvc.perform(get("/api/muebles").param("buscar", "duna"))
+                .andExpect(jsonPath("$.datos.contenido", hasSize(1)))
+                .andExpect(jsonPath("$.datos.contenido[0].slug").value("sofa-duna"));
     }
 
     @Test
