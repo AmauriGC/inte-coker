@@ -5,12 +5,15 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router';
 import { authApi } from '../api/authApi';
 import Boton from '../../common/components/Boton';
 import Campo from '../../common/components/Campo';
+import Hoja from '../../common/components/Hoja';
 import { useEnvio } from '../../common/hooks/useEnvio';
 import { primerNombre } from '../../common/utils/formato';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
 import MarcoCuenta from '../components/MarcoCuenta';
 import RevisaTuCorreo from '../components/RevisaTuCorreo';
+import SelectorRol from '../components/SelectorRol';
 import { useSesion } from '../context/SesionContext';
+import { datosRol, ordenarRoles } from '../roles';
 
 const PESTANAS = [
   { id: 'entrar', texto: 'Entrar' },
@@ -26,11 +29,12 @@ function Aviso({ children }) {
 }
 
 function FormEntrar({ alPendiente }) {
-  const { entrar } = useSesion();
+  const { entrar, cambiarRol } = useSesion();
   const { notificar } = useNotificaciones();
   const navegar = useNavigate();
   const { state } = useLocation();
   const [datos, setDatos] = useState({ email: '', password: '' });
+  const [rolesPorElegir, setRolesPorElegir] = useState(null);
   const { enviar, enviando, error, errores } = useEnvio(entrar);
 
   async function alEnviar(e) {
@@ -38,6 +42,11 @@ function FormEntrar({ alPendiente }) {
     const r = await enviar(datos.email.trim(), datos.password);
     if (r.ok) {
       notificar({ tipo: 'exito', titulo: `Hola, ${primerNombre(r.datos.nombre)}`, texto: 'Entraste a tu cuenta.', guardar: false });
+      const roles = ordenarRoles(r.datos.roles);
+      if (roles.length > 1) {
+        setRolesPorElegir(roles);
+        return;
+      }
       const destino = state?.desde ?? (r.datos.permisos?.includes('MUEBLE_CREAR') ? '/panel/muebles' : '/');
       navegar(destino, { replace: true });
     } else if (r.error.estado === 403 && /verifica/i.test(r.error.message)) {
@@ -45,7 +54,20 @@ function FormEntrar({ alPendiente }) {
     }
   }
 
+  function elegirRol(rol) {
+    cambiarRol(rol);
+    setRolesPorElegir(null);
+    navegar(state?.desde ?? datosRol(rol).inicio, { replace: true });
+  }
+
   return (
+    <>
+    <Hoja abierta={Boolean(rolesPorElegir)} alCerrar={() => elegirRol(rolesPorElegir[0])} titulo="¿Cómo quieres entrar?">
+      <p className="mb-4 text-[14px] leading-relaxed text-texto">
+        Tu cuenta tiene varios roles. Elige con cuál trabajar; puedes cambiarlo cuando quieras desde Cuenta.
+      </p>
+      {rolesPorElegir && <SelectorRol roles={rolesPorElegir} activo={null} alElegir={elegirRol} />}
+    </Hoja>
     <form onSubmit={alEnviar} className="grid gap-4" noValidate>
       {error && !Object.keys(errores).length && <Aviso>{error.message}</Aviso>}
       <Campo etiqueta="Correo" type="email" autoComplete="email" icono={Mail} placeholder="tu@correo.com" value={datos.email} error={errores.email}
@@ -59,6 +81,7 @@ function FormEntrar({ alPendiente }) {
         Entrar
       </Boton>
     </form>
+    </>
   );
 }
 

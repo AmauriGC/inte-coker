@@ -1,8 +1,9 @@
-import { ArrowLeft, LogOut, Package, Shield, Tags, Users } from 'lucide-react';
+import { ArrowLeft, ChevronDown, LogOut, Package, Shield, Tags, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import { useSesion } from '../auth/context/SesionContext';
+import { datosRol } from '../auth/roles';
 import { confirmar } from '../common/alertas/alertas';
 import Logo from '../common/components/Logo';
 import SalidaAnimada from './SalidaAnimada';
@@ -26,7 +27,7 @@ function Cargando() {
 
 /** Panel de vendedor y administrador: sidebar oscura en escritorio, pestañas arriba en móvil. */
 export default function LayoutPanel() {
-  const { usuario, tienePermiso, salir } = useSesion();
+  const { usuario, tienePermiso, salir, roles, multiRol, rolActivo, cambiarRol } = useSesion();
   const navegar = useNavigate();
   const secciones = SECCIONES.filter((s) => tienePermiso(...s.permisos));
   const etiquetaPanel = tienePermiso('USUARIO_GESTIONAR') ? 'Administración' : 'Panel de vendedor';
@@ -52,7 +53,28 @@ export default function LayoutPanel() {
           </span>
           <div className="min-w-0 flex-1">
             <p className="font-display text-[17px] font-bold leading-tight">GC-Confort</p>
-            <p className="text-[12px] text-crema/55">{etiquetaPanel}</p>
+            {multiRol ? (
+              <label className="relative mt-0.5 inline-flex items-center gap-1 text-[12px] text-crema/70">
+                <span className="sr-only">Rol activo</span>
+                <select
+                  value={rolActivo}
+                  onChange={(e) => {
+                    cambiarRol(e.target.value);
+                    navegar(datosRol(e.target.value).inicio);
+                  }}
+                  className="cursor-pointer appearance-none rounded-full bg-white/10 py-0.5 pl-2.5 pr-6 font-semibold text-crema outline-none focus-visible:ring-2 focus-visible:ring-crema/40"
+                >
+                  {roles.map((r) => (
+                    <option key={r} value={r} className="text-tinta">
+                      Como {datosRol(r).nombre.toLowerCase()}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-1.5 size-3.5" aria-hidden />
+              </label>
+            ) : (
+              <p className="text-[12px] text-crema/55">{etiquetaPanel}</p>
+            )}
           </div>
           <button type="button" onClick={cerrarSesion} className="grid size-9 place-items-center rounded-full text-crema/70 hover:bg-white/10 lg:hidden" aria-label="Cerrar sesión">
             <LogOut className="size-[18px]" />
