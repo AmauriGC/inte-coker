@@ -10,8 +10,10 @@ COPY --from=node:24-bookworm-slim /usr/local/bin/node /usr/local/bin/node
 COPY --from=node:24-bookworm-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=docker:29-cli /usr/local/bin/docker /usr/local/bin/docker
 COPY --from=docker:29-cli /usr/local/libexec/docker/cli-plugins/docker-compose /usr/local/libexec/docker/cli-plugins/docker-compose
+# git con GnuTLS corta a veces las descargas de GitHub por HTTP/2 ("recv error -110"): HTTP/1.1.
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
-    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx \
+    && git config --system http.version HTTP/1.1
 
 USER jenkins
 
