@@ -21,7 +21,7 @@ function Acciones({ mueble, alEditar, alEliminar }) {
   const boton = 'grid size-9 place-items-center rounded-full text-texto hover:bg-crema';
   return (
     <div className="flex justify-end gap-1">
-      <Link to={`/mueble/${mueble.slug}`} className={boton} aria-label={`Ver ${mueble.nombre}`}>
+      <Link to={`/panel/muebles/${mueble.slug}`} className={boton} aria-label={`Ver ${mueble.nombre}`}>
         <Eye className="size-[17px]" />
       </Link>
       <button type="button" onClick={() => alEditar(mueble)} className={boton} aria-label={`Editar ${mueble.nombre}`}>
