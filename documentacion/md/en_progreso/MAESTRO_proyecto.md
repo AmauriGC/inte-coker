@@ -39,14 +39,14 @@ el JWT y se validan con `@PreAuthorize`.
 
 ## Fases
 
-- [ ] Fase 0 — Repositorio, ramas y documentación
+- [x] Fase 0 — Repositorio, ramas y documentación
 - [ ] Fase 1 — Back base: paquetes, `ApiResponse`, `GlobalExceptionHandler`, CORS
 - [ ] Fase 2 — Seguridad: usuario, rol, permiso, JWT, registro, verificación por correo, recuperar contraseña, datos iniciales
 - [ ] Fase 3 — Catálogo: categorías y muebles (CRUD paginado), subida de `.glb` e imágenes
 - [ ] Fase 4 — Front base: Vite, Tailwind, rutas, sesión, alertas
 - [ ] Fase 5 — Front catálogo: listado, detalle, visor 3D y AR, panel del vendedor y del admin
 - [ ] Fase 6 — PWA: manifest, service worker, instalación y modo sin conexión
-- [ ] Fase 7 — Modelos 3D en Blender y exportación optimizada
+- [ ] Fase 7 — Modelos 3D en Blender y exportación optimizada (4 muebles hechos: ver `blender/README.md`)
 - [ ] Fase 8 — Docker: Dockerfile del back y del front, docker-compose con MySQL
 - [ ] Fase 9 — Jenkins: pipeline y despliegue automático de `test` y `main`
 
@@ -54,4 +54,20 @@ el JWT y se validan con `@PreAuthorize`.
 
 | Fase | Archivo | Estado |
 |---|---|---|
-| 0 | (este maestro) | en progreso |
+| 0 | (este maestro) | hecho |
+| 7 | `blender/README.md` | en progreso |
+
+## Diseño
+
+Pantallas (móvil y paneles web) en el lienzo de diseño:
+https://claude.ai/artifact/2ouk8qCM5BmS6n2W5EiKiL
+
+| Decisión | Valor |
+|---|---|
+| Nombre provisional | Morada |
+| Fondo / tinta | `#F3F0EA` / `#1D1B18` |
+| Acento | Terracota `#A8461F` (acciones principales) |
+| Secundario | Salvia `#2E4A3B` (3D, AR, éxito) |
+| Tipografía | Space Grotesk (títulos), Inter (texto) |
+| Radios | 12–14 px campos, 20–28 px tarjetas, botones en píldora |
+| Filtros | Siempre `<select>` |
