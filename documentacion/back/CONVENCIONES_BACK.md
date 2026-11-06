@@ -18,11 +18,11 @@ com.gc.back
 │   └── exception/           ApiException, RecursoNoEncontrado, RecursoDuplicado,
 │                            ReglaNegocio, GlobalExceptionHandler
 ├── cors/                    CorsConfig
-├── config/                  OpenApiConfig, DatosIniciales, RecursosEstaticosConfig
+├── config/                  OpenApiConfig, DatosIniciales, RecursosEstaticosConfig, AsincroniaConfig
 ├── security/                SecurityConfig, JWT, filtro, UserDetailsService
-├── correo/                  envío de correos y plantillas
+├── correo/                  envío de correos y plantillas; avisos asíncronos tras el commit
 ├── archivo/                 guardado de archivos subidos y validación de formato
-└── <modulo>/                usuario, rol, auth, categoria, mueble...
+└── <modulo>/                usuario, rol, auth, categoria, mueble, favorito, pedido...
     ├── entity/              entidades JPA y enums del dominio
     ├── dto/                 records de request (con validaciones) y response
     ├── repository/          interfaces JpaRepository
