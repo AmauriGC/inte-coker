@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -127,7 +128,10 @@ class AuthFlowTest extends PruebaIntegracion {
                         .content("{\"roles\":[\"cliente\",\"VENDEDOR\"]}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.datos.roles", hasItems("CLIENTE", "VENDEDOR")))
-                .andExpect(jsonPath("$.datos.permisos", hasItems("MUEBLE_CREAR", "FAVORITO_GESTIONAR")));
+                .andExpect(jsonPath("$.datos.permisos", hasItems("MUEBLE_CREAR", "FAVORITO_GESTIONAR")))
+                .andExpect(jsonPath("$.datos.permisosPorRol.VENDEDOR", hasItems("MUEBLE_CREAR")))
+                .andExpect(jsonPath("$.datos.permisosPorRol.VENDEDOR", not(hasItems("FAVORITO_GESTIONAR"))))
+                .andExpect(jsonPath("$.datos.permisosPorRol.CLIENTE", hasItems("FAVORITO_GESTIONAR")));
 
         mvc.perform(get("/api/usuarios").param("buscar", "vendedora").header(HttpHeaders.AUTHORIZATION, bearer))
                 .andExpect(status().isOk())
