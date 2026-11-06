@@ -1,14 +1,18 @@
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
+import pluginSw from './pwa/pluginSw.js';
 
-// envDir '..': el front lee el .env de la raíz del repo (Vite solo expone las VITE_*).
-export default defineConfig({
-  envDir: '..',
-  plugins: [react(), tailwindcss()],
-  server: { port: 5173 },
-  build: {
-    // model-viewer (visor 3D) va en su propio chunk y pesa cerca de 1 MB.
-    chunkSizeWarningLimit: 1200,
-  },
+// El .env vive en la raíz del repositorio (junto al del back).
+const ENV_DIR = '..';
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, ENV_DIR, 'VITE_');
+  return {
+    envDir: ENV_DIR,
+    plugins: [react(), tailwindcss(), pluginSw({ apiUrl: env.VITE_API_URL ?? 'http://localhost:8080/api' })],
+    server: { port: 5173 },
+    preview: { port: 5173 },
+    build: { chunkSizeWarningLimit: 1200 },
+  };
 });
