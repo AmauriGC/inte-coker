@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronRight, Download, Heart, LogIn, LogOut, Package, Shield, Tags, Users } from 'lucide-react';
+import { BadgeCheck, ChevronRight, Download, Heart, LogIn, LogOut, Package, ReceiptText, Shield, Tags, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import { confirmar } from '../../common/alertas/alertas';
@@ -10,10 +10,10 @@ import { instalar } from '../../pwa/estadoPwa';
 import { usePwa } from '../../pwa/usePwa';
 import Encabezado from '../../layout/Encabezado';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
+import { usePedidos } from '../../pedidos/context/PedidosContext';
 import SelectorRol from '../components/SelectorRol';
 import { useSesion } from '../context/SesionContext';
 import { datosRol } from '../roles';
-
 
 const ACCESOS = [
   { a: '/panel/muebles', texto: 'Mis muebles', detalle: 'Crea, sube modelos y publica', Icono: Package, permiso: 'MUEBLE_CREAR' },
@@ -22,7 +22,7 @@ const ACCESOS = [
   { a: '/panel/roles', texto: 'Roles y permisos', detalle: 'Qué puede hacer cada rol', Icono: Shield, permiso: 'ROL_GESTIONAR' },
 ];
 
-function Fila({ a, Icono, texto, detalle, i }) {
+function Fila({ a, Icono, texto, detalle, cuenta = 0, i }) {
   return (
     <motion.li initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0, transition: { delay: 0.05 * i } }}>
       <Link to={a} className="flex items-center gap-3.5 rounded-2xl px-3 py-3 transition-colors hover:bg-crema">
@@ -33,6 +33,12 @@ function Fila({ a, Icono, texto, detalle, i }) {
           <span className="block text-[15px] font-semibold">{texto}</span>
           <span className="block truncate text-[12.5px] text-gris">{detalle}</span>
         </span>
+        {cuenta > 0 && (
+          <span className="grid h-6 min-w-6 place-items-center rounded-full bg-terracota px-1.5 text-[12px] font-bold text-white">
+            {cuenta > 9 ? '9+' : cuenta}
+            <span className="sr-only"> con novedades</span>
+          </span>
+        )}
         <ChevronRight className="size-[18px] text-gris-2" aria-hidden />
       </Link>
     </motion.li>
@@ -40,7 +46,8 @@ function Fila({ a, Icono, texto, detalle, i }) {
 }
 
 export default function CuentaPage() {
-  const { usuario, tienePermiso, salir, roles, multiRol, rolActivo, cambiarRol } = useSesion();
+  const { usuario, tienePermiso, cuentaTienePermiso, salir, roles, multiRol, rolActivo, cambiarRol } = useSesion();
+  const { resumen } = usePedidos();
   const { notificar } = useNotificaciones();
   const { favoritos, enCuenta } = useFavoritos();
   const { instalable } = usePwa();
@@ -50,7 +57,7 @@ export default function CuentaPage() {
     return (
       <Pagina className="mx-auto max-w-md px-4">
         <Encabezado titulo="Cuenta" />
-        <EstadoVacio icono={LogIn} titulo="Entra a tu cuenta" texto="Así guardas favoritos y, si vendes, publicas tus muebles en 3D.">
+        <EstadoVacio icono={LogIn} titulo="Entra a tu cuenta" texto="Así guardas favoritos, pides muebles y, si vendes, publicas los tuyos en 3D.">
           <Boton a="/entrar" icono={LogIn}>
             Entrar o crear cuenta
           </Boton>
@@ -110,8 +117,18 @@ export default function CuentaPage() {
 
       <ul className="mt-4 rounded-[24px] border border-linea bg-white p-1.5">
         <Fila a="/favoritos" Icono={Heart} texto="Favoritos" detalle={`${favoritos.length} guardados en ${enCuenta ? 'tu cuenta' : 'este dispositivo'}`} i={0} />
+        {cuentaTienePermiso('PEDIDO_CREAR') && (
+          <Fila
+            a="/pedidos"
+            Icono={ReceiptText}
+            texto="Mis pedidos"
+            detalle={resumen.comprasSinLeer > 0 ? 'Tienes novedades de tus vendedores' : 'Compras y preguntas a vendedores'}
+            cuenta={resumen.comprasSinLeer}
+            i={1}
+          />
+        )}
         {accesos.map((x, i) => (
-          <Fila key={x.a} {...x} i={i + 1} />
+          <Fila key={x.a} {...x} i={i + 2} />
         ))}
       </ul>
 

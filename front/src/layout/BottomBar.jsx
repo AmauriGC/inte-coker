@@ -2,19 +2,22 @@ import { Bell, Heart, House, LayoutGrid, User } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { NavLink } from 'react-router';
 import { useNotificaciones } from '../notificaciones/context/NotificacionesContext';
+import { usePedidos } from '../pedidos/context/PedidosContext';
 
 const ENLACES = [
   { a: '/', texto: 'Inicio', Icono: House, fin: true },
   { a: '/catalogo', texto: 'Catálogo', Icono: LayoutGrid },
   { a: '/favoritos', texto: 'Favoritos', Icono: Heart },
   { a: '/avisos', texto: 'Avisos', Icono: Bell, cuenta: 'avisos' },
-  { a: '/cuenta', texto: 'Cuenta', Icono: User },
+  { a: '/cuenta', texto: 'Cuenta', Icono: User, cuenta: 'pedidos' },
 ];
 
 /** Barra inferior flotante; la píldora negra se desliza al cambiar de pestaña (layoutId). */
 export default function BottomBar() {
   const { sinLeer } = useNotificaciones();
-  const cuentas = { avisos: sinLeer };
+  const { resumen } = usePedidos();
+  // Cuenta lleva el punto de "Mis pedidos" (mensajes nuevos de vendedores).
+  const cuentas = { avisos: sinLeer, pedidos: resumen.comprasSinLeer };
 
   return (
     <nav
