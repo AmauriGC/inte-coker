@@ -1,4 +1,4 @@
-import { ArrowLeft, LogOut, Package, Shield, Tags, Users } from 'lucide-react';
+import { ArrowLeft, LogOut, Package, ReceiptText, Shield, Tags, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { NavLink, useNavigate } from 'react-router';
@@ -7,10 +7,12 @@ import SelectorRol from '../auth/components/SelectorRol';
 import { datosRol } from '../auth/roles';
 import { confirmar } from '../common/alertas/alertas';
 import Logo from '../common/components/Logo';
+import { usePedidos } from '../pedidos/context/PedidosContext';
 import SalidaAnimada from './SalidaAnimada';
 
 const SECCIONES = [
   { a: '/panel/muebles', texto: 'Mis muebles', Icono: Package, permisos: ['MUEBLE_CREAR'] },
+  { a: '/panel/pedidos', texto: 'Pedidos', Icono: ReceiptText, permisos: ['PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR'], contador: true },
   { a: '/panel/categorias', texto: 'Categorías', Icono: Tags, permisos: ['CATEGORIA_GESTIONAR'] },
   { a: '/panel/usuarios', texto: 'Usuarios', Icono: Users, permisos: ['USUARIO_GESTIONAR'] },
   { a: '/panel/roles', texto: 'Roles y permisos', Icono: Shield, permisos: ['ROL_GESTIONAR'] },
@@ -30,6 +32,8 @@ function Cargando() {
 export default function LayoutPanel() {
   const { usuario, tienePermiso, salir, roles, multiRol, rolActivo, cambiarRol } = useSesion();
   const navegar = useNavigate();
+  const { resumen } = usePedidos();
+  const novedades = resumen.ventasPorAtender + resumen.ventasSinLeer;
   const secciones = SECCIONES.filter((s) => tienePermiso(...s.permisos));
   const etiquetaPanel = tienePermiso('USUARIO_GESTIONAR') ? 'Administración' : 'Panel de vendedor';
 
@@ -75,7 +79,7 @@ export default function LayoutPanel() {
 
         <nav aria-label="Secciones del panel" className="overflow-x-auto px-3 pb-3 lg:overflow-visible lg:p-0">
           <ul className="flex gap-1 lg:flex-col">
-            {secciones.map(({ a, texto, Icono }) => (
+            {secciones.map(({ a, texto, Icono, contador }) => (
               <li key={a} className="shrink-0">
                 <NavLink to={a} className={enlace}>
                   {({ isActive }) => (
@@ -85,6 +89,12 @@ export default function LayoutPanel() {
                       )}
                       <Icono className="relative size-[18px]" aria-hidden />
                       <span className="relative whitespace-nowrap">{texto}</span>
+                      {contador && novedades > 0 && (
+                        <span className="relative ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-terracota px-1.5 text-[11px] font-bold text-white">
+                          {novedades > 9 ? '9+' : novedades}
+                          <span className="sr-only"> pendientes</span>
+                        </span>
+                      )}
                     </>
                   )}
                 </NavLink>
