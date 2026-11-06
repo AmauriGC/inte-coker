@@ -14,6 +14,8 @@ import LayoutMovil from '../layout/LayoutMovil';
 import LayoutPanel from '../layout/LayoutPanel';
 import Raiz from '../layout/Raiz';
 import AvisosPage from '../notificaciones/pages/AvisosPage';
+import MisPedidosPage from '../pedidos/pages/MisPedidosPage';
+import PedidoPage from '../pedidos/pages/PedidoPage';
 import { CategoriasPage, PanelMueblesPage, RolesPage, UsuariosPage } from './paginasPanel';
 
 export const router = createBrowserRouter([
@@ -28,6 +30,8 @@ export const router = createBrowserRouter([
           { path: 'mueble/:slug', element: <DetallePage /> },
           { path: 'favoritos', element: <FavoritosPage /> },
           { path: 'avisos', element: <AvisosPage /> },
+          { path: 'pedidos', element: <RutaProtegida><MisPedidosPage /></RutaProtegida> },
+          { path: 'pedidos/:id', element: <RutaProtegida><PedidoPage /></RutaProtegida> },
           { path: 'cuenta', element: <CuentaPage /> },
           { path: 'entrar', element: <LoginPage /> },
           { path: 'verificar', element: <VerificarPage /> },

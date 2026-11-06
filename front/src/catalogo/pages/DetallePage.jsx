@@ -1,7 +1,8 @@
-import { ArrowLeft, Copy, PackageX, Ruler, ScanLine, Share2, WifiOff } from 'lucide-react';
+import { ArrowLeft, Copy, MessageCircle, PackageX, Ruler, ScanLine, Share2, ShoppingBag, WifiOff } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useCallback, useRef, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router';
+import { useSesion } from '../../auth/context/SesionContext';
 import { informar } from '../../common/alertas/alertas';
 import Boton from '../../common/components/Boton';
 import EstadoVacio from '../../common/components/EstadoVacio';
@@ -10,6 +11,8 @@ import Pagina from '../../common/components/Pagina';
 import { useConsulta } from '../../common/hooks/useConsulta';
 import { precio } from '../../common/utils/formato';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
+import HojaComprar from '../../pedidos/components/HojaComprar';
+import HojaPreguntar from '../../pedidos/components/HojaPreguntar';
 import { catalogoApi } from '../api/catalogoApi';
 import BotonFavorito from '../components/BotonFavorito';
 import Visor3D from '../components/Visor3D';
@@ -31,17 +34,57 @@ function Cota({ etiqueta, valor, i }) {
   );
 }
 
+/** "Agotado", "Quedan N" (3 o menos) o "Disponible". */
+function Existencias({ n }) {
+  if (n === null || n === undefined) return null;
+  const [texto, clases] =
+    n === 0
+      ? ['Agotado', 'bg-[#F6DAD7] text-[#8C1D17]']
+      : n <= 3
+        ? [`Quedan ${n}`, 'bg-terracota-suave text-terracota-osc']
+        : ['Disponible', 'bg-salvia-suave text-salvia'];
+  return <span className={`inline-flex rounded-full px-3 py-1 text-[12px] font-semibold ${clases}`}>{texto}</span>;
+}
+
 /**
  * Detalle con visor 3D y AR. enPanel: se muestra dentro del panel (con la sidebar) y
- * "volver" lleva a Mis muebles en vez del catálogo.
+ * "volver" lleva a Mis muebles en vez del catálogo. Fuera del panel ofrece Comprar y
+ * Preguntar (sin sesión, primero lleva a entrar y regresa aquí).
  */
 export default function DetallePage({ enPanel = false }) {
   const { slug } = useParams();
   const navegar = useNavigate();
   const visor = useRef(null);
   const [medidas, setMedidas] = useState(false);
+  const ubicacion = useLocation();
   const { notificar } = useNotificaciones();
+  const { usuario, cuentaTienePermiso } = useSesion();
+  const [hoja, setHoja] = useState(null);
+  const cerrarHoja = useCallback(() => setHoja(null), []);
   const { datos: mueble, error, cargando } = useConsulta((s) => catalogoApi.mueble(slug, s), [slug]);
+
+  // Comprar es de la cuenta (no del rol activo); nadie compra lo que vende.
+  const esMio = Boolean(usuario) && mueble?.vendedor?.id === usuario.id;
+  const puedePedir = !enPanel && Boolean(mueble?.publicado) && !esMio && (!usuario || cuentaTienePermiso('PEDIDO_CREAR'));
+  const agotado = mueble?.existencias === 0;
+
+  function abrir(cual) {
+    if (!usuario) {
+      navegar('/entrar', { state: { desde: ubicacion.pathname } });
+      return;
+    }
+    setHoja(cual);
+  }
+
+  function alPedir(pedido, pregunta) {
+    setHoja(null);
+    notificar(
+      pregunta
+        ? { tipo: 'mensaje', titulo: 'Pregunta enviada', texto: 'Te avisamos cuando el vendedor responda.' }
+        : { tipo: 'pedido', titulo: `Pedido ${pedido.folio} enviado`, texto: 'Sigue la conversación con el vendedor.' },
+    );
+    navegar(`/pedidos/${pedido.id}`);
+  }
 
   const salida = enPanel ? '/panel/muebles' : '/catalogo';
   const volver = () => (enPanel || window.history.length <= 1 ? navegar(salida) : navegar(-1));
@@ -95,7 +138,7 @@ export default function DetallePage({ enPanel = false }) {
   }
 
   return (
-    <Pagina className="mx-auto min-h-dvh max-w-5xl pb-32 md:grid md:grid-cols-[1.1fr_1fr] md:gap-8 md:px-6 md:pb-10 md:pt-6">
+    <Pagina className={`mx-auto min-h-dvh max-w-5xl ${puedePedir ? 'pb-48' : 'pb-32'} md:grid md:grid-cols-[1.1fr_1fr] md:gap-8 md:px-6 md:pb-10 md:pt-6`}>
       <div className="relative md:sticky md:top-6 md:self-start">
         {cargando || !mueble ? (
           <div className="esqueleto h-[392px] rounded-b-[34px] md:h-[560px] md:rounded-[34px]" />
@@ -149,6 +192,9 @@ export default function DetallePage({ enPanel = false }) {
               <h1 className="font-display text-[30px] font-bold leading-tight tracking-[-0.03em] md:text-[38px]">{mueble.nombre}</h1>
               <p className="mt-1.5 shrink-0 font-display text-[22px] font-bold">{precio(mueble.precio)}</p>
             </motion.div>
+            <motion.div {...aparece(1)} className="mt-2">
+              <Existencias n={mueble.existencias} />
+            </motion.div>
             {!mueble.publicado && (
               <motion.p {...aparece(1)} className="mt-2 inline-flex rounded-full bg-crema-2 px-3 py-1 text-[12px] font-semibold text-texto">
                 Borrador · solo lo ves tú
@@ -188,21 +234,43 @@ export default function DetallePage({ enPanel = false }) {
               </motion.p>
             )}
 
-            {mueble.modeloUrl && (
+            {(mueble.modeloUrl || puedePedir) && (
               <motion.div
                 initial={{ y: 80 }}
                 animate={{ y: 0, transition: { delay: 0.25, type: 'spring', stiffness: 300, damping: 30 } }}
                 className="pb-segura fixed inset-x-0 bottom-0 z-30 bg-gradient-to-t from-crema via-crema to-crema/0 px-4 pt-6 md:static md:mt-8 md:bg-none md:p-0"
               >
-                <div className="mx-auto flex max-w-md gap-2 md:max-w-none">
-                  <Boton variante="acento" icono={ScanLine} bloque onClick={verEnMiEspacio} className="h-14 text-[16px]">
-                    Ver en mi espacio
-                  </Boton>
-                  <Boton variante="secundario" onClick={copiarEnlace} className="size-14 shrink-0 px-0" aria-label="Copiar enlace">
-                    <Copy className="size-[18px]" />
-                  </Boton>
+                <div className="mx-auto grid max-w-md gap-2 md:max-w-none">
+                  {puedePedir && (
+                    <Boton variante="acento" icono={ShoppingBag} bloque disabled={agotado} onClick={() => abrir('comprar')} className="h-14 text-[16px]">
+                      {agotado ? 'Agotado por ahora' : `Comprar · ${precio(mueble.precio)}`}
+                    </Boton>
+                  )}
+                  <div className="flex gap-2">
+                    {mueble.modeloUrl && (
+                      <Boton variante={puedePedir ? 'secundario' : 'acento'} icono={ScanLine} bloque onClick={verEnMiEspacio} className={puedePedir ? '' : 'h-14 text-[16px]'}>
+                        Ver en mi espacio
+                      </Boton>
+                    )}
+                    {puedePedir ? (
+                      <Boton variante="secundario" icono={MessageCircle} bloque={!mueble.modeloUrl} onClick={() => abrir('preguntar')} className={mueble.modeloUrl ? 'shrink-0' : ''} aria-label="Preguntar al vendedor">
+                        Preguntar
+                      </Boton>
+                    ) : (
+                      <Boton variante="secundario" onClick={copiarEnlace} className="size-14 shrink-0 px-0" aria-label="Copiar enlace">
+                        <Copy className="size-[18px]" />
+                      </Boton>
+                    )}
+                  </div>
                 </div>
               </motion.div>
+            )}
+
+            {puedePedir && (
+              <>
+                <HojaComprar abierta={hoja === 'comprar'} alCerrar={cerrarHoja} mueble={mueble} alListo={(p) => alPedir(p, false)} />
+                <HojaPreguntar abierta={hoja === 'preguntar'} alCerrar={cerrarHoja} mueble={mueble} alListo={(p) => alPedir(p, true)} />
+              </>
             )}
           </>
         )}

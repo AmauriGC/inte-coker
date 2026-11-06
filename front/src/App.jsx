@@ -6,6 +6,7 @@ import SesionProvider from './auth/context/SesionProvider';
 import FavoritosProvider from './favoritos/context/FavoritosProvider';
 import Splash from './layout/Splash';
 import NotificacionesProvider from './notificaciones/context/NotificacionesProvider';
+import PedidosProvider from './pedidos/context/PedidosProvider';
 import AvisosPwa from './pwa/AvisosPwa';
 
 /** Tiempo mínimo del splash para que su animación se vea completa. */
@@ -24,7 +25,9 @@ export default function App() {
       <NotificacionesProvider>
         <SesionProvider>
           <FavoritosProvider>
-            <RouterProvider router={router} />
+            <PedidosProvider>
+              <RouterProvider router={router} />
+            </PedidosProvider>
           </FavoritosProvider>
         </SesionProvider>
         <AvisosPwa />
