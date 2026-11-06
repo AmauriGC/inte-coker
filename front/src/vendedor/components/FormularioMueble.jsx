@@ -6,7 +6,7 @@ import { useEnvio } from '../../common/hooks/useEnvio';
 import { vendedorApi } from '../api/vendedorApi';
 import SubidaArchivo from './SubidaArchivo';
 
-const VACIO = { nombre: '', descripcion: '', precio: '', anchoCm: '', fondoCm: '', altoCm: '', materiales: '', categoriaId: '' };
+const VACIO = { nombre: '', descripcion: '', precio: '', anchoCm: '', fondoCm: '', altoCm: '', materiales: '', existencias: '1', categoriaId: '' };
 
 function desde(mueble) {
   if (!mueble) return VACIO;
@@ -18,6 +18,7 @@ function desde(mueble) {
     fondoCm: mueble.fondoCm ?? '',
     altoCm: mueble.altoCm ?? '',
     materiales: mueble.materiales ?? '',
+    existencias: mueble.existencias ?? '',
     categoriaId: mueble.categoria?.id ?? '',
   };
 }
@@ -49,6 +50,7 @@ export default function FormularioMueble({ mueble, categorias, alGuardar, alCamb
       fondoCm: numero(datos.fondoCm),
       altoCm: numero(datos.altoCm),
       materiales: datos.materiales.trim() || null,
+      existencias: numero(datos.existencias),
       categoriaId: numero(datos.categoriaId),
     });
     alEstado?.(false);
@@ -66,8 +68,10 @@ export default function FormularioMueble({ mueble, categorias, alGuardar, alCamb
         <Campo etiqueta="Nombre" placeholder="Sofá Nube" {...campo('nombre')} required />
         <div className="grid grid-cols-2 gap-3">
           <Campo etiqueta="Precio (MXN)" type="number" inputMode="decimal" min="0" step="0.01" placeholder="18990" {...campo('precio')} />
-          <Selector etiqueta="Categoría" opciones={opciones} {...campo('categoriaId')} />
+          <Campo etiqueta="Existencias" type="number" inputMode="numeric" min="0" max="9999" step="1" placeholder="5" {...campo('existencias')} />
         </div>
+        <p className="-mt-2 text-[12.5px] text-gris">Las existencias bajan solas cuando aceptas un pedido; con 0 se muestra como agotado.</p>
+        <Selector etiqueta="Categoría" opciones={opciones} {...campo('categoriaId')} />
         <fieldset>
           <legend className="mb-1.5 text-[13px] font-semibold text-texto">Medidas reales (cm)</legend>
           <div className="grid grid-cols-3 gap-3">

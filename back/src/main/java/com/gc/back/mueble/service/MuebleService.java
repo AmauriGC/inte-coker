@@ -16,6 +16,8 @@ import com.gc.back.mueble.exception.MuebleAjenoException;
 import com.gc.back.mueble.repository.MuebleRepository;
 import com.gc.back.security.UsuarioPrincipal;
 import com.gc.back.usuario.service.UsuarioService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,11 +33,14 @@ import java.util.List;
 public class MuebleService {
 
     private static final int LARGO_SLUG = 120;
+    private static final int MAX_EXISTENCIAS = 9999;
 
     private final MuebleRepository muebleRepository;
     private final CategoriaService categoriaService;
     private final UsuarioService usuarioService;
     private final AlmacenamientoService almacenamientoService;
+    private final EntityManager entityManager;
+    private final List<ReglaBorradoMueble> reglasBorrado;
 
     @Transactional(readOnly = true)
     public PaginaResponse<MuebleResponse> listarPublicados(FiltroCatalogoRequest filtro, Pageable pageable) {
@@ -103,6 +108,7 @@ public class MuebleService {
     @Transactional
     public void eliminar(Long id, UsuarioPrincipal actual) {
         Mueble mueble = obtenerPropio(id, actual);
+        reglasBorrado.forEach(regla -> regla.validarBorrado(mueble));
         String carpeta = carpeta(mueble);
         muebleRepository.delete(mueble);
         muebleRepository.flush();
@@ -121,6 +127,27 @@ public class MuebleService {
     @Transactional(readOnly = true)
     public List<Mueble> obtenerPublicados(Collection<Long> ids) {
         return ids.isEmpty() ? List.of() : muebleRepository.findAllByIdInAndPublicadoTrue(ids);
+    }
+
+    /**
+     * Para el módulo pedido: descuenta existencias al aceptar. Bloquea la fila hasta el commit
+     * y la vuelve a leer, así dos aceptaciones a la vez no dejan existencias negativas.
+     * Falla con 400 si ya no alcanzan (otro pedido se las llevó primero).
+     */
+    @Transactional
+    public void descontarExistencias(Mueble mueble, int cantidad) {
+        entityManager.refresh(mueble, LockModeType.PESSIMISTIC_WRITE);
+        if (mueble.getExistencias() < cantidad) {
+            throw new ReglaNegocioException("Ya no hay existencias suficientes: quedan " + mueble.getExistencias());
+        }
+        mueble.setExistencias(mueble.getExistencias() - cantidad);
+    }
+
+    /** Para el módulo pedido: devuelve existencias al cancelar un pedido aceptado. */
+    @Transactional
+    public void devolverExistencias(Mueble mueble, int cantidad) {
+        entityManager.refresh(mueble, LockModeType.PESSIMISTIC_WRITE);
+        mueble.setExistencias(Math.min(mueble.getExistencias() + cantidad, MAX_EXISTENCIAS));
     }
 
     /** Adjunta un archivo ya leído (lo usa la semilla del catálogo). */
@@ -162,6 +189,7 @@ public class MuebleService {
         mueble.setFondoCm(request.fondoCm());
         mueble.setAltoCm(request.altoCm());
         mueble.setMateriales(StringUtils.hasText(request.materiales()) ? request.materiales().trim() : null);
+        mueble.setExistencias(request.existencias());
         mueble.setCategoria(categoriaService.obtenerEntidad(request.categoriaId()));
     }
 

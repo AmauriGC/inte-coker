@@ -13,7 +13,10 @@ public enum PermisoBase {
     CATEGORIA_GESTIONAR("Crear, editar y eliminar categorías"),
     USUARIO_GESTIONAR("Ver usuarios, asignar roles y activar o desactivar cuentas"),
     ROL_GESTIONAR("Ver roles y cambiar sus permisos"),
-    FAVORITO_GESTIONAR("Guardar y quitar muebles favoritos");
+    FAVORITO_GESTIONAR("Guardar y quitar muebles favoritos"),
+    PEDIDO_CREAR("Preguntar por muebles, pedirlos y seguir mis compras"),
+    PEDIDO_ATENDER("Ver y atender los pedidos de mis muebles"),
+    PEDIDO_SUPERVISAR("Ver todos los pedidos y cancelarlos por moderación");
 
     private final String descripcion;
 

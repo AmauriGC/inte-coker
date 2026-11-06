@@ -1,5 +1,6 @@
 package com.gc.back.correo.service;
 
+import com.gc.back.correo.dto.AvisoCorreo;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +16,13 @@ import org.springframework.web.util.HtmlUtils;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * Envía los correos de la app. Con MAIL_ENABLED=false no envía nada y escribe el
  * enlace en el log, para probar en local sin SMTP.
  * Un fallo de envío no rompe la operación: se registra y el usuario puede pedir reenvío.
+ * Los avisos de pedidos llegan por {@link AvisosCorreoListener}, en segundo plano.
  */
 @Slf4j
 @Service
@@ -42,17 +45,27 @@ public class CorreoService {
 
     public void enviarVerificacion(String email, String nombre, String token) {
         String enlace = urlFront + "/verificar?token=" + token;
-        enviar(email, "Verifica tu cuenta en GC-Confort", "verificacion", nombre, enlace);
+        enviar(email, "Verifica tu cuenta en GC-Confort", "verificacion", Map.of("nombre", nombre, "enlace", enlace));
     }
 
     public void enviarRecuperacion(String email, String nombre, String token) {
         String enlace = urlFront + "/restablecer-password?token=" + token;
-        enviar(email, "Restablece tu contraseña de GC-Confort", "recuperacion", nombre, enlace);
+        enviar(email, "Restablece tu contraseña de GC-Confort", "recuperacion", Map.of("nombre", nombre, "enlace", enlace));
     }
 
-    private void enviar(String email, String asunto, String plantilla, String nombre, String enlace) {
+    /** Aviso de un módulo (pedidos): título, texto y un botón que lleva al front. */
+    public void enviarAviso(AvisoCorreo aviso) {
+        enviar(aviso.email(), aviso.asunto(), "aviso", Map.of(
+                "nombre", aviso.nombre(),
+                "titulo", aviso.titulo(),
+                "texto", aviso.texto(),
+                "boton", aviso.boton(),
+                "enlace", urlFront + aviso.ruta()));
+    }
+
+    private void enviar(String email, String asunto, String plantilla, Map<String, String> datos) {
         if (!habilitado) {
-            log.info("Correo deshabilitado (MAIL_ENABLED=false). Para {} | {} | {}", email, asunto, enlace);
+            log.info("Correo deshabilitado (MAIL_ENABLED=false). Para {} | {} | {}", email, asunto, datos.get("enlace"));
             return;
         }
         try {
@@ -61,7 +74,7 @@ public class CorreoService {
             helper.setFrom(remitente);
             helper.setTo(email);
             helper.setSubject(asunto);
-            helper.setText(renderizar(plantilla, nombre, enlace), true);
+            helper.setText(renderizar(plantilla, datos), true);
             mailSender.send(mensaje);
             log.info("Correo '{}' enviado a {}", asunto, email);
         } catch (MessagingException | MailException ex) {
@@ -69,14 +82,16 @@ public class CorreoService {
         }
     }
 
-    private String renderizar(String plantilla, String nombre, String enlace) {
+    /** Reemplaza cada {{clave}} de la plantilla por su valor escapado para HTML. */
+    private String renderizar(String plantilla, Map<String, String> datos) {
         try {
             String html = StreamUtils.copyToString(
                     new ClassPathResource("correo/" + plantilla + ".html").getInputStream(),
                     StandardCharsets.UTF_8);
-            return html
-                    .replace("{{nombre}}", HtmlUtils.htmlEscape(nombre))
-                    .replace("{{enlace}}", HtmlUtils.htmlEscape(enlace));
+            for (Map.Entry<String, String> dato : datos.entrySet()) {
+                html = html.replace("{{" + dato.getKey() + "}}", HtmlUtils.htmlEscape(dato.getValue()));
+            }
+            return html;
         } catch (IOException ex) {
             throw new UncheckedIOException("No se encontró la plantilla de correo " + plantilla, ex);
         }

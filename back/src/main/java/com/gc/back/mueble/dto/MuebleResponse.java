@@ -20,6 +20,7 @@ public record MuebleResponse(
         Integer fondoCm,
         Integer altoCm,
         String materiales,
+        int existencias,
         boolean publicado,
         String modeloUrl,
         String imagenUrl,
@@ -38,7 +39,7 @@ public record MuebleResponse(
     public static MuebleResponse desde(Mueble m) {
         return new MuebleResponse(
                 m.getId(), m.getNombre(), m.getSlug(), m.getDescripcion(), m.getPrecio(),
-                m.getAnchoCm(), m.getFondoCm(), m.getAltoCm(), m.getMateriales(), m.isPublicado(),
+                m.getAnchoCm(), m.getFondoCm(), m.getAltoCm(), m.getMateriales(), m.getExistencias(), m.isPublicado(),
                 url(m.getModeloRuta()), url(m.getImagenRuta()),
                 new CategoriaResumen(m.getCategoria().getId(), m.getCategoria().getNombre(), m.getCategoria().getSlug()),
                 new VendedorResumen(m.getVendedor().getId(), m.getVendedor().getNombre()),

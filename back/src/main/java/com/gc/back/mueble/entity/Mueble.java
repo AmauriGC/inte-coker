@@ -12,13 +12,15 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 
 /**
  * Mueble del catálogo. Las medidas van en centímetros enteros y deben coincidir con
  * el modelo 3D (que está en metros) para que la realidad aumentada mida bien.
- * Las rutas de archivos son relativas a UPLOADS_DIR.
+ * Las rutas de archivos son relativas a UPLOADS_DIR. Las existencias bajan cuando el
+ * vendedor acepta un pedido; los muebles que ya existían al agregar la columna quedan con 5.
  */
 @Getter
 @Setter
@@ -50,6 +52,10 @@ public class Mueble extends EntidadBase {
 
     @Column(length = 255)
     private String materiales;
+
+    @ColumnDefault("5")
+    @Column(nullable = false)
+    private int existencias;
 
     @Column(nullable = false)
     private boolean publicado;
