@@ -16,7 +16,7 @@ import Raiz from '../layout/Raiz';
 import AvisosPage from '../notificaciones/pages/AvisosPage';
 import MisPedidosPage from '../pedidos/pages/MisPedidosPage';
 import PedidoPage from '../pedidos/pages/PedidoPage';
-import { CategoriasPage, PanelMueblesPage, RolesPage, UsuariosPage } from './paginasPanel';
+import { CategoriasPage, PanelMueblesPage, PanelPedidosPage, RolesPage, UsuariosPage } from './paginasPanel';
 
 export const router = createBrowserRouter([
   {
@@ -43,7 +43,7 @@ export const router = createBrowserRouter([
       {
         path: 'panel',
         element: (
-          <RutaProtegida permisos={['MUEBLE_CREAR', 'CATEGORIA_GESTIONAR', 'USUARIO_GESTIONAR', 'ROL_GESTIONAR']}>
+          <RutaProtegida permisos={['MUEBLE_CREAR', 'PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR', 'CATEGORIA_GESTIONAR', 'USUARIO_GESTIONAR', 'ROL_GESTIONAR']}>
             <LayoutPanel />
           </RutaProtegida>
         ),
@@ -51,6 +51,8 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate to="muebles" replace /> },
           { path: 'muebles', element: <RutaProtegida permisos={['MUEBLE_CREAR']}><PanelMueblesPage /></RutaProtegida> },
           { path: 'muebles/:slug', element: <RutaProtegida permisos={['MUEBLE_CREAR']}><DetallePage enPanel /></RutaProtegida> },
+          { path: 'pedidos', element: <RutaProtegida permisos={['PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR']}><PanelPedidosPage /></RutaProtegida> },
+          { path: 'pedidos/:id', element: <RutaProtegida permisos={['PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR']}><PedidoPage enPanel /></RutaProtegida> },
           { path: 'categorias', element: <RutaProtegida permisos={['CATEGORIA_GESTIONAR']}><CategoriasPage /></RutaProtegida> },
           { path: 'usuarios', element: <RutaProtegida permisos={['USUARIO_GESTIONAR']}><UsuariosPage /></RutaProtegida> },
           { path: 'roles', element: <RutaProtegida permisos={['ROL_GESTIONAR']}><RolesPage /></RutaProtegida> },
