@@ -24,7 +24,7 @@ el espacio ni cómo combina con el cuarto. Muchas devoluciones salen de ahí.
 | Front | React 19 + Vite 8, Tailwind CSS v4, React Router, Motion, lucide-react, SweetAlert2 |
 | 3D | Blender 5.2 (MCP), exportación `.glb`, `<model-viewer>` con AR |
 | PWA | `manifest.webmanifest` + service worker propio (estrategias de la práctica 4.2) |
-| Infra (después) | Dockerfile, docker-compose, Jenkins |
+| Infra | Dockerfile multietapa, docker-compose (MySQL, back, front con nginx), Jenkins (JCasC, multibranch) |
 
 ## Roles (multirol)
 
@@ -48,7 +48,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 6 — PWA: manifest, service worker, instalación y modo sin conexión
 - [x] Fase 7 — Modelos 3D en Blender y exportación optimizada (8 muebles: ver `blender/README.md`)
 - [x] Fase 8 — Docker: Dockerfile del back y del front, docker-compose con MySQL
-- [ ] Fase 9 — Jenkins: pipeline y despliegue automático de `test` y `main`
+- [x] Fase 9 — Jenkins: pipeline y despliegue automático de `test` y `main`
 
 ## Fases documentadas
 
@@ -63,6 +63,17 @@ el JWT y se validan con `@PreAuthorize`.
 | 6 | `md/hechos/FASE_06_pwa.md` | hecho |
 | 7 | `md/hechos/FASE_07_modelos.md` | hecho |
 | 8 | `md/hechos/FASE_08_docker.md` | hecho |
+| 9 | `md/hechos/FASE_09_jenkins.md` | hecho |
+
+## Pendientes después de las fases
+
+| Tema | Nota |
+|---|---|
+| AR en el teléfono | "Verlo en mi sala": WebXR y Scene Viewer piden HTTPS; probar con un túnel (por ejemplo Tailscale) |
+| Favoritos en el back | Hoy viven en `localStorage`; falta el endpoint con `FAVORITO_GESTIONAR` |
+| Webhook de GitHub | Jenkins escanea cada 2 minutos; con un túnel público se puede usar webhook |
+
+El maestro pasa a `hechos/` cuando se cierren estos pendientes o se descarten.
 
 ## Diseño
 

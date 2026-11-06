@@ -107,7 +107,8 @@ pero antes de fusionar se revisa:
 - [ ] La rama no está atrás de `develop`.
 - [ ] El MD de la fase se actualizó.
 
-Cuando exista Jenkins, el PR además debe pasar el pipeline.
+Jenkins (fase 9) corre el pipeline al llegar a `develop`, `test` y `main`; si queda en rojo, se
+corrige con otro PR antes de promover.
 
 ## 7. Reglas rápidas
 
