@@ -32,3 +32,6 @@ desktop.ini
 # Blender (respaldos automáticos)
 *.blend1
 *.blend2
+
+# Configuración local de Claude Code (permisos personales)
+.claude/settings.local.json
