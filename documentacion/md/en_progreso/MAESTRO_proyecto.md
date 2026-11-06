@@ -21,7 +21,7 @@ el espacio ni cómo combina con el cuarto. Muchas devoluciones salen de ahí.
 | Capa | Tecnología |
 |---|---|
 | Back | Spring Boot 4.1.2, Java 21, Maven, MySQL 8, JPA, Spring Security + JWT, Mail, SpringDoc, Actuator |
-| Front | React + Vite, Tailwind CSS v4, lucide-react, SweetAlert2 |
+| Front | React 19 + Vite 8, Tailwind CSS v4, React Router, Motion, lucide-react, SweetAlert2 |
 | 3D | Blender 5.2 (MCP), exportación `.glb`, `<model-viewer>` con AR |
 | PWA | `manifest.json` + service worker propio (estrategias de la práctica 4.2) |
 | Infra (después) | Dockerfile, docker-compose, Jenkins |
@@ -43,8 +43,8 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 1 — Back base: paquetes, `ApiResponse`, `GlobalExceptionHandler`, CORS
 - [x] Fase 2 — Seguridad: usuario, rol, permiso, JWT, registro, verificación por correo, recuperar contraseña, datos iniciales
 - [x] Fase 3 — Catálogo: categorías y muebles (CRUD paginado), subida de `.glb` e imágenes
-- [ ] Fase 4 — Front base: Vite, Tailwind, rutas, sesión, alertas
-- [ ] Fase 5 — Front catálogo: listado, detalle, visor 3D y AR, panel del vendedor y del admin
+- [x] Fase 4 — Front base: Vite, Tailwind, rutas, sesión, alertas
+- [x] Fase 5 — Front catálogo: listado, detalle, visor 3D y AR, panel del vendedor y del admin
 - [ ] Fase 6 — PWA: manifest, service worker, instalación y modo sin conexión
 - [ ] Fase 7 — Modelos 3D en Blender y exportación optimizada (4 muebles hechos: ver `blender/README.md`)
 - [ ] Fase 8 — Docker: Dockerfile del back y del front, docker-compose con MySQL
@@ -58,6 +58,8 @@ el JWT y se validan con `@PreAuthorize`.
 | 1 | `md/hechos/FASE_01_back_base.md` | hecho |
 | 2 | `md/hechos/FASE_02_seguridad.md` | hecho |
 | 3 | `md/hechos/FASE_03_catalogo.md` | hecho |
+| 4 | `md/hechos/FASE_04_front_base.md` | hecho |
+| 5 | `md/hechos/FASE_05_front_catalogo.md` | hecho |
 | 7 | `blender/README.md` | en progreso |
 
 ## Diseño
