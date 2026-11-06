@@ -9,4 +9,5 @@ Cada hallazgo lleva: número, severidad, dónde está, qué pasa y propuesta.
 
 | Archivo | Tema |
 |---|---|
-| (ninguno todavía) | |
+| `ANALISIS_pedidos.md` | Compra de muebles y comunicación cliente-vendedor (por decidir) |
+| `ANALISIS_seguridad.md` | Hallazgos de seguridad abiertos (por ejemplo, límite de intentos de login) |
