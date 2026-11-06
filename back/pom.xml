@@ -11,8 +11,8 @@
 	<groupId>com.gc</groupId>
 	<artifactId>back</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>gc-confort-back</name>
+	<description>API del catálogo de muebles 3D GC-Confort</description>
 	<url/>
 	<licenses>
 		<license/>

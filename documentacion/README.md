@@ -11,8 +11,9 @@
 | 3 | `git/FLUJO_GIT.md` | Ramas, PRs y promoción |
 | 4 | `git/CONVENCION_COMMITS.md` | Cómo escribir commits |
 | 5 | `git/REGLAS_IGNORE.md` | Qué no subir |
-| 6 | `md/analisis/` | Decisiones pendientes |
-| 7 | `md/en_progreso/MAESTRO_proyecto.md` | Objetivo, stack, roles y fases |
+| 6 | `back/CONVENCIONES_BACK.md` | Paquetes por módulo, capas, respuestas, errores y pruebas del back |
+| 7 | `md/analisis/` | Decisiones pendientes |
+| 8 | `md/en_progreso/MAESTRO_proyecto.md` | Objetivo, stack, roles y fases |
 
 ## Empezar a trabajar un tema
 
@@ -26,8 +27,9 @@ AGENTS.md -> ESTANDAR.md -> git/FLUJO_GIT.md -> md/analisis/
 | Ruta | Contenido |
 |---|---|
 | `git/` | Reglas de Git |
+| `back/` | Convenciones del back |
 | `historias_de_usuario/` | Historias por rol (pendiente) |
 | `md/pendientes/` | Fases por iniciar |
 | `md/en_progreso/` | `MAESTRO_proyecto.md` |
-| `md/hechos/` | Fases terminadas |
+| `md/hechos/` | Fases terminadas (`FASE_01_back_base.md`) |
 | `md/analisis/` | Hallazgos por revisar |

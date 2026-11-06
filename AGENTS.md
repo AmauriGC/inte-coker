@@ -9,6 +9,7 @@ Monorepo del Catálogo de muebles 3D (PWA):
 ## Antes de tocar código
 
 1. Lee `documentacion/README.md`, `documentacion/ESTANDAR.md` y `documentacion/git/`.
+   Para el back, además `documentacion/back/CONVENCIONES_BACK.md`.
 2. Revisa `documentacion/md/analisis/` por decisiones pendientes.
 3. Trabaja en una rama `tipo/tema` que salga de `develop`; nunca en `main`, `test` ni `develop`.
 
