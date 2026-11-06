@@ -14,13 +14,15 @@ com.gc.back
 ├── common/                  <- compartido por todos los módulos
 │   ├── entity/              EntidadBase (id, creadoEn, actualizadoEn)
 │   ├── response/            ApiResponse, PaginaResponse
+│   ├── util/                Slug
 │   └── exception/           ApiException, RecursoNoEncontrado, RecursoDuplicado,
 │                            ReglaNegocio, GlobalExceptionHandler
 ├── cors/                    CorsConfig
-├── config/                  OpenApiConfig, DatosIniciales
+├── config/                  OpenApiConfig, DatosIniciales, RecursosEstaticosConfig
 ├── security/                SecurityConfig, JWT, filtro, UserDetailsService
 ├── correo/                  envío de correos y plantillas
-└── <modulo>/                usuario, rol, auth, mueble, categoria...
+├── archivo/                 guardado de archivos subidos y validación de formato
+└── <modulo>/                usuario, rol, auth, categoria, mueble...
     ├── entity/              entidades JPA y enums del dominio
     ├── dto/                 records de request (con validaciones) y response
     ├── repository/          interfaces JpaRepository
@@ -100,22 +102,35 @@ Todo responde `ApiResponse<T>`:
   bloqueo aplica sin esperar a que caduque el token.
 - Contraseñas con BCrypt. Los tokens de los correos se guardan como hash SHA-256.
 
-## 8. Configuración
+## 8. Archivos subidos
+
+- Siempre por `archivo/service/AlmacenamientoService`; nadie escribe en disco por su cuenta.
+- El formato se valida por la firma de bytes (`TipoArchivo`), nunca por la extensión
+  ni por el `Content-Type` del cliente.
+- En base se guarda la ruta relativa (`muebles/1/modelo-xxxx.glb`); la API devuelve
+  `/uploads/...` y el front le antepone el origen del back.
+- Cada subida usa un nombre nuevo y borra el anterior.
+
+## 9. Configuración
 
 - Todo valor sensible o que cambia por entorno sale del `.env` con `${VAR:default}`
   en `application.properties`. Clave nueva: también en `.env.example`.
 - Propiedades propias bajo el prefijo `app.`.
 
-## 9. Pruebas
+## 10. Pruebas
 
 - Corren contra **MySQL real** en la base `DB_NAME_TEST` (`catalogo_muebles_test`), que
   se crea y se borra en cada corrida. No se usa H2.
 - Requisito: MySQL encendido y el `.env` con credenciales válidas.
-- Flujos de la API con `@SpringBootTest` + `@AutoConfigureMockMvc`
-  (`org.springframework.boot.webmvc.test.autoconfigure`).
+- Toda prueba de integración **extiende `PruebaIntegracion`**: así comparten un solo
+  contexto de Spring. Dos contextos distintos se borrarían la base entre sí.
+- `PruebaIntegracion` trae helpers: `registrar`, `login`, `accessToken`,
+  `usuarioConRoles(email, roles...)`, `enviar`.
+- Como las pruebas comparten base, cada una usa correos y nombres propios y no
+  supone totales exactos (usa filtros o `greaterThanOrEqualTo`).
 - `./mvnw verify` debe pasar antes de abrir un PR.
 
-## 10. Versiones (Spring Boot 4)
+## 11. Versiones (Spring Boot 4)
 
 | Pieza | Nota |
 |---|---|
@@ -123,3 +138,4 @@ Todo responde `ApiResponse<T>`:
 | Spring Data 4 | `PropertyReferenceException` está en `org.springframework.data.core` |
 | Spring Security 7 | Sin `AntPathRequestMatcher`; `requestMatchers(String...)` usa `PathPatternRequestMatcher` |
 | jjwt 0.12 | `Jwts.parser().verifyWith(clave).build().parseSignedClaims(token)` |
+| Spring MVC 7 | `configureContentNegotiation` ya no afecta los recursos estáticos; para tipos MIME propios se declara un `ResourceHttpRequestHandler` con `setMediaTypes` |

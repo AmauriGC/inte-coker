@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.LinkedHashMap;
@@ -76,6 +78,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiResponse<Void>> manejarParametroFaltante(MissingServletRequestParameterException ex) {
         return responder(HttpStatus.BAD_REQUEST, "Falta el parámetro '" + ex.getParameterName() + "'");
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiResponse<Void>> manejarParteFaltante(MissingServletRequestPartException ex) {
+        return responder(HttpStatus.BAD_REQUEST, "Falta el archivo '" + ex.getRequestPartName() + "'");
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ApiResponse<Void>> manejarMultipart(MultipartException ex) {
+        return responder(HttpStatus.BAD_REQUEST, "La petición debe enviarse como multipart/form-data");
     }
 
     @ExceptionHandler(PropertyReferenceException.class)

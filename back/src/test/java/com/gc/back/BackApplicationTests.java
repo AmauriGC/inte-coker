@@ -1,10 +1,8 @@
 package com.gc.back;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class BackApplicationTests {
+class BackApplicationTests extends PruebaIntegracion {
 
 	@Test
 	void contextLoads() {
