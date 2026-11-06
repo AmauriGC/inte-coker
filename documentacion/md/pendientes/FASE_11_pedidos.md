@@ -1,7 +1,7 @@
 # FASE 11 · Pedidos y conversación cliente-vendedor
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso (11a y 11b hechas)
+- Estado: En progreso (11a, 11b y 11c hechas)
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_pedidos.md` (decisiones D1 a D5 tomadas)
 
@@ -28,7 +28,7 @@ llevan existencias que bajan cuando el vendedor acepta.
   - "Comprar" y "Preguntar" en el detalle; existencias en catálogo y detalle.
   - Hoja de compra, "Mis pedidos", detalle con línea de tiempo y chat (cada 10 s).
   - Contador de no leídos (cada 30 s) y exclusión de `/api/pedidos` en el service worker.
-- [ ] 11c · Front vendedor y admin
+- [x] 11c · Front vendedor y admin
   - Existencias en el formulario y la tabla de muebles.
   - Sección "Pedidos" del panel con filtro, acciones por estado y contador en la sidebar.
 - [ ] 11d · Docs
@@ -69,7 +69,7 @@ Notas de diseño:
 | Hoja Comprar | `pedidos/components/HojaComprar` | Cantidad (hasta 10 o las existencias), domicilio o recoger, datos de entrega recordados en `gc.entrega`, mensaje y total |
 | Hoja Preguntar | `pedidos/components/HojaPreguntar` | Pregunta con sugerencias; se suma a la consulta abierta |
 | Mis pedidos | `/pedidos` | Lista por actividad, filtro por estado, no leídos por pedido |
-| Detalle del pedido | `/pedidos/:id` (y `/panel/pedidos/:id` en 11c) | Línea de tiempo, datos de entrega, acciones que manda el back y conversación |
+| Detalle del pedido | `/pedidos/:id` (y `/panel/pedidos/:id`) | Línea de tiempo, datos de entrega, acciones que manda el back y conversación |
 | Conversación | `pedidos/components/Conversacion` | Mensajes nuevos cada 10 s con la pestaña visible; marca como leído |
 | Contadores | `PedidosProvider` | `/pedidos/resumen` cada 30 s; punto en Cuenta y en "Mis pedidos"; toast si sube |
 
@@ -78,10 +78,24 @@ Notas de diseño:
 - El service worker no guarda `/api/pedidos` (solo cachea las rutas públicas del catálogo).
 - Las tarjetas del catálogo muestran "Agotado" con 0 existencias.
 
+## Front del vendedor y admin (11c)
+
+| Pieza | Dónde | Qué hace |
+|---|---|---|
+| Tabla de muebles | `vendedor/components/TablaMuebles` | Columna de existencias; "Agotado" en rojo con 0 |
+| Pedidos del panel | `/panel/pedidos` (`vendedor/pages/PanelPedidosPage`) | Ventas del vendedor con filtro por estado y "Ver más" |
+| Supervisión | Mismo listado, vista "Todos" | Con `PEDIDO_SUPERVISAR`: todos los pedidos y búsqueda por folio, mueble o persona |
+| Detalle | `/panel/pedidos/:id` | El mismo `PedidoPage` con `enPanel`; aceptar, rechazar, enviar, entregar y chat |
+| Contadores | Sidebar del panel y Cuenta | Por aceptar más mensajes sin leer; toast que lleva a `/panel/pedidos` |
+
+- Las rutas piden `PEDIDO_ATENDER` o `PEDIDO_SUPERVISAR`; la raíz `/panel` también las acepta.
+- La descripción de los roles en `auth/roles.js` ya menciona pedidos y compras.
+
 ## Verificación
 
 - `./mvnw verify` en `back/`; `npm run lint` y `npm run build` en `front/`.
 - 11a: `./mvnw verify` con 18 pruebas en verde (`PedidoTest`, 5 casos); `npm run lint` y
   `npm run build` en verde.
 - 11b: `npm run lint` y `npm run build` en verde.
+- 11c: `npm run lint` y `npm run build` en verde.
 - Revisión en el navegador por la persona dueña del proyecto con sus cuentas.

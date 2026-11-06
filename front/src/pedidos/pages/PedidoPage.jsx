@@ -78,7 +78,7 @@ export default function PedidoPage({ enPanel = false }) {
         titulo={pedido.folio}
         subtitulo={pedido.estado === 'CONSULTA' ? 'Consulta' : 'Pedido'}
         acciones={<ChipEstado estado={pedido.estado} tipoEntrega={pedido.tipoEntrega} />}
-        className={enPanel ? 'pt-0' : ''}
+        className={enPanel ? 'pt-0!' : ''}
       />
 
       <div className="grid gap-4 md:grid-cols-[1fr_1.1fr] md:items-start">

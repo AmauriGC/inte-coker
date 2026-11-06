@@ -17,6 +17,17 @@ function EstadoArchivo({ listo, texto }) {
   );
 }
 
+/** Existencias: en rojo cuando se agotó. */
+function Existencias({ n }) {
+  return n === 0 ? (
+    <span className="inline-flex rounded-full bg-[#F6DAD7] px-2.5 py-1 text-[12px] font-semibold text-[#8C1D17]">Agotado</span>
+  ) : (
+    <span className="text-texto">
+      <span className="font-semibold text-tinta">{n}</span> en existencia
+    </span>
+  );
+}
+
 function Acciones({ mueble, alEditar, alEliminar }) {
   const boton = 'grid size-9 place-items-center rounded-full text-texto hover:bg-crema';
   return (
@@ -44,6 +55,7 @@ export default function TablaMuebles({ muebles, alEditar, alEliminar, alPublicar
             <tr>
               <th className="px-5 py-3 font-semibold">Mueble</th>
               <th className="px-3 py-3 font-semibold">Medidas</th>
+              <th className="px-3 py-3 font-semibold">Existencias</th>
               <th className="px-3 py-3 font-semibold">Archivos</th>
               <th className="px-3 py-3 font-semibold">Publicado</th>
               <th className="px-5 py-3 text-right font-semibold">Acciones</th>
@@ -65,6 +77,9 @@ export default function TablaMuebles({ muebles, alEditar, alEliminar, alPublicar
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 text-texto">{medidas(m)}</td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    <Existencias n={m.existencias} />
+                  </td>
                   <td className="px-3 py-3">
                     <div className="flex flex-wrap gap-1.5">
                       <EstadoArchivo listo={Boolean(m.modeloUrl)} texto="3D" />
@@ -93,7 +108,12 @@ export default function TablaMuebles({ muebles, alEditar, alEliminar, alPublicar
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-display text-[15.5px] font-semibold">{m.nombre}</p>
                   <p className="truncate text-[12.5px] text-gris">{medidas(m)}</p>
-                  <p className="mt-0.5 text-[14px] font-bold">{precio(m.precio)}</p>
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[14px] font-bold">
+                    {precio(m.precio)}
+                    <span className="text-[12.5px] font-normal">
+                      <Existencias n={m.existencias} />
+                    </span>
+                  </p>
                 </div>
                 <Interruptor activo={m.publicado} alCambiar={(v) => alPublicar(m, v)} deshabilitado={publicando === m.id} etiqueta={`Publicar ${m.nombre}`} />
               </div>

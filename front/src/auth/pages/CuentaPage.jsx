@@ -17,6 +17,7 @@ import { datosRol } from '../roles';
 
 const ACCESOS = [
   { a: '/panel/muebles', texto: 'Mis muebles', detalle: 'Crea, sube modelos y publica', Icono: Package, permiso: 'MUEBLE_CREAR' },
+  { a: '/panel/pedidos', texto: 'Pedidos', detalle: 'Atiende a tus clientes', Icono: ReceiptText, permiso: 'PEDIDO_ATENDER' },
   { a: '/panel/categorias', texto: 'Categorías', detalle: 'Organiza el catálogo', Icono: Tags, permiso: 'CATEGORIA_GESTIONAR' },
   { a: '/panel/usuarios', texto: 'Usuarios', detalle: 'Roles y cuentas activas', Icono: Users, permiso: 'USUARIO_GESTIONAR' },
   { a: '/panel/roles', texto: 'Roles y permisos', detalle: 'Qué puede hacer cada rol', Icono: Shield, permiso: 'ROL_GESTIONAR' },
@@ -128,7 +129,7 @@ export default function CuentaPage() {
           />
         )}
         {accesos.map((x, i) => (
-          <Fila key={x.a} {...x} i={i + 2} />
+          <Fila key={x.a} {...x} cuenta={x.permiso === 'PEDIDO_ATENDER' ? resumen.ventasPorAtender + resumen.ventasSinLeer : 0} i={i + 2} />
         ))}
       </ul>
 
