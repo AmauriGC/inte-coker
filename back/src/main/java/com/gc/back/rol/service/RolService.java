@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,13 +39,19 @@ public class RolService {
     /**
      * Crea los permisos y roles base que falten. Es idempotente: no pisa los permisos
      * que un administrador ya cambió, salvo ADMIN, que siempre queda con todos.
+     * Un permiso que se crea por primera vez se agrega a los roles base existentes que lo
+     * traen en {@link RolBase} (así CLIENTE y VENDEDOR reciben los permisos de módulos nuevos).
      */
     @Transactional
     public void asegurarRolesYPermisos() {
         Map<String, Permiso> permisos = new HashMap<>();
+        Set<PermisoBase> nuevos = EnumSet.noneOf(PermisoBase.class);
         for (PermisoBase base : PermisoBase.values()) {
-            Permiso permiso = permisoRepository.findByNombre(base.name())
-                    .orElseGet(() -> permisoRepository.save(new Permiso(base.name(), base.getDescripcion())));
+            Permiso permiso = permisoRepository.findByNombre(base.name()).orElse(null);
+            if (permiso == null) {
+                permiso = permisoRepository.save(new Permiso(base.name(), base.getDescripcion()));
+                nuevos.add(base);
+            }
             permisos.put(base.name(), permiso);
         }
 
@@ -59,6 +66,13 @@ public class RolService {
                 log.info("Rol {} creado con {} permisos", base.name(), iniciales.size());
             } else if (base == RolBase.ADMIN) {
                 rol.setPermisos(new HashSet<>(permisos.values()));
+            } else {
+                List<Permiso> agregar = base.getPermisos().stream().filter(nuevos::contains)
+                        .map(p -> permisos.get(p.name())).toList();
+                if (!agregar.isEmpty()) {
+                    rol.getPermisos().addAll(agregar);
+                    log.info("Rol {}: {} permisos nuevos agregados", base.name(), agregar.size());
+                }
             }
         }
     }

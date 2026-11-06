@@ -4,21 +4,24 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Roles que siempre existen. Se crean al arrancar con sus permisos iniciales.
+ * Roles que siempre existen. Se crean al arrancar con sus permisos iniciales; un permiso
+ * nuevo del sistema se agrega a los roles base que lo traen aquí.
  * Después, ROL_GESTIONAR puede cambiar los permisos de VENDEDOR y CLIENTE;
  * ADMIN siempre conserva todos.
  */
 public enum RolBase {
 
     ADMIN("Administra usuarios, roles y categorías", EnumSet.allOf(PermisoBase.class)),
-    VENDEDOR("Publica y mantiene sus muebles y modelos 3D", EnumSet.of(
+    VENDEDOR("Publica sus muebles y modelos 3D y atiende sus pedidos", EnumSet.of(
             PermisoBase.MUEBLE_VER,
             PermisoBase.MUEBLE_CREAR,
             PermisoBase.MUEBLE_EDITAR,
-            PermisoBase.MUEBLE_ELIMINAR)),
-    CLIENTE("Explora el catálogo, usa el visor 3D y AR y guarda favoritos", EnumSet.of(
+            PermisoBase.MUEBLE_ELIMINAR,
+            PermisoBase.PEDIDO_ATENDER)),
+    CLIENTE("Explora el catálogo, usa el visor 3D y AR, guarda favoritos y pide muebles", EnumSet.of(
             PermisoBase.MUEBLE_VER,
-            PermisoBase.FAVORITO_GESTIONAR));
+            PermisoBase.FAVORITO_GESTIONAR,
+            PermisoBase.PEDIDO_CREAR));
 
     private final String descripcion;
     private final Set<PermisoBase> permisos;
