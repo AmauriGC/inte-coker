@@ -1,17 +1,11 @@
 package com.gc.back.auth;
 
-import com.gc.back.correo.service.CorreoService;
+import com.gc.back.PruebaIntegracion;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -19,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,19 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Flujo de la API de autenticación contra MySQL (base de pruebas).
  * El correo está deshabilitado; los tokens se capturan espiando CorreoService.
  */
-@SpringBootTest
-@AutoConfigureMockMvc
-class AuthFlowTest {
-
-    private static final String ADMIN_EMAIL = "admin@prueba.com";
-    private static final String ADMIN_PASSWORD = "Admin123*";
-    private static final String PASSWORD = "Mueble2026";
-
-    @Autowired
-    private MockMvc mvc;
-
-    @MockitoSpyBean
-    private CorreoService correoService;
+class AuthFlowTest extends PruebaIntegracion {
 
     @Test
     void clienteSeRegistraVerificaEntraYRenuevaSesion() throws Exception {
@@ -166,30 +147,5 @@ class AuthFlowTest {
         mvc.perform(get("/api/roles").header(HttpHeaders.AUTHORIZATION, bearer))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.datos", hasSize(3)));
-    }
-
-    private ResultActions registrar(String nombre, String email, String password) throws Exception {
-        return enviar("/api/auth/registro",
-                "{\"nombre\":\"%s\",\"email\":\"%s\",\"password\":\"%s\"}".formatted(nombre, email, password));
-    }
-
-    private ResultActions login(String email, String password) throws Exception {
-        return enviar("/api/auth/login", "{\"email\":\"%s\",\"password\":\"%s\"}".formatted(email, password));
-    }
-
-    private String accessToken(String email, String password) throws Exception {
-        String respuesta = login(email, password).andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        return JsonPath.read(respuesta, "$.datos.accessToken");
-    }
-
-    private String tokenDeVerificacion(String email) {
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(correoService).enviarVerificacion(eq(email), anyString(), captor.capture());
-        return captor.getValue();
-    }
-
-    private ResultActions enviar(String ruta, String json) throws Exception {
-        return mvc.perform(post(ruta).contentType(MediaType.APPLICATION_JSON).content(json));
     }
 }
