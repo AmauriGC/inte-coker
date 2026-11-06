@@ -1,7 +1,7 @@
 # FASE 11 · Pedidos y conversación cliente-vendedor
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso (11a, 11b y 11c hechas)
+- Estado: Hecho
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_pedidos.md` (decisiones D1 a D5 tomadas)
 
@@ -31,7 +31,7 @@ llevan existencias que bajan cuando el vendedor acepta.
 - [x] 11c · Front vendedor y admin
   - Existencias en el formulario y la tabla de muebles.
   - Sección "Pedidos" del panel con filtro, acciones por estado y contador en la sidebar.
-- [ ] 11d · Docs
+- [x] 11d · Docs
   - Mover esta fase a `hechos/`, actualizar el maestro y la guía.
 
 ## API (11a)
