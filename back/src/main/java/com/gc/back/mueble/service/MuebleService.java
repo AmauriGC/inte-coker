@@ -40,6 +40,7 @@ public class MuebleService {
     private final UsuarioService usuarioService;
     private final AlmacenamientoService almacenamientoService;
     private final EntityManager entityManager;
+    private final List<ReglaBorradoMueble> reglasBorrado;
 
     @Transactional(readOnly = true)
     public PaginaResponse<MuebleResponse> listarPublicados(FiltroCatalogoRequest filtro, Pageable pageable) {
@@ -107,6 +108,7 @@ public class MuebleService {
     @Transactional
     public void eliminar(Long id, UsuarioPrincipal actual) {
         Mueble mueble = obtenerPropio(id, actual);
+        reglasBorrado.forEach(regla -> regla.validarBorrado(mueble));
         String carpeta = carpeta(mueble);
         muebleRepository.delete(mueble);
         muebleRepository.flush();
