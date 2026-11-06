@@ -1,8 +1,9 @@
-import { ArrowLeft, ChevronDown, LogOut, Package, Shield, Tags, Users } from 'lucide-react';
+import { ArrowLeft, LogOut, Package, Shield, Tags, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import { useSesion } from '../auth/context/SesionContext';
+import SelectorRol from '../auth/components/SelectorRol';
 import { datosRol } from '../auth/roles';
 import { confirmar } from '../common/alertas/alertas';
 import Logo from '../common/components/Logo';
@@ -54,24 +55,15 @@ export default function LayoutPanel() {
           <div className="min-w-0 flex-1">
             <p className="font-display text-[17px] font-bold leading-tight">GC-Confort</p>
             {multiRol ? (
-              <label className="relative mt-0.5 inline-flex items-center gap-1 text-[12px] text-crema/70">
-                <span className="sr-only">Rol activo</span>
-                <select
-                  value={rolActivo}
-                  onChange={(e) => {
-                    cambiarRol(e.target.value);
-                    navegar(datosRol(e.target.value).inicio);
-                  }}
-                  className="cursor-pointer appearance-none rounded-full bg-white/10 py-0.5 pl-2.5 pr-6 font-semibold text-crema outline-none focus-visible:ring-2 focus-visible:ring-crema/40"
-                >
-                  {roles.map((r) => (
-                    <option key={r} value={r} className="text-tinta">
-                      Como {datosRol(r).nombre.toLowerCase()}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-1.5 size-3.5" aria-hidden />
-              </label>
+              <SelectorRol
+                variante="menu"
+                roles={roles}
+                activo={rolActivo}
+                alElegir={(rol) => {
+                  cambiarRol(rol);
+                  navegar(datosRol(rol).inicio);
+                }}
+              />
             ) : (
               <p className="text-[12px] text-crema/55">{etiquetaPanel}</p>
             )}
