@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface MuebleRepository extends JpaRepository<Mueble, Long> {
@@ -22,6 +24,9 @@ public interface MuebleRepository extends JpaRepository<Mueble, Long> {
 
     @EntityGraph(attributePaths = {"categoria", "vendedor"})
     Optional<Mueble> findWithRelacionesById(Long id);
+
+    @EntityGraph(attributePaths = {"categoria", "vendedor"})
+    List<Mueble> findAllByIdInAndPublicadoTrue(Collection<Long> ids);
 
     /** Catálogo público: solo publicados; cada filtro se ignora si llega null. */
     @EntityGraph(attributePaths = {"categoria", "vendedor"})
