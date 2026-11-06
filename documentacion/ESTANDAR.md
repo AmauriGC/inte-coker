@@ -14,6 +14,10 @@ documentacion/
 │   └── REGLAS_IGNORE.md      <- qué no subir
 ├── back/
 │   └── CONVENCIONES_BACK.md  <- reglas de código del back
+├── front/
+│   └── CONVENCIONES_FRONT.md <- reglas de código del front
+├── infra/
+│   └── GUIA_DOCKER_JENKINS.md <- Docker, compose y Jenkins
 ├── historias_de_usuario/     <- HU por rol
 └── md/
     ├── pendientes/           <- escrito, no iniciado
