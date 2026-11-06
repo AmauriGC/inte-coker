@@ -11,12 +11,18 @@ function archivosPublicos(carpeta, base = carpeta) {
   });
 }
 
+/** Expresión del origen del back dentro del SW; con URL relativa es el mismo de la página. */
+function origenApi(apiUrl) {
+  return apiUrl.startsWith('/') ? 'self.location.origin' : JSON.stringify(new URL(apiUrl).origin);
+}
+
 /**
  * Genera /sw.js a partir de pwa/sw.js al compilar:
  * - __PRECACHE__: index.html, el JS que carga al inicio, el CSS y los archivos de public/.
  *   Los chunks diferidos (panel, model-viewer) no se precargan: se guardan cuando se usan.
  * - __VERSION__: hash de la lista, para que cada build tenga su caché estática.
- * - __API_ORIGEN__: origen de VITE_API_URL (para reconocer /api y /uploads).
+ * - __API_ORIGEN__: origen de VITE_API_URL (para reconocer /api y /uploads). Si la URL es
+ *   relativa ("/api", nginx en Docker), el back está en el mismo origen que la página.
  */
 export default function pluginSw({ apiUrl }) {
   let raiz;
@@ -41,7 +47,7 @@ export default function pluginSw({ apiUrl }) {
         source: plantilla
           .replace("'__VERSION__'", JSON.stringify(version))
           .replace('__PRECACHE__;', JSON.stringify(precache, null, 2) + ';')
-          .replace("'__API_ORIGEN__'", JSON.stringify(new URL(apiUrl).origin)),
+          .replace("'__API_ORIGEN__'", origenApi(apiUrl)),
       });
     },
   };

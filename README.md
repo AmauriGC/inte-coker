@@ -17,6 +17,17 @@ real en tu casa con realidad aumentada antes de comprarlo.
 2. Back: `cd back` y `./mvnw spring-boot:run` (API en `http://localhost:8080`, Swagger en `/swagger-ui.html`).
 3. Front: `cd front`, `npm install` y `npm run dev` (en `http://localhost:5173`).
 
+## Arrancar con Docker
+
+Con el `.env` lleno, desde la raíz:
+
+```powershell
+docker compose up -d --build
+```
+
+Front en `http://localhost:8088`, back (Swagger) en `http://localhost:8089/swagger-ui.html`.
+MySQL corre dentro de Docker. Detalle en `documentacion/md/hechos/FASE_08_docker.md`.
+
 ## Ramas
 
 `main` (producción) ← `test` (pruebas) ← `develop` (tronco) ← `feat/*`, `fix/*`, `docs/*`, `chore/*`.
