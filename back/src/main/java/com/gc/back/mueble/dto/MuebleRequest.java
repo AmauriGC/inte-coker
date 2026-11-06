@@ -42,6 +42,11 @@ public record MuebleRequest(
         @Size(max = 255, message = "Los materiales admiten hasta 255 caracteres")
         String materiales,
 
+        @NotNull(message = "Las existencias son obligatorias")
+        @Min(value = 0, message = "Las existencias no pueden ser negativas")
+        @Max(value = 9999, message = "Las existencias no pueden pasar de 9999")
+        Integer existencias,
+
         @NotNull(message = "La categoría es obligatoria")
         Long categoriaId
 ) {

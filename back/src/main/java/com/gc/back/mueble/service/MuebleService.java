@@ -123,6 +123,24 @@ public class MuebleService {
         return ids.isEmpty() ? List.of() : muebleRepository.findAllByIdInAndPublicadoTrue(ids);
     }
 
+    /**
+     * Para el módulo pedido: descuenta existencias al aceptar. Falla con 400 si ya no alcanzan
+     * (otro pedido se las llevó primero).
+     */
+    @Transactional
+    public void descontarExistencias(Long id, int cantidad) {
+        if (muebleRepository.descontarExistencias(id, cantidad) == 0) {
+            int quedan = muebleRepository.existenciasDe(id).orElse(0);
+            throw new ReglaNegocioException("Ya no hay existencias suficientes: quedan " + quedan);
+        }
+    }
+
+    /** Para el módulo pedido: devuelve existencias al cancelar un pedido aceptado. */
+    @Transactional
+    public void devolverExistencias(Long id, int cantidad) {
+        muebleRepository.devolverExistencias(id, cantidad);
+    }
+
     /** Adjunta un archivo ya leído (lo usa la semilla del catálogo). */
     @Transactional
     void adjuntar(Mueble mueble, byte[] contenido, TipoArchivo tipo) {
@@ -162,6 +180,7 @@ public class MuebleService {
         mueble.setFondoCm(request.fondoCm());
         mueble.setAltoCm(request.altoCm());
         mueble.setMateriales(StringUtils.hasText(request.materiales()) ? request.materiales().trim() : null);
+        mueble.setExistencias(request.existencias());
         mueble.setCategoria(categoriaService.obtenerEntidad(request.categoriaId()));
     }
 

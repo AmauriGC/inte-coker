@@ -45,6 +45,7 @@ class CatalogoTest extends PruebaIntegracion {
                 .andExpect(jsonPath("$.datos.contenido", hasSize(1)))
                 .andExpect(jsonPath("$.datos.contenido[0].slug").value("sofa-nube"))
                 .andExpect(jsonPath("$.datos.contenido[0].anchoCm").value(210))
+                .andExpect(jsonPath("$.datos.contenido[0].existencias").value(4))
                 .andExpect(jsonPath("$.datos.contenido[0].categoria.nombre").value("Sofás"))
                 .andExpect(jsonPath("$.datos.contenido[0].modeloUrl", startsWith("/uploads/muebles/")))
                 .andReturn().getResponse().getContentAsString();
@@ -157,10 +158,11 @@ class CatalogoTest extends PruebaIntegracion {
 
         mvc.perform(post("/api/muebles").header(HttpHeaders.AUTHORIZATION, admin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nombre\":\"Silla\",\"precio\":-5,\"anchoCm\":0,\"fondoCm\":40,\"altoCm\":80,\"categoriaId\":" + idMesas + "}"))
+                        .content("{\"nombre\":\"Silla\",\"precio\":-5,\"anchoCm\":0,\"fondoCm\":40,\"altoCm\":80,\"existencias\":-1,\"categoriaId\":" + idMesas + "}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errores.precio").value("El precio debe ser mayor que cero"))
-                .andExpect(jsonPath("$.errores.anchoCm").exists());
+                .andExpect(jsonPath("$.errores.anchoCm").exists())
+                .andExpect(jsonPath("$.errores.existencias").value("Las existencias no pueden ser negativas"));
 
         String creada = mvc.perform(post("/api/categorias").header(HttpHeaders.AUTHORIZATION, admin)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"nombre\":\"Libreros\"}"))
@@ -204,7 +206,7 @@ class CatalogoTest extends PruebaIntegracion {
     private static String mueble(String nombre, Integer categoriaId) {
         return """
                 {"nombre":"%s","descripcion":"Prueba","precio":1999.90,"anchoCm":120,"fondoCm":60,
-                 "altoCm":75,"materiales":"Pino","categoriaId":%d}
+                 "altoCm":75,"materiales":"Pino","existencias":7,"categoriaId":%d}
                 """.formatted(nombre, categoriaId);
     }
 

@@ -118,7 +118,7 @@ class FavoritoTest extends PruebaIntegracion {
         Integer categoriaId = JsonPath.read(categorias, "$.datos.contenido[0].id");
         String creado = mvc.perform(post("/api/muebles").header(HttpHeaders.AUTHORIZATION, vendedor)
                         .contentType(MediaType.APPLICATION_JSON).content("""
-                                {"nombre":"%s","precio":999.00,"anchoCm":100,"fondoCm":40,"altoCm":45,"categoriaId":%d}
+                                {"nombre":"%s","precio":999.00,"anchoCm":100,"fondoCm":40,"altoCm":45,"existencias":3,"categoriaId":%d}
                                 """.formatted(nombre, categoriaId)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
