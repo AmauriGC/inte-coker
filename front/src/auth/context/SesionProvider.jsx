@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { alExpirarSesion } from '../../common/api/cliente';
 import { tokens } from '../../common/api/tokens';
+import { limpiarCacheApi } from '../../pwa/estadoPwa';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
 import { authApi } from '../api/authApi';
 import { SesionContext } from './SesionContext';
@@ -36,6 +37,7 @@ export default function SesionProvider({ children }) {
     () =>
       alExpirarSesion(() => {
         setUsuario(null);
+        limpiarCacheApi();
         notificar({ tipo: 'info', titulo: 'Tu sesión expiró', texto: 'Vuelve a entrar para continuar.', guardar: false });
       }),
     [notificar],
@@ -50,6 +52,7 @@ export default function SesionProvider({ children }) {
 
   const salir = useCallback(() => {
     tokens.limpiar();
+    limpiarCacheApi();
     setUsuario(null);
   }, []);
 

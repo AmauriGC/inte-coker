@@ -18,4 +18,12 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    files: ['pwa/sw.js'],
+    languageOptions: { globals: { ...globals.serviceworker, __PRECACHE__: 'readonly' } },
+  },
+  {
+    files: ['vite.config.js', 'pwa/pluginSw.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])

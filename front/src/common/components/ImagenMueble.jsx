@@ -11,6 +11,7 @@ function Foto({ src, alt, prioridad, Icono }) {
       <img
         src={src}
         alt={alt}
+        crossOrigin="anonymous"
         loading={prioridad ? 'eager' : 'lazy'}
         decoding="async"
         onLoad={() => setEstado('lista')}

@@ -1,4 +1,4 @@
-import { ArrowLeft, Copy, PackageX, Ruler, ScanLine, Share2 } from 'lucide-react';
+import { ArrowLeft, Copy, PackageX, Ruler, ScanLine, Share2, WifiOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
@@ -76,7 +76,11 @@ export default function DetallePage() {
   if (error) {
     return (
       <Pagina className="mx-auto grid min-h-dvh max-w-md place-items-center px-4">
-        <EstadoVacio icono={PackageX} titulo={error.estado === 404 ? 'Este mueble ya no está' : 'No pudimos cargarlo'} texto={error.message}>
+        <EstadoVacio
+          icono={error.estado === 503 || error.estado === 0 ? WifiOff : PackageX}
+          titulo={error.estado === 404 ? 'Este mueble ya no está' : error.estado === 503 || error.estado === 0 ? 'Sin conexión' : 'No pudimos cargarlo'}
+          texto={error.message}
+        >
           <Boton a="/catalogo" icono={ArrowLeft}>
             Volver al catálogo
           </Boton>

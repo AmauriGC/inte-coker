@@ -15,6 +15,7 @@ front/src/
     hooks/          useConsulta, useEnvio, useRetraso, useEnLinea, useAlmacen
     utils/          formato.js (precio MXN, medidas, fechas), categorias.js (tinte e icono)
   layout/           Splash, BottomBar, LayoutMovil, LayoutPanel, SalidaAnimada, Encabezado
+  pwa/              estadoPwa.js (registro, versión nueva, instalación), AvisosPwa.jsx, usePwa.js
   <modulo>/
     api/            llamadas al back de ese dominio
     context/        XContext.js (createContext + hook) y XProvider.jsx
@@ -41,6 +42,15 @@ Módulos: `auth`, `catalogo`, `favoritos`, `notificaciones`, `vendedor`, `admin`
 | 3D | `@google/model-viewer` se importa bajo demanda en `Visor3D`; `ar-scale="fixed"` para escala real. |
 | Archivos | `urlArchivo(ruta)` antepone el origen del back a `/uploads/...`. |
 | Variables | Solo `VITE_API_URL`, leída del `.env` de la raíz (`envDir: '..'`). |
+
+## PWA
+
+- El service worker vive en `front/pwa/sw.js` (plantilla) y lo publica `pwa/pluginSw.js` al compilar.
+  Solo se registra en producción; para probarlo: `npm run build` y `npm run preview`.
+- Una ruta nueva de la API que deba verse sin conexión se agrega a `RUTAS_API_PUBLICAS` del service worker.
+  Nunca rutas con datos privados.
+- Imágenes del back con `crossOrigin="anonymous"` para que la caché guarde respuestas CORS y no opacas.
+- Estrategias y cachés: `documentacion/md/hechos/FASE_06_pwa.md`.
 
 ## Nombres
 

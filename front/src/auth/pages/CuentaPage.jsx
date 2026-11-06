@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronRight, Heart, LogIn, LogOut, Package, Shield, Tags, Users } from 'lucide-react';
+import { BadgeCheck, ChevronRight, Download, Heart, LogIn, LogOut, Package, Shield, Tags, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import { confirmar } from '../../common/alertas/alertas';
@@ -6,6 +6,8 @@ import Boton from '../../common/components/Boton';
 import EstadoVacio from '../../common/components/EstadoVacio';
 import Pagina from '../../common/components/Pagina';
 import { useFavoritos } from '../../favoritos/context/FavoritosContext';
+import { instalar } from '../../pwa/estadoPwa';
+import { usePwa } from '../../pwa/usePwa';
 import Encabezado from '../../layout/Encabezado';
 import { useSesion } from '../context/SesionContext';
 
@@ -38,6 +40,7 @@ function Fila({ a, Icono, texto, detalle, i }) {
 export default function CuentaPage() {
   const { usuario, tienePermiso, salir } = useSesion();
   const { favoritos } = useFavoritos();
+  const { instalable } = usePwa();
   const navegar = useNavigate();
 
   if (!usuario) {
@@ -95,6 +98,12 @@ export default function CuentaPage() {
           <Fila key={x.a} {...x} i={i + 1} />
         ))}
       </ul>
+
+      {instalable && (
+        <Boton variante="secundario" bloque icono={Download} onClick={instalar} className="mt-4">
+          Instalar la app
+        </Boton>
+      )}
 
       <Boton variante="secundario" bloque icono={LogOut} onClick={cerrarSesion} className="mt-4">
         Cerrar sesión

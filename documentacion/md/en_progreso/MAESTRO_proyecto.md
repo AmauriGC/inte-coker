@@ -23,7 +23,7 @@ el espacio ni cómo combina con el cuarto. Muchas devoluciones salen de ahí.
 | Back | Spring Boot 4.1.2, Java 21, Maven, MySQL 8, JPA, Spring Security + JWT, Mail, SpringDoc, Actuator |
 | Front | React 19 + Vite 8, Tailwind CSS v4, React Router, Motion, lucide-react, SweetAlert2 |
 | 3D | Blender 5.2 (MCP), exportación `.glb`, `<model-viewer>` con AR |
-| PWA | `manifest.json` + service worker propio (estrategias de la práctica 4.2) |
+| PWA | `manifest.webmanifest` + service worker propio (estrategias de la práctica 4.2) |
 | Infra (después) | Dockerfile, docker-compose, Jenkins |
 
 ## Roles (multirol)
@@ -45,7 +45,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 3 — Catálogo: categorías y muebles (CRUD paginado), subida de `.glb` e imágenes
 - [x] Fase 4 — Front base: Vite, Tailwind, rutas, sesión, alertas
 - [x] Fase 5 — Front catálogo: listado, detalle, visor 3D y AR, panel del vendedor y del admin
-- [ ] Fase 6 — PWA: manifest, service worker, instalación y modo sin conexión
+- [x] Fase 6 — PWA: manifest, service worker, instalación y modo sin conexión
 - [ ] Fase 7 — Modelos 3D en Blender y exportación optimizada (4 muebles hechos: ver `blender/README.md`)
 - [ ] Fase 8 — Docker: Dockerfile del back y del front, docker-compose con MySQL
 - [ ] Fase 9 — Jenkins: pipeline y despliegue automático de `test` y `main`
@@ -60,6 +60,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 3 | `md/hechos/FASE_03_catalogo.md` | hecho |
 | 4 | `md/hechos/FASE_04_front_base.md` | hecho |
 | 5 | `md/hechos/FASE_05_front_catalogo.md` | hecho |
+| 6 | `md/hechos/FASE_06_pwa.md` | hecho |
 | 7 | `blender/README.md` | en progreso |
 
 ## Diseño
