@@ -12,6 +12,8 @@ documentacion/
 │   ├── FLUJO_GIT.md          <- ramas, PRs y promoción
 │   ├── CONVENCION_COMMITS.md <- mensajes de commit
 │   └── REGLAS_IGNORE.md      <- qué no subir
+├── back/
+│   └── CONVENCIONES_BACK.md  <- reglas de código del back
 ├── historias_de_usuario/     <- HU por rol
 └── md/
     ├── pendientes/           <- escrito, no iniciado
