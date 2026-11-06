@@ -9,7 +9,8 @@ const ENV_DIR = '..';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ENV_DIR, 'VITE_');
   const apiUrl = env.VITE_API_URL ?? 'http://localhost:8080/api';
-  const origenBack = new URL(apiUrl).origin;
+  // Con una URL relativa (build de Docker) el proxy de desarrollo apunta al back local.
+  const origenBack = apiUrl.startsWith('/') ? 'http://localhost:8080' : new URL(apiUrl).origin;
 
   // En desarrollo el front llama a /api y /uploads de su propia dirección y Vite los reenvía al back.
   // Se quita la cabecera Origin para que el back no lo trate como petición CORS de otra IP.

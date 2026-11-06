@@ -3,11 +3,17 @@
  * - Desarrollo (npm run dev): misma dirección que la página + /api. Vite reenvía /api y /uploads
  *   al back (proxy en vite.config.js), así funciona igual desde la laptop o desde el teléfono
  *   por la IP de la red, sin tocar CORS.
- * - Producción: VITE_API_URL del .env de la raíz.
+ * - Producción: VITE_API_URL. Si es relativa ("/api", como en Docker), se usa la misma dirección
+ *   de la página y nginx reenvía al back; si es absoluta, se llama directo a ese back.
  */
 const API_ENV = (import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api').replace(/\/+$/, '');
 
-export const API_URL = import.meta.env.DEV ? `${window.location.origin}/api` : API_ENV;
+function resolverApi() {
+  if (import.meta.env.DEV) return `${window.location.origin}/api`;
+  return API_ENV.startsWith('/') ? window.location.origin + API_ENV : API_ENV;
+}
+
+export const API_URL = resolverApi();
 
 /** Origen del back: los archivos subidos se sirven en ORIGEN_API + /uploads/... */
 export const ORIGEN_API = new URL(API_URL).origin;

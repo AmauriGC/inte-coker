@@ -149,8 +149,18 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
 
+  if (url.origin === self.location.origin && request.mode === 'navigate') return event.respondWith(navegacion(request));
+
+  // Va antes que los estáticos: en Docker el back comparte origen con la página (nginx).
+  if (url.origin === API_ORIGEN) {
+    if (url.pathname.startsWith('/uploads/')) {
+      return event.respondWith(cacheFirst(request, { nombreCache: CACHE_ARCHIVOS, ttl: TTL_ARCHIVOS, limite: LIMITE_ARCHIVOS }));
+    }
+    if (RUTAS_API_PUBLICAS.some((r) => r.test(url.pathname))) return event.respondWith(networkFirstApi(request));
+    if (url.pathname.startsWith('/api/')) return undefined;
+  }
+
   if (url.origin === self.location.origin) {
-    if (request.mode === 'navigate') return event.respondWith(navegacion(request));
     if (url.pathname.startsWith('/assets/')) return event.respondWith(cacheFirst(request, { nombreCache: CACHE_ESTATICO }));
     // Solo archivos estáticos conocidos: nunca /src, /@vite ni otras rutas del servidor de desarrollo.
     if (PRECACHE.includes(url.pathname) || EXTENSIONES_ESTATICAS.test(url.pathname)) {
@@ -161,13 +171,6 @@ self.addEventListener('fetch', (event) => {
 
   if (ORIGENES_FUENTES.includes(url.origin)) {
     return event.respondWith(cacheFirst(request, { nombreCache: CACHE_FUENTES, ttl: TTL_ARCHIVOS }));
-  }
-
-  if (url.origin === API_ORIGEN) {
-    if (url.pathname.startsWith('/uploads/')) {
-      return event.respondWith(cacheFirst(request, { nombreCache: CACHE_ARCHIVOS, ttl: TTL_ARCHIVOS, limite: LIMITE_ARCHIVOS }));
-    }
-    if (RUTAS_API_PUBLICAS.some((r) => r.test(url.pathname))) return event.respondWith(networkFirstApi(request));
   }
   return undefined;
 });
