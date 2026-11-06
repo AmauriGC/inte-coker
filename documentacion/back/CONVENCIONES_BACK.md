@@ -110,6 +110,9 @@ Todo responde `ApiResponse<T>`:
 - En base se guarda la ruta relativa (`muebles/1/modelo-xxxx.glb`); la API devuelve
   `/uploads/...` y el front le antepone el origen del back.
 - Cada subida usa un nombre nuevo y borra el anterior.
+- `UPLOADS_DIR=uploads` es relativo al directorio desde el que arranca el back. Arrancar
+  siempre desde `back/` (como `./mvnw`); en IntelliJ: Run Configuration → Working directory
+  = carpeta `back`. Si arranca desde la raíz, busca en `inte-cocker/uploads` y los modelos dan 404.
 
 ## 9. Configuración
 
