@@ -39,7 +39,7 @@ function Fila({ a, Icono, texto, detalle, i }) {
 
 export default function CuentaPage() {
   const { usuario, tienePermiso, salir } = useSesion();
-  const { favoritos } = useFavoritos();
+  const { favoritos, enCuenta } = useFavoritos();
   const { instalable } = usePwa();
   const navegar = useNavigate();
 
@@ -59,7 +59,8 @@ export default function CuentaPage() {
   const accesos = ACCESOS.filter((x) => tienePermiso(x.permiso));
 
   async function cerrarSesion() {
-    if (await confirmar({ titulo: '¿Cerrar sesión?', texto: 'Tus favoritos se quedan guardados en este dispositivo.', boton: 'Cerrar sesión' })) {
+    const texto = enCuenta ? 'Tus favoritos se quedan guardados en tu cuenta.' : 'Tus favoritos se quedan guardados en este dispositivo.';
+    if (await confirmar({ titulo: '¿Cerrar sesión?', texto, boton: 'Cerrar sesión' })) {
       salir();
       navegar('/');
     }
@@ -93,7 +94,7 @@ export default function CuentaPage() {
       </motion.section>
 
       <ul className="mt-4 rounded-[24px] border border-linea bg-white p-1.5">
-        <Fila a="/favoritos" Icono={Heart} texto="Favoritos" detalle={`${favoritos.length} guardados en este dispositivo`} i={0} />
+        <Fila a="/favoritos" Icono={Heart} texto="Favoritos" detalle={`${favoritos.length} guardados en ${enCuenta ? 'tu cuenta' : 'este dispositivo'}`} i={0} />
         {accesos.map((x, i) => (
           <Fila key={x.a} {...x} i={i + 1} />
         ))}

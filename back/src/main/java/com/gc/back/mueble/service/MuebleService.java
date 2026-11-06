@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MuebleService {
@@ -104,6 +107,20 @@ public class MuebleService {
         muebleRepository.delete(mueble);
         muebleRepository.flush();
         almacenamientoService.eliminarCarpeta(carpeta);
+    }
+
+    /** Para otros módulos (favorito): el mueble publicado o 404. */
+    @Transactional(readOnly = true)
+    public Mueble obtenerPublicado(Long id) {
+        return muebleRepository.findWithRelacionesById(id)
+                .filter(Mueble::isPublicado)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El mueble no existe"));
+    }
+
+    /** Para otros módulos (favorito): los publicados de la lista; los demás ids se ignoran. */
+    @Transactional(readOnly = true)
+    public List<Mueble> obtenerPublicados(Collection<Long> ids) {
+        return ids.isEmpty() ? List.of() : muebleRepository.findAllByIdInAndPublicadoTrue(ids);
     }
 
     /** Adjunta un archivo ya leído (lo usa la semilla del catálogo). */
