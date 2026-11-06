@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Al arrancar asegura los roles, los permisos y el administrador inicial
- * (ADMIN_EMAIL / ADMIN_PASSWORD del .env) y, si SEMILLA_CATALOGO=true y no hay
- * muebles, carga el catálogo de ejemplo. La lógica vive en los services.
+ * (ADMIN_EMAIL / ADMIN_PASSWORD del .env) y, si SEMILLA_CATALOGO=true, agrega los
+ * muebles de ejemplo que falten. La lógica vive en los services.
  */
 @Component
 public class DatosIniciales implements ApplicationRunner {
@@ -42,7 +42,7 @@ public class DatosIniciales implements ApplicationRunner {
         rolService.asegurarRolesYPermisos();
         usuarioService.asegurarAdmin(adminEmail, adminPassword);
         if (semillaCatalogo) {
-            semillaCatalogoService.sembrarSiVacio(adminEmail);
+            semillaCatalogoService.sembrarFaltantes(adminEmail);
         }
     }
 }

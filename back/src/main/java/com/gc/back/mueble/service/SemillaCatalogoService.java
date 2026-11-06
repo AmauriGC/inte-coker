@@ -21,9 +21,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Carga los 4 muebles hechos en Blender (resources/semilla) cuando el catálogo está
- * vacío, publicados y a nombre del administrador. Los precios son de ejemplo.
- * Se apaga con SEMILLA_CATALOGO=false.
+ * Carga los muebles hechos en Blender (resources/semilla), publicados y a nombre del
+ * administrador. Solo agrega los que faltan (por slug): un modelo nuevo aparece al
+ * reiniciar sin tocar los existentes. Un ejemplo borrado vuelve en el siguiente arranque;
+ * para evitarlo se apaga con SEMILLA_CATALOGO=false. Los precios son de ejemplo.
  */
 @Slf4j
 @Service
@@ -49,7 +50,19 @@ public class SemillaCatalogoService {
                             "5200.00", 80, 80, 40, "Mármol, base de roble, zócalo de latón")),
             new Ejemplo("lampara-faro", "Iluminación", "Lámparas de piso, mesa y techo",
                     new MuebleDatos("Lámpara Faro", "Lámpara de piso con pantalla de lino y luz cálida.",
-                            "3350.00", 48, 48, 160, "Metal negro, pantalla de lino, latón"))
+                            "3350.00", 48, 48, 160, "Metal negro, pantalla de lino, latón")),
+            new Ejemplo("sofa-duna", "Sofás", "Sofás de dos y tres plazas",
+                    new MuebleDatos("Sofá Duna", "Sofá compacto de dos plazas con cojines sueltos, ideal para espacios pequeños.",
+                            "12600.00", 160, 85, 82, "Tela salvia, patas de metal negro")),
+            new Ejemplo("butaca-coral", "Sillones", "Sillones y butacas individuales",
+                    new MuebleDatos("Butaca Coral", "Butaca de brazos anchos y asiento profundo para leer con calma.",
+                            "6200.00", 74, 78, 76, "Tela mostaza, patas de roble")),
+            new Ejemplo("mesa-taller", "Mesas", "Mesas de centro, auxiliares y de comedor",
+                    new MuebleDatos("Mesa Taller", "Mesa de comedor para seis personas con base de trineo de metal.",
+                            "9800.00", 180, 90, 75, "Cubierta de roble, base de metal negro")),
+            new Ejemplo("lampara-nido", "Iluminación", "Lámparas de piso, mesa y techo",
+                    new MuebleDatos("Lámpara Nido", "Lámpara de mesa con base de cerámica esférica y pantalla de lino.",
+                            "1450.00", 30, 30, 45, "Cerámica, latón, pantalla de lino"))
     );
 
     private final MuebleRepository muebleRepository;
@@ -58,12 +71,15 @@ public class SemillaCatalogoService {
     private final UsuarioService usuarioService;
 
     @Transactional
-    public void sembrarSiVacio(String adminEmail) {
-        if (muebleRepository.count() > 0) {
+    public void sembrarFaltantes(String adminEmail) {
+        List<Ejemplo> faltantes = EJEMPLOS.stream()
+                .filter(ejemplo -> !muebleRepository.existsBySlug(ejemplo.archivo()))
+                .toList();
+        if (faltantes.isEmpty()) {
             return;
         }
         UsuarioPrincipal admin = UsuarioPrincipal.desde(usuarioService.obtenerPorEmail(adminEmail));
-        for (Ejemplo ejemplo : EJEMPLOS) {
+        for (Ejemplo ejemplo : faltantes) {
             Categoria categoria = categoriaService.asegurar(ejemplo.categoria(), ejemplo.descripcionCategoria());
             MuebleDatos d = ejemplo.datos();
             Long id = muebleService.crear(new MuebleRequest(d.nombre(), d.descripcion(), new BigDecimal(d.precio()),
@@ -74,7 +90,7 @@ public class SemillaCatalogoService {
             muebleService.adjuntar(mueble, leer(ejemplo.archivo() + ".webp"), TipoArchivo.IMAGEN);
             mueble.setPublicado(true);
         }
-        log.info("Catálogo de ejemplo cargado: {} muebles", EJEMPLOS.size());
+        log.info("Catálogo de ejemplo: {} muebles agregados", faltantes.size());
     }
 
     private static byte[] leer(String archivo) {
