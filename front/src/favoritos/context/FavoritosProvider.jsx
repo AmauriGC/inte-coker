@@ -36,9 +36,10 @@ const con = (mueble) => (lista) => [resumen(mueble), ...sin(mueble.id)(lista)];
  * Los cambios son optimistas: se ven al instante y se revierten si el back falla.
  */
 export default function FavoritosProvider({ children }) {
-  const { usuario, tienePermiso } = useSesion();
+  const { usuario, cuentaTienePermiso } = useSesion();
   const { notificar } = useNotificaciones();
-  const enCuenta = Boolean(usuario) && tienePermiso('FAVORITO_GESTIONAR');
+  // Los favoritos son de la cuenta: no cambian al cambiar de rol activo.
+  const enCuenta = Boolean(usuario) && cuentaTienePermiso('FAVORITO_GESTIONAR');
   const usuarioId = enCuenta ? usuario.id : null;
 
   const [locales, setLocales] = useAlmacen(CLAVE_LOCAL, []);
