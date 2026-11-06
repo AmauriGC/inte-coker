@@ -1,7 +1,7 @@
 # FASE 11 · Pedidos y conversación cliente-vendedor
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso (11a hecha)
+- Estado: En progreso (11a y 11b hechas)
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_pedidos.md` (decisiones D1 a D5 tomadas)
 
@@ -24,7 +24,7 @@ llevan existencias que bajan cuando el vendedor acepta.
   - Un mueble con pedidos abiertos no se borra.
   - Correos asíncronos: pedido nuevo al vendedor, cambio de estado al cliente.
   - `PedidoTest` con MySQL.
-- [ ] 11b · Front cliente
+- [x] 11b · Front cliente
   - "Comprar" y "Preguntar" en el detalle; existencias en catálogo y detalle.
   - Hoja de compra, "Mis pedidos", detalle con línea de tiempo y chat (cada 10 s).
   - Contador de no leídos (cada 30 s) y exclusión de `/api/pedidos` en el service worker.
@@ -61,9 +61,27 @@ Notas de diseño:
   por pregunta o pedido nuevo y al otro lado en cada cambio de estado; no hay correo por mensaje.
 - `MuebleService` no conoce a pedidos: el bloqueo de borrado entra por `ReglaBorradoMueble`.
 
+## Front del cliente (11b)
+
+| Pieza | Dónde | Qué hace |
+|---|---|---|
+| Detalle del mueble | `catalogo/pages/DetallePage` | "Comprar · precio" (desactivado si está agotado), "Preguntar" y chip de existencias; sin sesión lleva a entrar y regresa |
+| Hoja Comprar | `pedidos/components/HojaComprar` | Cantidad (hasta 10 o las existencias), domicilio o recoger, datos de entrega recordados en `gc.entrega`, mensaje y total |
+| Hoja Preguntar | `pedidos/components/HojaPreguntar` | Pregunta con sugerencias; se suma a la consulta abierta |
+| Mis pedidos | `/pedidos` | Lista por actividad, filtro por estado, no leídos por pedido |
+| Detalle del pedido | `/pedidos/:id` (y `/panel/pedidos/:id` en 11c) | Línea de tiempo, datos de entrega, acciones que manda el back y conversación |
+| Conversación | `pedidos/components/Conversacion` | Mensajes nuevos cada 10 s con la pestaña visible; marca como leído |
+| Contadores | `PedidosProvider` | `/pedidos/resumen` cada 30 s; punto en Cuenta y en "Mis pedidos"; toast si sube |
+
+- El front no repite la máquina de estados: pinta los botones de `pedido.acciones`.
+- Rechazar y cancelar piden el motivo con `pedirTexto` (SweetAlert2 con textarea).
+- El service worker no guarda `/api/pedidos` (solo cachea las rutas públicas del catálogo).
+- Las tarjetas del catálogo muestran "Agotado" con 0 existencias.
+
 ## Verificación
 
 - `./mvnw verify` en `back/`; `npm run lint` y `npm run build` en `front/`.
 - 11a: `./mvnw verify` con 18 pruebas en verde (`PedidoTest`, 5 casos); `npm run lint` y
   `npm run build` en verde.
+- 11b: `npm run lint` y `npm run build` en verde.
 - Revisión en el navegador por la persona dueña del proyecto con sus cuentas.
