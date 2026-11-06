@@ -131,6 +131,12 @@ public class UsuarioService {
         return UsuarioResponse.desde(usuario);
     }
 
+    /** Para otros módulos (mueble). */
+    @Transactional(readOnly = true)
+    public Usuario obtenerEntidad(Long id) {
+        return buscarPorId(id);
+    }
+
     private Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("El usuario no existe"));

@@ -40,6 +40,10 @@ public record UsuarioPrincipal(
                 usuario.getPassword(), usuario.puedeEntrar(), roles, permisos);
     }
 
+    public boolean esAdmin() {
+        return roles.contains("ADMIN");
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> autoridades = new ArrayList<>();
