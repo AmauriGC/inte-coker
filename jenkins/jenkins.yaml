@@ -1,0 +1,66 @@
+# Configuración de Jenkins como código (JCasC). Se aplica en cada arranque.
+# Los valores ${...} salen del entorno del contenedor o de archivos montados (ver docker-compose.yml).
+
+jenkins:
+  systemMessage: "GC-Confort: integra develop y despliega test y main automáticamente."
+  numExecutors: 1
+  mode: NORMAL
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_USER}"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+unclassified:
+  location:
+    url: "http://localhost:${JENKINS_PORT}/"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          # El .env de la raíz, montado de solo lectura: lo usa el despliegue (docker compose).
+          - file:
+              scope: GLOBAL
+              id: "gc-env"
+              description: ".env de GC-Confort para desplegar"
+              fileName: ".env"
+              secretBytes: "${readFileBase64:/run/secrets/gc.env}"
+
+jobs:
+  - script: >
+      multibranchPipelineJob('gc-confort') {
+        displayName('GC-Confort')
+        description('Pipeline del Jenkinsfile en develop, test y main.')
+        branchSources {
+          branchSource {
+            source {
+              git {
+                id('gc-confort-git')
+                remote('https://github.com/AmauriGC/inte-coker.git')
+                traits {
+                  gitBranchDiscovery()
+                  headWildcardFilter {
+                    includes('develop test main')
+                    excludes('')
+                  }
+                }
+              }
+            }
+          }
+        }
+        triggers {
+          periodicFolderTrigger {
+            interval('2m')
+          }
+        }
+        orphanedItemStrategy {
+          discardOldItems {
+            numToKeep(10)
+          }
+        }
+      }
