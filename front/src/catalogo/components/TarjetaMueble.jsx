@@ -24,6 +24,9 @@ export default function TarjetaMueble({ mueble, indice = 0 }) {
               <Rotate3d className="size-3.5" aria-hidden /> 3D · AR
             </span>
           )}
+          {mueble.existencias === 0 && (
+            <span className="absolute bottom-2.5 left-2.5 rounded-full bg-tinta/85 px-2.5 py-1 text-[11px] font-bold text-crema backdrop-blur">Agotado</span>
+          )}
           <BotonFavorito mueble={mueble} className="absolute right-2 top-2 size-9" />
         </div>
         <div className="px-1 pt-2.5">
