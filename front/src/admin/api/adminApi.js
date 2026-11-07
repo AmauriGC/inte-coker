@@ -16,4 +16,3 @@ export const adminApi = {
   eliminarCategoria: (id) => peticion(`/categorias/${id}`, { metodo: 'DELETE' }),
 };
 
-export const NOMBRE_ROL = { ADMIN: 'Administrador', VENDEDOR: 'Vendedor', CLIENTE: 'Cliente' };
