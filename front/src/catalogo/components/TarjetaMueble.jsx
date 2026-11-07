@@ -1,4 +1,4 @@
-import { Rotate3d } from 'lucide-react';
+import { Rotate3d, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router';
 import ImagenMueble from '../../common/components/ImagenMueble';
@@ -34,7 +34,15 @@ export default function TarjetaMueble({ mueble, indice = 0 }) {
           <p className="mt-0.5 truncate text-[12.5px] text-gris">
             {mueble.categoria?.nombre} · {medidas(mueble)}
           </p>
-          <p className="mt-1 text-[15px] font-bold">{precio(mueble.precio)}</p>
+          <p className="mt-1 flex items-center justify-between gap-2 text-[15px] font-bold">
+            {precio(mueble.precio)}
+            {mueble.totalResenas > 0 && (
+              <span className="inline-flex items-center gap-0.5 text-[12.5px] font-semibold text-texto" aria-label={`${mueble.calificacion} de 5, ${mueble.totalResenas} reseñas`}>
+                <Star className="size-3.5 text-terracota" fill="currentColor" strokeWidth={0} aria-hidden />
+                {Number(mueble.calificacion).toFixed(1)}
+              </span>
+            )}
+          </p>
         </div>
       </Link>
     </motion.article>

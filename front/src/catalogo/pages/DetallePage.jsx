@@ -1,7 +1,7 @@
 import { ArrowLeft, ChevronRight, Maximize, MessageCircle, Minimize, PackageX, Ruler, ScanLine, Share2, ShoppingBag, WifiOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { useSesion } from '../../auth/context/SesionContext';
 import { informar } from '../../common/alertas/alertas';
 import Boton from '../../common/components/Boton';
@@ -13,6 +13,10 @@ import { precio } from '../../common/utils/formato';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
 import HojaComprar from '../../pedidos/components/HojaComprar';
 import HojaPreguntar from '../../pedidos/components/HojaPreguntar';
+import { resenasApi } from '../../resenas/api/resenasApi';
+import BotonMeGusta from '../../resenas/components/BotonMeGusta';
+import Estrellas from '../../resenas/components/Estrellas';
+import ResumenResenas from '../../resenas/components/ResumenResenas';
 import { catalogoApi } from '../api/catalogoApi';
 import BotonFavorito from '../components/BotonFavorito';
 import Visor3D from '../components/Visor3D';
@@ -75,6 +79,10 @@ export default function DetallePage({ enPanel = false }) {
   const [hoja, setHoja] = useState(null);
   const cerrarHoja = useCallback(() => setHoja(null), []);
   const { datos: mueble, error, cargando } = useConsulta((s) => catalogoApi.mueble(slug, s), [slug]);
+  // Reseñas y me gusta solo de muebles publicados (un borrador no tiene).
+  const conResenas = !enPanel && Boolean(mueble?.publicado);
+  const resumenC = useConsulta((s) => (conResenas ? resenasApi.resumen(mueble.id, s) : Promise.resolve(null)), [mueble?.id, conResenas, usuario?.id]);
+  const resumen = resumenC.datos;
 
   // Comprar es de la cuenta (no del rol activo); nadie compra lo que vende.
   const esMio = Boolean(usuario) && mueble?.vendedor?.id === usuario.id;
@@ -284,6 +292,23 @@ export default function DetallePage({ enPanel = false }) {
             </motion.div>
             <motion.div {...aparece(1)} className="mt-2 flex flex-wrap items-center gap-2">
               <Existencias n={mueble.existencias} />
+              {mueble.totalResenas > 0 && (
+                <Link to={`/mueble/${mueble.slug}/resenas`} className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-tinta hover:text-terracota">
+                  <Estrellas valor={mueble.calificacion} tamano="size-3.5" />
+                  {Number(mueble.calificacion).toFixed(1)}
+                  <span className="font-normal text-gris">({mueble.totalResenas})</span>
+                </Link>
+              )}
+              {resumen && (
+                <span className="ml-auto">
+                  <BotonMeGusta
+                    muebleId={mueble.id}
+                    meGusta={resumen.meGusta}
+                    total={resumen.totalMeGusta}
+                    alCambiar={(r) => resumenC.mutar((d) => ({ ...d, meGusta: r.meGusta, totalMeGusta: r.total }))}
+                  />
+                </span>
+              )}
               {!mueble.publicado && (
                 <span className="inline-flex rounded-full bg-crema-2 px-3 py-1 text-[12px] font-semibold text-texto">Borrador · solo lo ves tú</span>
               )}
@@ -364,6 +389,15 @@ export default function DetallePage({ enPanel = false }) {
                     </button>
                   )}
                 </motion.div>
+              )}
+
+              {resumen && (
+                <div>
+                  <Titulo i={10}>Reseñas</Titulo>
+                  <div className="mt-2">
+                    <ResumenResenas resumen={resumen} enlace={`/mueble/${mueble.slug}/resenas`} />
+                  </div>
+                </div>
               )}
             </div>
 
