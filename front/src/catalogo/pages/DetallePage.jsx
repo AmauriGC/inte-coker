@@ -228,8 +228,8 @@ export default function DetallePage({ enPanel = false }) {
     );
   }
 
-  const alto = 'h-[64dvh] min-h-[380px] max-h-[640px] md:h-[calc(100dvh-136px)] md:min-h-[520px] md:max-h-[820px]';
-  const redondeo = ampliado ? '' : 'rounded-b-[34px] md:rounded-[34px]';
+  const alto = 'h-[64dvh] min-h-[380px] max-h-[640px] lg:h-[calc(100dvh-136px)] lg:min-h-[520px] lg:max-h-[820px]';
+  const redondeo = ampliado ? '' : 'rounded-b-[34px] lg:rounded-[34px]';
   const materiales = mueble?.materiales?.split(/[,;]/).map((m) => m.trim()).filter(Boolean) ?? [];
 
   const acciones = conAcciones && (
@@ -268,7 +268,7 @@ export default function DetallePage({ enPanel = false }) {
           icono={ScanLine}
           bloque
           onClick={verEnMiEspacio}
-          className={puedePedir ? 'hidden md:inline-flex' : 'h-14 text-[16px]'}
+          className={puedePedir ? 'hidden lg:inline-flex' : 'h-14 text-[16px]'}
         >
           Ver en mi espacio
         </Boton>
@@ -278,11 +278,12 @@ export default function DetallePage({ enPanel = false }) {
 
   return (
     <Pagina
-      className={`mx-auto min-h-dvh max-w-6xl md:grid md:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] md:gap-8 md:px-6 md:pb-10 md:pt-6 ${
+      className={`mx-auto min-h-dvh max-w-6xl lg:grid lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:gap-8 lg:px-6 lg:pb-10 lg:pt-6 ${
         conAcciones && !enPanel ? 'pb-24' : ''
       }`}
     >
-      <div className="md:sticky md:top-6 md:self-start">
+      {/* Ampliado, el contenedor sube de capa: sticky lo encerraría bajo la ficha y la barra inferior. */}
+      <div className={ampliado ? 'relative z-[60]' : 'lg:sticky lg:top-6 lg:self-start'}>
         <section
           aria-label="Visor 3D"
           className={ampliado ? 'fixed inset-0 z-[60] bg-crema' : `relative ${alto}`}
@@ -295,7 +296,7 @@ export default function DetallePage({ enPanel = false }) {
             <ImagenMueble mueble={mueble} prioridad redondeo={redondeo} className="h-full" />
           )}
 
-          <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top)+14px)] md:px-5 md:pt-5">
+          <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top)+14px)] lg:px-5 lg:pt-5">
             {ampliado ? (
               <span />
             ) : (
@@ -323,13 +324,13 @@ export default function DetallePage({ enPanel = false }) {
           </div>
 
           {mueble?.modeloUrl && variantes.length > 0 && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-1.5 shadow-[0_6px_18px_-8px_rgba(29,27,24,0.3)] backdrop-blur md:left-5">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-1.5 shadow-[0_6px_18px_-8px_rgba(29,27,24,0.3)] backdrop-blur lg:left-5">
               <MuestrasColor vertical variantes={variantes} valor={colorId} alElegir={setColorElegido} etiqueta="Color del mueble en 3D" />
             </div>
           )}
 
           {mueble?.modeloUrl && (
-            <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+76px)] flex flex-col gap-1.5 rounded-full bg-white/90 p-1.5 shadow-[0_6px_18px_-8px_rgba(29,27,24,0.3)] backdrop-blur md:right-5 md:top-20">
+            <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+76px)] flex flex-col gap-1.5 rounded-full bg-white/90 p-1.5 shadow-[0_6px_18px_-8px_rgba(29,27,24,0.3)] backdrop-blur lg:right-5 lg:top-20">
               <button type="button" onClick={verEnMiEspacio} className="grid size-11 place-items-center rounded-full bg-tinta text-crema" aria-label="Ver en mi espacio con AR">
                 <ScanLine className="size-[19px]" />
               </button>
@@ -352,8 +353,8 @@ export default function DetallePage({ enPanel = false }) {
         </section>
       </div>
 
-      <div className="relative z-10 -mt-7 rounded-t-[28px] bg-crema px-5 pt-3 shadow-[0_-10px_30px_-18px_rgba(29,27,24,0.35)] md:mt-0 md:rounded-none md:px-0 md:pt-2 md:shadow-none">
-        <div className="mx-auto mb-3 h-[5px] w-10 rounded-full bg-borde md:hidden" aria-hidden />
+      <div className="relative z-10 -mt-7 rounded-t-[28px] bg-crema px-5 pt-3 shadow-[0_-10px_30px_-18px_rgba(29,27,24,0.35)] lg:mt-0 lg:rounded-none lg:px-0 lg:pt-2 lg:shadow-none">
+        <div className="mx-auto mb-3 h-[5px] w-10 rounded-full bg-borde lg:hidden" aria-hidden />
         {!mueble ? (
           <div className="space-y-3">
             <div className="esqueleto h-4 w-24 rounded-full" />
@@ -366,8 +367,8 @@ export default function DetallePage({ enPanel = false }) {
               {mueble.categoria?.nombre}
             </motion.p>
             <motion.div {...aparece(1)} className="mt-0.5 flex items-start justify-between gap-4">
-              <h1 className="font-display text-[28px] font-bold leading-tight tracking-[-0.03em] md:text-[40px]">{mueble.nombre}</h1>
-              <p className="mt-1.5 shrink-0 font-display text-[22px] font-bold md:mt-3 md:text-[26px]">{precio(mueble.precio)}</p>
+              <h1 className="font-display text-[28px] font-bold leading-tight tracking-[-0.03em] lg:text-[40px]">{mueble.nombre}</h1>
+              <p className="mt-1.5 shrink-0 font-display text-[22px] font-bold lg:mt-3 lg:text-[26px]">{precio(mueble.precio)}</p>
             </motion.div>
             <motion.div {...aparece(1)} className="mt-2 flex flex-wrap items-center gap-2">
               <Existencias n={mueble.existencias} />
@@ -430,7 +431,7 @@ export default function DetallePage({ enPanel = false }) {
               {...aparece(2)}
               type="button"
               onClick={() => ficha.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className="mt-4 flex w-full items-center justify-between gap-3 rounded-[18px] border border-linea bg-white px-4 py-3 text-left md:hidden"
+              className="mt-4 flex w-full items-center justify-between gap-3 rounded-[18px] border border-linea bg-white px-4 py-3 text-left lg:hidden"
             >
               <span className="min-w-0 truncate text-[13.5px]">
                 <strong className="font-display">
@@ -450,10 +451,10 @@ export default function DetallePage({ enPanel = false }) {
                 className={
                   enPanel
                     ? 'mt-6'
-                    : 'fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+80px)] z-30 bg-gradient-to-t from-crema from-60% to-crema/0 px-4 pb-2 pt-6 md:static md:mt-6 md:bg-none md:p-0'
+                    : 'fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+80px)] z-30 bg-gradient-to-t from-crema from-60% to-crema/0 px-4 pb-2 pt-6 lg:static lg:mt-6 lg:bg-none lg:p-0'
                 }
               >
-                <div className="mx-auto max-w-md md:max-w-none">{acciones}</div>
+                <div className="mx-auto max-w-md lg:max-w-none">{acciones}</div>
               </motion.div>
             )}
 

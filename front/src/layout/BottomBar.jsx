@@ -32,7 +32,7 @@ export default function BottomBar() {
   return (
     <nav
       aria-label="Navegación principal"
-      className="pb-segura fixed inset-x-0 bottom-0 z-40 px-3 pt-2 md:bottom-4"
+      className="pb-segura fixed inset-x-0 bottom-0 z-40 px-3 pt-2 lg:bottom-4"
     >
       <ul className="mx-auto flex max-w-md items-stretch justify-between rounded-[26px] border border-black/5 bg-white/90 p-1.5 shadow-[0_18px_40px_-20px_rgba(29,27,24,0.45)] backdrop-blur-xl">
         {enlaces.map(({ a, texto, Icono, fin, cuenta }) => (

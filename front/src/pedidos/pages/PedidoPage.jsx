@@ -86,7 +86,7 @@ export default function PedidoPage({ enPanel = false }) {
         className={enPanel ? 'pt-0!' : ''}
       />
 
-      <div className="grid gap-4 md:grid-cols-[1fr_1.1fr] md:items-start">
+      <div className="grid gap-4 lg:grid-cols-[1fr_1.1fr] lg:items-start">
         <div className="grid gap-4">
           <motion.section {...aparece(0)} className="rounded-[24px] border border-linea bg-white p-4">
             <div className="flex items-center gap-3.5">
@@ -173,7 +173,7 @@ export default function PedidoPage({ enPanel = false }) {
           key={pedido.id}
           pedido={pedido}
           alCambiarEstado={recargar}
-          className="md:sticky md:top-6 md:max-h-[calc(100dvh-48px)]"
+          className="lg:sticky lg:top-6 lg:max-h-[calc(100dvh-48px)]"
         />
       </div>
 

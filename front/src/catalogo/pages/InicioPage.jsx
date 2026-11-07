@@ -29,27 +29,27 @@ function Portada({ mueble }) {
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
-      className="relative overflow-hidden rounded-[30px] p-5 md:grid md:grid-cols-2 md:items-center md:p-8"
+      className="relative overflow-hidden rounded-[30px] p-5 lg:grid lg:grid-cols-2 lg:items-center lg:p-8"
       style={{ backgroundColor: tinte }}
     >
       <div className="relative z-10">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[12px] font-bold text-terracota">
           <span className="size-1.5 rounded-full bg-terracota" /> Nuevo · {mueble.nombre}
         </span>
-        <h2 className="mt-3 max-w-[15ch] font-display text-[30px] font-bold leading-[1.05] tracking-[-0.03em] md:text-[42px]">
+        <h2 className="mt-3 max-w-[15ch] font-display text-[30px] font-bold leading-[1.05] tracking-[-0.03em] lg:text-[42px]">
           Míralo en tu sala antes de comprarlo
         </h2>
         <p className="mt-2 text-[14px] text-texto">Desde {precio(mueble.precio)}</p>
       </div>
-      <Link to={`/mueble/${mueble.slug}`} className="relative -mx-2 my-2 block h-52 md:h-72" aria-label={`Ver ${mueble.nombre}`}>
+      <Link to={`/mueble/${mueble.slug}`} className="relative -mx-2 my-2 block h-52 lg:h-72" aria-label={`Ver ${mueble.nombre}`}>
         <div aria-hidden className="absolute inset-x-[18%] bottom-3 h-5 animate-sombra rounded-[50%] bg-black/30 blur-md" />
         <ImagenMueble mueble={mueble} sombra={false} redondeo="" prioridad className="size-full animate-flotar bg-transparent!" />
       </Link>
-      <div className="relative z-10 flex gap-2 md:col-start-1">
-        <Boton a={`/mueble/${mueble.slug}`} icono={Rotate3d} className="flex-1 md:flex-none">
+      <div className="relative z-10 flex gap-2 lg:col-start-1">
+        <Boton a={`/mueble/${mueble.slug}`} icono={Rotate3d} className="flex-1 lg:flex-none">
           Ver en 3D
         </Boton>
-        <Boton a={`/mueble/${mueble.slug}`} variante="acento" icono={ScanLine} className="flex-1 md:flex-none">
+        <Boton a={`/mueble/${mueble.slug}`} variante="acento" icono={ScanLine} className="flex-1 lg:flex-none">
           Probar en AR
         </Boton>
       </div>
@@ -84,7 +84,7 @@ export default function InicioPage() {
       </header>
 
       {destacados.cargando && !destacados.datos ? (
-        <div className="esqueleto h-[420px] rounded-[30px] md:h-80" />
+        <div className="esqueleto h-[420px] rounded-[30px] lg:h-80" />
       ) : lista[0] ? (
         <Portada mueble={lista[0]} />
       ) : null}
@@ -114,7 +114,7 @@ export default function InicioPage() {
             </Boton>
           </EstadoVacio>
         ) : (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-5 md:grid-cols-3">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-5 lg:grid-cols-3">
             {destacados.cargando && !destacados.datos
               ? [0, 1, 2, 3].map((i) => <TarjetaEsqueleto key={i} />)
               : lista.slice(1).concat(lista.slice(0, 1)).slice(0, 6).map((m, i) => <TarjetaMueble key={m.id} mueble={m} indice={i} />)}
@@ -130,9 +130,9 @@ export default function InicioPage() {
               Ver más <ArrowRight className="size-4" />
             </Link>
           </div>
-          <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0">
+          <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
             {mejores.slice(0, 8).map((m, i) => (
-              <div key={m.id} className="w-[44%] shrink-0 snap-start md:w-auto">
+              <div key={m.id} className="w-[44%] shrink-0 snap-start lg:w-auto">
                 <TarjetaMueble mueble={m} indice={i} />
               </div>
             ))}
@@ -140,7 +140,7 @@ export default function InicioPage() {
         </section>
       )}
 
-      <section className="mt-9 grid gap-3 md:grid-cols-3">
+      <section className="mt-9 grid gap-3 lg:grid-cols-3">
         {PASOS.map(({ Icono, titulo, texto }, i) => (
           <motion.div
             key={titulo}

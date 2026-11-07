@@ -1,13 +1,14 @@
 import { Lock, Shield } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
+import { datosRol } from '../../auth/roles';
 import { error as alertaError } from '../../common/alertas/alertas';
 import Boton from '../../common/components/Boton';
 import Pagina from '../../common/components/Pagina';
 import { useConsulta } from '../../common/hooks/useConsulta';
 import EncabezadoPanel from '../../layout/EncabezadoPanel';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
-import { adminApi, NOMBRE_ROL } from '../api/adminApi';
+import { adminApi } from '../api/adminApi';
 
 function TarjetaRol({ rol, permisos, alGuardar, i }) {
   const fijo = rol.nombre === 'ADMIN';
@@ -37,7 +38,7 @@ function TarjetaRol({ rol, permisos, alGuardar, i }) {
           {fijo ? <Lock className="size-5" /> : <Shield className="size-5" />}
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="font-display text-lg font-semibold">{NOMBRE_ROL[rol.nombre] ?? rol.nombre}</h2>
+          <h2 className="font-display text-lg font-semibold">{datosRol(rol.nombre).nombre}</h2>
           <p className="text-[13px] text-gris">{fijo ? 'Siempre conserva todos los permisos.' : rol.descripcion}</p>
         </div>
       </div>
@@ -81,7 +82,7 @@ export default function RolesPage() {
     try {
       const actualizado = await adminApi.cambiarPermisos(rol.id, lista);
       roles.mutar((rs) => rs.map((r) => (r.id === rol.id ? actualizado : r)));
-      notificar({ tipo: 'exito', titulo: 'Permisos guardados', texto: `${NOMBRE_ROL[rol.nombre] ?? rol.nombre}: aplican desde la siguiente acción de cada usuario.`, guardar: false });
+      notificar({ tipo: 'exito', titulo: 'Permisos guardados', texto: `${datosRol(rol.nombre).nombre}: aplican desde la siguiente acción de cada usuario.`, guardar: false });
     } catch (e) {
       alertaError({ titulo: 'No se pudieron guardar', texto: e.message });
     }

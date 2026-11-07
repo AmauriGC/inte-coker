@@ -2,6 +2,7 @@ import { BadgeCheck, Search, Users } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
 import { useSesion } from '../../auth/context/SesionContext';
+import { datosRol } from '../../auth/roles';
 import { error as alertaError } from '../../common/alertas/alertas';
 import Boton from '../../common/components/Boton';
 import EstadoVacio from '../../common/components/EstadoVacio';
@@ -11,9 +12,10 @@ import { useConsulta } from '../../common/hooks/useConsulta';
 import { useRetraso } from '../../common/hooks/useRetraso';
 import EncabezadoPanel from '../../layout/EncabezadoPanel';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
-import { adminApi, NOMBRE_ROL } from '../api/adminApi';
+import { adminApi } from '../api/adminApi';
 
-const ROLES = ['CLIENTE', 'VENDEDOR', 'ADMIN'];
+/** Roles base que se pueden asignar, de menor a mayor alcance. */
+const ROLES = ['CLIENTE', 'VENDEDOR', 'TRANSPORTISTA', 'ADMIN'];
 
 /** Chips para activar o quitar roles (multirol). Al menos un rol debe quedar. */
 function ChipsRoles({ usuario, alCambiar, ocupado }) {
@@ -32,7 +34,7 @@ function ChipsRoles({ usuario, alCambiar, ocupado }) {
               activo ? 'border-tinta bg-tinta text-crema' : 'border-borde bg-white text-gris hover:text-tinta'
             }`}
           >
-            {NOMBRE_ROL[rol]}
+            {datosRol(rol).nombre}
           </button>
         );
       })}

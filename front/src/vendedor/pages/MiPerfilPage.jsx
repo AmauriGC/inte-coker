@@ -108,7 +108,7 @@ export default function MiPerfilPage() {
       ) : (
         <>
           <section className="overflow-hidden rounded-[28px] border border-linea bg-white">
-            <div className="relative h-36 bg-gradient-to-br from-[#E9DCCB] via-crema to-[#D9B8A3] md:h-44">
+            <div className="relative h-36 bg-gradient-to-br from-[#E9DCCB] via-crema to-[#D9B8A3] lg:h-44">
               {perfil.portadaUrl && <img src={urlArchivo(perfil.portadaUrl)} alt="" className="size-full object-cover" />}
               <div className="absolute bottom-3 right-3 flex gap-2">
                 <ElegirImagen texto={perfil.portadaUrl ? 'Cambiar portada' : 'Agregar portada'} alElegir={(a) => cambiarImagen('portada', a)} />
@@ -116,7 +116,7 @@ export default function MiPerfilPage() {
               </div>
             </div>
             <div className="flex flex-wrap items-end gap-3 px-4 pb-4">
-              <AvatarVendedor nombre={perfil.nombre} fotoUrl={perfil.fotoUrl} className="-mt-10 size-20 text-[30px] ring-4 ring-white" />
+              <AvatarVendedor nombre={perfil.nombre} fotoUrl={perfil.fotoUrl} className="relative z-10 -mt-10 size-20 text-[30px] ring-4 ring-white" />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-display text-[18px] font-bold">{perfil.nombre}</p>
                 <p className="text-[12.5px] text-gris">gc-confort/vendedor/{perfil.slug}</p>
