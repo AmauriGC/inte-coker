@@ -49,7 +49,7 @@ function Acciones({ mueble, alEditar, alEliminar }) {
 export default function TablaMuebles({ muebles, alEditar, alEliminar, alPublicar, publicando }) {
   return (
     <>
-      <div className="hidden overflow-hidden rounded-[24px] border border-linea bg-white md:block">
+      <div className="hidden overflow-hidden rounded-[24px] border border-linea bg-white lg:block">
         <table className="w-full text-left text-[14px]">
           <thead className="border-b border-linea bg-crema/50 text-[12px] uppercase tracking-wider text-gris">
             <tr>
@@ -99,7 +99,7 @@ export default function TablaMuebles({ muebles, alEditar, alEliminar, alPublicar
         </table>
       </div>
 
-      <ul className="grid gap-3 md:hidden">
+      <ul className="grid gap-3 lg:hidden">
         <AnimatePresence initial={false}>
           {muebles.map((m) => (
             <motion.li key={m.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -40 }} className="rounded-[22px] border border-linea bg-white p-3">

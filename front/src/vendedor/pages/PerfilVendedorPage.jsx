@@ -65,10 +65,10 @@ export default function PerfilVendedorPage() {
   return (
     <Pagina className="mx-auto max-w-5xl pb-6">
       <div className="relative">
-        <div className="h-44 overflow-hidden bg-gradient-to-br from-[#E9DCCB] via-crema to-[#D9B8A3] md:mx-4 md:mt-4 md:h-60 md:rounded-[28px]">
+        <div className="h-44 overflow-hidden bg-gradient-to-br from-[#E9DCCB] via-crema to-[#D9B8A3] lg:mx-4 lg:mt-4 lg:h-60 lg:rounded-[28px]">
           {v?.portadaUrl && <img src={urlArchivo(v.portadaUrl)} alt="" className="size-full object-cover" />}
         </div>
-        <div className="absolute inset-x-0 top-0 flex justify-between px-4 pt-[calc(env(safe-area-inset-top)+12px)] md:px-7 md:pt-7">
+        <div className="absolute inset-x-0 top-0 flex justify-between px-4 pt-[calc(env(safe-area-inset-top)+12px)] lg:px-7 lg:pt-7">
           <button type="button" onClick={() => navegar(-1)} aria-label="Volver" className="grid size-11 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur">
             <ArrowLeft className="size-5" />
           </button>
@@ -78,7 +78,7 @@ export default function PerfilVendedorPage() {
         </div>
       </div>
 
-      <div className="px-4 md:px-8">
+      <div className="px-4 lg:px-8">
         <div className="relative z-10 -mt-12 flex items-end justify-between gap-3">
           {v ? (
             <AvatarVendedor nombre={v.nombre} fotoUrl={v.fotoUrl} className="size-24 text-[36px] ring-4 ring-crema" />
@@ -110,7 +110,7 @@ export default function PerfilVendedorPage() {
             </p>
             {v.bio && <p className="mt-3 max-w-2xl whitespace-pre-line text-[14.5px] leading-relaxed text-texto">{v.bio}</p>}
 
-            <dl className="mt-4 grid grid-cols-3 gap-2 md:max-w-md">
+            <dl className="mt-4 grid grid-cols-3 gap-2 lg:max-w-md">
               {cifras.map((c) => (
                 <div key={c.texto} className="rounded-[18px] border border-linea bg-white px-3 py-2.5 text-center">
                   <dt className="sr-only">{c.texto}</dt>
@@ -125,7 +125,7 @@ export default function PerfilVendedorPage() {
           </motion.div>
         )}
 
-        <div role="tablist" aria-label="Contenido del vendedor" className="mt-6 flex gap-1 rounded-full border border-linea bg-white p-1 md:max-w-sm">
+        <div role="tablist" aria-label="Contenido del vendedor" className="mt-6 flex gap-1 rounded-full border border-linea bg-white p-1 lg:max-w-sm">
           {[
             { id: 'muebles', texto: 'Muebles', Icono: Package, n: v?.mueblesPublicados },
             { id: 'trabajos', texto: 'Trabajos', Icono: Images, n: v?.trabajos },
@@ -153,7 +153,7 @@ export default function PerfilVendedorPage() {
         <div role="tabpanel" className="mt-5">
           {pestana === 'muebles' ? (
             !mueblesC.datos ? (
-              <div className="grid grid-cols-2 gap-x-3 gap-y-5 md:grid-cols-3">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-5 lg:grid-cols-3">
                 {[0, 1, 2, 3].map((i) => (
                   <TarjetaEsqueleto key={i} />
                 ))}
@@ -162,7 +162,7 @@ export default function PerfilVendedorPage() {
               <EstadoVacio icono={Package} titulo="Aún no publica muebles" texto="Vuelve pronto para ver sus piezas en 3D." />
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-5 md:grid-cols-3">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-5 lg:grid-cols-3">
                   {muebles.map((m, i) => (
                     <TarjetaMueble key={m.id} mueble={m} indice={i} />
                   ))}
@@ -175,7 +175,7 @@ export default function PerfilVendedorPage() {
               </>
             )
           ) : !trabajosC.datos ? (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
               {[0, 1, 2, 3].map((i) => (
                 <div key={i} className="esqueleto aspect-square rounded-[22px]" />
               ))}
@@ -183,7 +183,7 @@ export default function PerfilVendedorPage() {
           ) : trabajos.length === 0 ? (
             <EstadoVacio icono={Images} titulo="Sin trabajos todavía" texto="Aquí aparecerán fotos de muebles que ya entregó." />
           ) : (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
               {trabajos.map((t, i) => (
                 <motion.button
                   key={t.id}

@@ -7,9 +7,9 @@ import Pagina from '../../common/components/Pagina';
 export default function MarcoCuenta({ titulo, subtitulo, children, volverA = '/' }) {
   const navegar = useNavigate();
   return (
-    <Pagina className="min-h-dvh bg-crema md:grid md:place-items-center md:py-10">
-      <div className="mx-auto w-full max-w-md md:overflow-hidden md:rounded-[34px] md:bg-white md:shadow-[0_30px_60px_-30px_rgba(29,27,24,0.35)]">
-        <div className="relative h-[250px] overflow-hidden rounded-b-[34px] bg-[#EADBD0] md:rounded-none">
+    <Pagina className="min-h-dvh bg-crema lg:grid lg:place-items-center lg:py-10">
+      <div className="mx-auto w-full max-w-md lg:overflow-hidden lg:rounded-[34px] lg:bg-white lg:shadow-[0_30px_60px_-30px_rgba(29,27,24,0.35)]">
+        <div className="relative h-[250px] overflow-hidden rounded-b-[34px] bg-[#EADBD0] lg:rounded-none">
           <div aria-hidden className="absolute -right-16 -top-20 size-64 rounded-full bg-[radial-gradient(circle,rgba(168,70,31,0.25),transparent_70%)]" />
           <button
             type="button"
@@ -29,7 +29,7 @@ export default function MarcoCuenta({ titulo, subtitulo, children, volverA = '/'
             className="absolute inset-x-0 bottom-9 mx-auto h-44 animate-flotar object-contain"
           />
         </div>
-        <div className="bg-white px-5 pb-10 pt-6 md:px-7">
+        <div className="bg-white px-5 pb-10 pt-6 lg:px-7">
           <h1 className="font-display text-[26px] font-bold tracking-[-0.025em]">{titulo}</h1>
           {subtitulo && <p className="mt-1 text-[14px] text-gris">{subtitulo}</p>}
           <div className="mt-5">{children}</div>

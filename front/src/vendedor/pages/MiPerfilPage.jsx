@@ -108,7 +108,7 @@ export default function MiPerfilPage() {
       ) : (
         <>
           <section className="overflow-hidden rounded-[28px] border border-linea bg-white">
-            <div className="relative h-36 bg-gradient-to-br from-[#E9DCCB] via-crema to-[#D9B8A3] md:h-44">
+            <div className="relative h-36 bg-gradient-to-br from-[#E9DCCB] via-crema to-[#D9B8A3] lg:h-44">
               {perfil.portadaUrl && <img src={urlArchivo(perfil.portadaUrl)} alt="" className="size-full object-cover" />}
               <div className="absolute bottom-3 right-3 flex gap-2">
                 <ElegirImagen texto={perfil.portadaUrl ? 'Cambiar portada' : 'Agregar portada'} alElegir={(a) => cambiarImagen('portada', a)} />
