@@ -1,6 +1,6 @@
-import { ArrowLeft, Copy, MessageCircle, PackageX, Ruler, ScanLine, Share2, ShoppingBag, WifiOff } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Maximize, MessageCircle, Minimize, PackageX, Ruler, ScanLine, Share2, ShoppingBag, WifiOff } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useSesion } from '../../auth/context/SesionContext';
 import { informar } from '../../common/alertas/alertas';
@@ -21,6 +21,8 @@ const aparece = (i) => ({
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0, transition: { delay: 0.08 + i * 0.05, duration: 0.35 } },
 });
+
+const flotante = 'grid size-11 place-items-center rounded-full bg-white/90 text-tinta shadow-sm backdrop-blur transition-colors hover:bg-white';
 
 function Cota({ etiqueta, valor, i }) {
   return (
@@ -46,16 +48,27 @@ function Existencias({ n }) {
   return <span className={`inline-flex rounded-full px-3 py-1 text-[12px] font-semibold ${clases}`}>{texto}</span>;
 }
 
+function Titulo({ children, i }) {
+  return (
+    <motion.h2 {...aparece(i)} className="font-display text-[16px] font-semibold">
+      {children}
+    </motion.h2>
+  );
+}
+
 /**
- * Detalle con visor 3D y AR. enPanel: se muestra dentro del panel (con la sidebar) y
- * "volver" lleva a Mis muebles en vez del catálogo. Fuera del panel ofrece Comprar y
- * Preguntar (sin sesión, primero lleva a entrar y regresa aquí).
+ * Detalle con visor 3D y AR. El visor es lo principal: ocupa unos dos tercios de la
+ * pantalla en el teléfono y la columna grande en escritorio. Debajo va una hoja con los
+ * datos; las acciones quedan fijas encima de la bottom bar.
+ * enPanel: se muestra dentro del panel (con la sidebar), sin comprar ni bottom bar.
  */
 export default function DetallePage({ enPanel = false }) {
   const { slug } = useParams();
   const navegar = useNavigate();
   const visor = useRef(null);
+  const ficha = useRef(null);
   const [medidas, setMedidas] = useState(false);
+  const [ampliado, setAmpliado] = useState(false);
   const ubicacion = useLocation();
   const { notificar } = useNotificaciones();
   const { usuario, cuentaTienePermiso } = useSesion();
@@ -67,6 +80,20 @@ export default function DetallePage({ enPanel = false }) {
   const esMio = Boolean(usuario) && mueble?.vendedor?.id === usuario.id;
   const puedePedir = !enPanel && Boolean(mueble?.publicado) && !esMio && (!usuario || cuentaTienePermiso('PEDIDO_CREAR'));
   const agotado = mueble?.existencias === 0;
+  const conAcciones = Boolean(mueble) && (Boolean(mueble.modeloUrl) || puedePedir);
+
+  // Pantalla completa propia (funciona también en iPhone, donde un div no entra a fullscreen).
+  useEffect(() => {
+    if (!ampliado) return undefined;
+    const alTeclear = (e) => e.key === 'Escape' && setAmpliado(false);
+    const antes = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', alTeclear);
+    return () => {
+      document.body.style.overflow = antes;
+      window.removeEventListener('keydown', alTeclear);
+    };
+  }, [ampliado]);
 
   function abrir(cual) {
     if (!usuario) {
@@ -137,46 +164,109 @@ export default function DetallePage({ enPanel = false }) {
     );
   }
 
-  return (
-    <Pagina className={`mx-auto min-h-dvh max-w-5xl ${puedePedir ? 'pb-48' : 'pb-32'} md:grid md:grid-cols-[1.1fr_1fr] md:gap-8 md:px-6 md:pb-10 md:pt-6`}>
-      <div className="relative md:sticky md:top-6 md:self-start">
-        {cargando || !mueble ? (
-          <div className="esqueleto h-[392px] rounded-b-[34px] md:h-[560px] md:rounded-[34px]" />
-        ) : mueble.modeloUrl ? (
-          <Visor3D ref={visor} mueble={mueble} mostrarMedidas={medidas} className="h-[392px] rounded-b-[34px] md:h-[560px] md:rounded-[34px]" />
-        ) : (
-          <ImagenMueble mueble={mueble} prioridad redondeo="rounded-b-[34px] md:rounded-[34px]" className="h-[392px] md:h-[560px]" />
-        )}
+  const alto = 'h-[64dvh] min-h-[380px] max-h-[640px] md:h-[calc(100dvh-136px)] md:min-h-[520px] md:max-h-[820px]';
+  const redondeo = ampliado ? '' : 'rounded-b-[34px] md:rounded-[34px]';
+  const materiales = mueble?.materiales?.split(/[,;]/).map((m) => m.trim()).filter(Boolean) ?? [];
 
-        <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top)+14px)]">
-          <button type="button" onClick={volver} className="grid size-10 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur" aria-label="Volver">
-            <ArrowLeft className="size-[19px]" />
-          </button>
-          {mueble && (
-            <div className="flex gap-2">
-              <button type="button" onClick={compartir} className="grid size-10 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur" aria-label="Compartir">
-                <Share2 className="size-[18px]" />
+  const acciones = conAcciones && (
+    <div className="grid gap-2">
+      {puedePedir && (
+        <div className="flex gap-2">
+          <Boton variante="acento" icono={ShoppingBag} bloque disabled={agotado} onClick={() => abrir('comprar')} className="h-14 text-[16px]">
+            {agotado ? 'Agotado por ahora' : `Comprar · ${precio(mueble.precio)}`}
+          </Boton>
+          <Boton variante="secundario" onClick={() => abrir('preguntar')} className="size-14 shrink-0 px-0 md:w-auto md:px-5" aria-label="Preguntar al vendedor">
+            <MessageCircle className="size-[19px]" aria-hidden />
+            <span className="hidden md:inline">Preguntar</span>
+          </Boton>
+        </div>
+      )}
+      {mueble.modeloUrl && (
+        <Boton
+          variante={puedePedir ? 'primario' : 'acento'}
+          icono={ScanLine}
+          bloque
+          onClick={verEnMiEspacio}
+          className={puedePedir ? 'hidden md:inline-flex' : 'h-14 text-[16px]'}
+        >
+          Ver en mi espacio
+        </Boton>
+      )}
+    </div>
+  );
+
+  return (
+    <Pagina
+      className={`mx-auto min-h-dvh max-w-6xl md:grid md:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] md:gap-8 md:px-6 md:pb-10 md:pt-6 ${
+        conAcciones && !enPanel ? 'pb-24' : ''
+      }`}
+    >
+      <div className="md:sticky md:top-6 md:self-start">
+        <section
+          aria-label="Visor 3D"
+          className={ampliado ? 'fixed inset-0 z-[60] bg-crema' : `relative ${alto}`}
+        >
+          {cargando || !mueble ? (
+            <div className={`esqueleto h-full ${redondeo}`} />
+          ) : mueble.modeloUrl ? (
+            <Visor3D ref={visor} mueble={mueble} mostrarMedidas={medidas} className={`h-full ${redondeo}`} />
+          ) : (
+            <ImagenMueble mueble={mueble} prioridad redondeo={redondeo} className="h-full" />
+          )}
+
+          <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top)+14px)] md:px-5 md:pt-5">
+            {ampliado ? (
+              <span />
+            ) : (
+              <button type="button" onClick={volver} className={flotante} aria-label="Volver">
+                <ArrowLeft className="size-[19px]" />
               </button>
-              <BotonFavorito mueble={mueble} />
+            )}
+            {mueble && (
+              <div className="flex gap-2">
+                {!ampliado && (
+                  <>
+                    <button type="button" onClick={compartir} className={flotante} aria-label="Compartir">
+                      <Share2 className="size-[18px]" />
+                    </button>
+                    <BotonFavorito mueble={mueble} />
+                  </>
+                )}
+                {ampliado && (
+                  <button type="button" onClick={() => setAmpliado(false)} className={flotante} aria-label="Salir de pantalla completa">
+                    <Minimize className="size-[18px]" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {mueble?.modeloUrl && (
+            <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+76px)] flex flex-col gap-1.5 rounded-full bg-white/90 p-1.5 shadow-[0_6px_18px_-8px_rgba(29,27,24,0.3)] backdrop-blur md:right-5 md:top-20">
+              <button type="button" onClick={verEnMiEspacio} className="grid size-11 place-items-center rounded-full bg-tinta text-crema" aria-label="Ver en mi espacio con AR">
+                <ScanLine className="size-[19px]" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setMedidas((v) => !v)}
+                aria-pressed={medidas}
+                className={`grid size-11 place-items-center rounded-full transition-colors ${medidas ? 'bg-terracota text-white' : 'text-tinta hover:bg-crema'}`}
+                aria-label="Mostrar medidas"
+              >
+                <Ruler className="size-[19px]" />
+              </button>
+              {!ampliado && (
+                <button type="button" onClick={() => setAmpliado(true)} className="grid size-11 place-items-center rounded-full text-tinta hover:bg-crema" aria-label="Pantalla completa">
+                  <Maximize className="size-[18px]" />
+                </button>
+              )}
             </div>
           )}
-        </div>
-
-        {mueble?.modeloUrl && (
-          <button
-            type="button"
-            onClick={() => setMedidas((v) => !v)}
-            aria-pressed={medidas}
-            className={`absolute bottom-4 right-4 inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[12.5px] font-semibold shadow-sm transition-colors ${
-              medidas ? 'bg-tinta text-crema' : 'bg-white/90 text-tinta backdrop-blur'
-            }`}
-          >
-            <Ruler className="size-4" /> Medidas
-          </button>
-        )}
+        </section>
       </div>
 
-      <div className="px-5 pt-5 md:px-0 md:pt-2">
+      <div className="relative z-10 -mt-7 rounded-t-[28px] bg-crema px-5 pt-3 shadow-[0_-10px_30px_-18px_rgba(29,27,24,0.35)] md:mt-0 md:rounded-none md:px-0 md:pt-2 md:shadow-none">
+        <div className="mx-auto mb-3 h-[5px] w-10 rounded-full bg-borde md:hidden" aria-hidden />
         {!mueble ? (
           <div className="space-y-3">
             <div className="esqueleto h-4 w-24 rounded-full" />
@@ -185,86 +275,97 @@ export default function DetallePage({ enPanel = false }) {
           </div>
         ) : (
           <>
-            <motion.p {...aparece(0)} className="text-[13px] font-semibold uppercase tracking-wider text-terracota">
+            <motion.p {...aparece(0)} className="text-[12.5px] font-semibold uppercase tracking-wider text-terracota">
               {mueble.categoria?.nombre}
             </motion.p>
-            <motion.div {...aparece(1)} className="mt-1 flex items-start justify-between gap-4">
-              <h1 className="font-display text-[30px] font-bold leading-tight tracking-[-0.03em] md:text-[38px]">{mueble.nombre}</h1>
-              <p className="mt-1.5 shrink-0 font-display text-[22px] font-bold">{precio(mueble.precio)}</p>
+            <motion.div {...aparece(1)} className="mt-0.5 flex items-start justify-between gap-4">
+              <h1 className="font-display text-[28px] font-bold leading-tight tracking-[-0.03em] md:text-[40px]">{mueble.nombre}</h1>
+              <p className="mt-1.5 shrink-0 font-display text-[22px] font-bold md:mt-3 md:text-[26px]">{precio(mueble.precio)}</p>
             </motion.div>
-            <motion.div {...aparece(1)} className="mt-2">
+            <motion.div {...aparece(1)} className="mt-2 flex flex-wrap items-center gap-2">
               <Existencias n={mueble.existencias} />
+              {!mueble.publicado && (
+                <span className="inline-flex rounded-full bg-crema-2 px-3 py-1 text-[12px] font-semibold text-texto">Borrador · solo lo ves tú</span>
+              )}
             </motion.div>
-            {!mueble.publicado && (
-              <motion.p {...aparece(1)} className="mt-2 inline-flex rounded-full bg-crema-2 px-3 py-1 text-[12px] font-semibold text-texto">
-                Borrador · solo lo ves tú
-              </motion.p>
-            )}
-            {mueble.descripcion && (
-              <motion.p {...aparece(2)} className="mt-3 text-[15px] leading-relaxed text-texto">
-                {mueble.descripcion}
-              </motion.p>
-            )}
 
-            <motion.h2 {...aparece(3)} className="mt-6 font-display text-[16px] font-semibold">
-              Medidas
-            </motion.h2>
-            <div className="mt-2 grid grid-cols-3 gap-2">
-              <Cota etiqueta="Ancho" valor={mueble.anchoCm} i={4} />
-              <Cota etiqueta="Fondo" valor={mueble.fondoCm} i={5} />
-              <Cota etiqueta="Alto" valor={mueble.altoCm} i={6} />
-            </div>
+            <motion.button
+              {...aparece(2)}
+              type="button"
+              onClick={() => ficha.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="mt-4 flex w-full items-center justify-between gap-3 rounded-[18px] border border-linea bg-white px-4 py-3 text-left md:hidden"
+            >
+              <span className="min-w-0 truncate text-[13.5px]">
+                <strong className="font-display">
+                  {mueble.anchoCm} × {mueble.fondoCm} × {mueble.altoCm} cm
+                </strong>
+                {materiales.length > 0 && <span className="text-gris"> · {materiales.slice(0, 2).join(' y ').toLowerCase()}</span>}
+              </span>
+              <span className="inline-flex shrink-0 items-center text-[13px] font-semibold text-terracota">
+                Detalles <ChevronRight className="size-4" aria-hidden />
+              </span>
+            </motion.button>
 
-            {mueble.materiales && (
-              <motion.div {...aparece(7)} className="mt-6">
-                <h2 className="font-display text-[16px] font-semibold">Materiales</h2>
-                <ul className="mt-2 flex flex-wrap gap-2">
-                  {mueble.materiales.split(/[,;]/).map((m) => m.trim()).filter(Boolean).map((m) => (
-                    <li key={m} className="rounded-full border border-borde bg-white px-3 py-1.5 text-[13px] font-medium">
-                      {m}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            )}
-
-            {mueble.vendedor && (
-              <motion.p {...aparece(8)} className="mt-6 text-[13px] text-gris">
-                Publicado por <span className="font-semibold text-texto">{mueble.vendedor.nombre}</span>
-              </motion.p>
-            )}
-
-            {(mueble.modeloUrl || puedePedir) && (
+            {acciones && (
               <motion.div
                 initial={{ y: 80 }}
                 animate={{ y: 0, transition: { delay: 0.25, type: 'spring', stiffness: 300, damping: 30 } }}
-                className="pb-segura fixed inset-x-0 bottom-0 z-30 bg-gradient-to-t from-crema via-crema to-crema/0 px-4 pt-6 md:static md:mt-8 md:bg-none md:p-0"
+                className={
+                  enPanel
+                    ? 'mt-6'
+                    : 'fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+80px)] z-30 bg-gradient-to-t from-crema from-60% to-crema/0 px-4 pb-2 pt-6 md:static md:mt-6 md:bg-none md:p-0'
+                }
               >
-                <div className="mx-auto grid max-w-md gap-2 md:max-w-none">
-                  {puedePedir && (
-                    <Boton variante="acento" icono={ShoppingBag} bloque disabled={agotado} onClick={() => abrir('comprar')} className="h-14 text-[16px]">
-                      {agotado ? 'Agotado por ahora' : `Comprar · ${precio(mueble.precio)}`}
-                    </Boton>
-                  )}
-                  <div className="flex gap-2">
-                    {mueble.modeloUrl && (
-                      <Boton variante={puedePedir ? 'secundario' : 'acento'} icono={ScanLine} bloque onClick={verEnMiEspacio} className={puedePedir ? '' : 'h-14 text-[16px]'}>
-                        Ver en mi espacio
-                      </Boton>
-                    )}
-                    {puedePedir ? (
-                      <Boton variante="secundario" icono={MessageCircle} bloque={!mueble.modeloUrl} onClick={() => abrir('preguntar')} className={mueble.modeloUrl ? 'shrink-0' : ''} aria-label="Preguntar al vendedor">
-                        Preguntar
-                      </Boton>
-                    ) : (
-                      <Boton variante="secundario" onClick={copiarEnlace} className="size-14 shrink-0 px-0" aria-label="Copiar enlace">
-                        <Copy className="size-[18px]" />
-                      </Boton>
-                    )}
-                  </div>
-                </div>
+                <div className="mx-auto max-w-md md:max-w-none">{acciones}</div>
               </motion.div>
             )}
+
+            <div ref={ficha} className="scroll-mt-4 space-y-6 pt-6">
+              {mueble.descripcion && (
+                <motion.p {...aparece(3)} className="text-[15px] leading-relaxed text-texto">
+                  {mueble.descripcion}
+                </motion.p>
+              )}
+
+              <div>
+                <Titulo i={4}>Medidas</Titulo>
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  <Cota etiqueta="Ancho" valor={mueble.anchoCm} i={5} />
+                  <Cota etiqueta="Fondo" valor={mueble.fondoCm} i={6} />
+                  <Cota etiqueta="Alto" valor={mueble.altoCm} i={7} />
+                </div>
+              </div>
+
+              {materiales.length > 0 && (
+                <div>
+                  <Titulo i={8}>Materiales</Titulo>
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {materiales.map((m) => (
+                      <li key={m} className="rounded-full border border-borde bg-white px-3 py-1.5 text-[13px] font-medium">
+                        {m}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {mueble.vendedor && (
+                <motion.div {...aparece(9)} className="flex items-center gap-3 rounded-[22px] border border-linea bg-white p-3.5">
+                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-terracota font-display text-[19px] font-bold text-white" aria-hidden>
+                    {mueble.vendedor.nombre?.[0]?.toUpperCase()}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[12px] text-gris">Lo vende</span>
+                    <span className="block truncate text-[15px] font-bold">{mueble.vendedor.nombre}</span>
+                  </span>
+                  {puedePedir && (
+                    <button type="button" onClick={() => abrir('preguntar')} className="shrink-0 text-[13px] font-semibold text-terracota hover:text-terracota-osc">
+                      Preguntar
+                    </button>
+                  )}
+                </motion.div>
+              )}
+            </div>
 
             {puedePedir && (
               <>

@@ -62,7 +62,10 @@ public class SemillaCatalogoService {
                             "9800.00", 180, 90, 75, "Cubierta de roble, base de metal negro", 2)),
             new Ejemplo("lampara-nido", "Iluminación", "Lámparas de piso, mesa y techo",
                     new MuebleDatos("Lámpara Nido", "Lámpara de mesa con base de cerámica esférica y pantalla de lino.",
-                            "1450.00", 30, 30, 45, "Cerámica, latón, pantalla de lino", 12))
+                            "1450.00", 30, 30, 45, "Cerámica, latón, pantalla de lino", 12)),
+            new Ejemplo("sillon-alba", "Sillones", "Sillones y butacas individuales",
+                    new MuebleDatos("Sillón Alba", "Sillón tapizado con respaldo capitonado, vivos en el cojín y patas torneadas de nogal.",
+                            "8900.00", 83, 82, 90, "Tela arena, patas de nogal, casquillos de latón", 4))
     );
 
     private final MuebleRepository muebleRepository;
