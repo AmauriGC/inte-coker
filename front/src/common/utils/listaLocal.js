@@ -5,6 +5,11 @@ import { useSyncExternalStore } from 'react';
  * componentes que la usan se actualizan juntos. Cada elemento lleva un id.
  * Si el almacenamiento falla (modo privado), funciona en memoria.
  */
+const listas = [];
+const CLAVE_DUENO = 'gc.dueno';
+/** Datos personales del dispositivo que no deben pasar de una cuenta a otra. */
+const OTRAS_CLAVES = ['gc.entrega'];
+
 export function crearListaLocal(clave, maximo) {
   const oyentes = new Set();
   let cache = leer();
@@ -28,7 +33,7 @@ export function crearListaLocal(clave, maximo) {
     oyentes.forEach((avisar) => avisar());
   }
 
-  return {
+  const lista = {
     maximo,
     leer: () => cache,
     suscribir(avisar) {
@@ -47,6 +52,38 @@ export function crearListaLocal(clave, maximo) {
     quitar: (id) => guardar(cache.filter((x) => x.id !== id)),
     vaciar: () => guardar([]),
   };
+  listas.push(lista);
+  return lista;
+}
+
+/**
+ * Las listas del dispositivo son de quien las llenó. Al cerrar sesión o al entrar con otra
+ * cuenta se vacían; si alguien navegaba sin sesión y entra, se quedan con esa cuenta.
+ */
+export function asignarDueno(usuarioId) {
+  let anterior = null;
+  try {
+    anterior = JSON.parse(localStorage.getItem(CLAVE_DUENO));
+  } catch {
+    /* sin almacenamiento o valor viejo */
+  }
+  const actual = usuarioId ?? null;
+  if (anterior === actual) return;
+  if (anterior !== null) {
+    listas.forEach((l) => l.vaciar());
+    OTRAS_CLAVES.forEach((c) => {
+      try {
+        localStorage.removeItem(c);
+      } catch {
+        /* sin almacenamiento */
+      }
+    });
+  }
+  try {
+    localStorage.setItem(CLAVE_DUENO, JSON.stringify(actual));
+  } catch {
+    /* sin almacenamiento */
+  }
 }
 
 /** La lista actual; se vuelve a pintar cuando cambia desde cualquier parte. */
