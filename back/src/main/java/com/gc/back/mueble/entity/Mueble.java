@@ -3,18 +3,24 @@ package com.gc.back.mueble.entity;
 import com.gc.back.categoria.entity.Categoria;
 import com.gc.back.common.entity.EntidadBase;
 import com.gc.back.usuario.entity.Usuario;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mueble del catálogo. Las medidas van en centímetros enteros y deben coincidir con
@@ -86,6 +92,23 @@ public class Mueble extends EntidadBase {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "vendedor_id", nullable = false)
     private Usuario vendedor;
+
+    /** Colores en existencia; se cargan en lote para no hacer una consulta por mueble. */
+    @OneToMany(mappedBy = "mueble", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orden asc, id asc")
+    @BatchSize(size = 50)
+    private List<VarianteColor> variantes = new ArrayList<>();
+
+    public boolean tieneVariantes() {
+        return !variantes.isEmpty();
+    }
+
+    /** Con colores, las existencias del mueble son la suma de las de sus colores. */
+    public void recalcularExistencias() {
+        if (tieneVariantes()) {
+            existencias = variantes.stream().mapToInt(VarianteColor::getExistencias).sum();
+        }
+    }
 
     public boolean listoParaPublicar() {
         return modeloRuta != null && imagenRuta != null;

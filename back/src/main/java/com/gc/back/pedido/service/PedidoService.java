@@ -5,6 +5,7 @@ import com.gc.back.common.exception.ReglaNegocioException;
 import com.gc.back.common.response.PaginaResponse;
 import com.gc.back.correo.dto.AvisoCorreo;
 import com.gc.back.mueble.entity.Mueble;
+import com.gc.back.mueble.entity.VarianteColor;
 import com.gc.back.mueble.service.MuebleService;
 import com.gc.back.pedido.dto.CambioEstadoRequest;
 import com.gc.back.pedido.dto.ConsultaRequest;
@@ -194,7 +195,8 @@ public class PedidoService {
                 if (pedido.getMueble() == null) {
                     throw new ReglaNegocioException("El mueble ya no existe");
                 }
-                muebleService.descontarExistencias(pedido.getMueble(), pedido.getCantidad());
+                muebleService.descontarExistencias(pedido.getMueble(), idVariante(pedido), pedido.getVarianteNombre(),
+                        pedido.getCantidad());
                 pedido.setAceptadoEn(ahora);
             }
             case EN_CAMINO -> pedido.setEnCaminoEn(ahora);
@@ -203,7 +205,7 @@ public class PedidoService {
                 pedido.setCerradoEn(ahora);
                 pedido.setMotivoCierre(motivo);
                 if (anterior == ACEPTADO && pedido.getMueble() != null) {
-                    muebleService.devolverExistencias(pedido.getMueble(), pedido.getCantidad());
+                    muebleService.devolverExistencias(pedido.getMueble(), idVariante(pedido), pedido.getCantidad());
                 }
             }
         }
@@ -281,12 +283,27 @@ public class PedidoService {
 
     private void solicitar(Pedido pedido, Mueble mueble, DatosSolicitud datos, UsuarioPrincipal actual) {
         validarEntrega(datos);
-        if (mueble.getExistencias() == 0) {
+        VarianteColor variante = null;
+        if (mueble.tieneVariantes()) {
+            if (datos.varianteId() == null) {
+                throw new ReglaNegocioException("Elige el color");
+            }
+            variante = MuebleService.variante(mueble, datos.varianteId())
+                    .orElseThrow(() -> new ReglaNegocioException("Ese color no es de este mueble"));
+            if (variante.getExistencias() == 0) {
+                throw new ReglaNegocioException("El color " + variante.getNombre() + " está agotado; elige otro o pregunta al vendedor");
+            }
+            if (datos.cantidad() > variante.getExistencias()) {
+                throw new ReglaNegocioException("Solo quedan " + variante.getExistencias() + " piezas en " + variante.getNombre());
+            }
+        } else if (mueble.getExistencias() == 0) {
             throw new ReglaNegocioException("Este mueble está agotado; pregunta al vendedor cuándo vuelve a haber");
-        }
-        if (datos.cantidad() > mueble.getExistencias()) {
+        } else if (datos.cantidad() > mueble.getExistencias()) {
             throw new ReglaNegocioException("Solo quedan " + mueble.getExistencias() + " piezas de este mueble");
         }
+        pedido.setVariante(variante);
+        pedido.setVarianteNombre(variante == null ? null : variante.getNombre());
+        pedido.setVarianteHex(variante == null ? null : variante.getHex());
         pedido.setMuebleNombre(mueble.getNombre());
         pedido.setPrecioUnitario(mueble.getPrecio());
         pedido.setCantidad(datos.cantidad());
@@ -302,13 +319,17 @@ public class PedidoService {
         pedido.setSolicitadoEn(Instant.now());
 
         String resumen = "Pedido solicitado: %d × %s, %s. Total: %s.".formatted(pedido.getCantidad(),
-                pedido.getMuebleNombre(), pedido.getTipoEntrega().getDescripcion(), dinero(pedido.getTotal()));
+                pedido.getMuebleNombre() + (variante == null ? "" : " (" + variante.getNombre() + ")"), pedido.getTipoEntrega().getDescripcion(), dinero(pedido.getTotal()));
         agregarMensaje(pedido, null, resumen, actual);
         if (StringUtils.hasText(datos.mensaje())) {
             agregarMensaje(pedido, pedido.getCliente(), datos.mensaje().trim(), actual);
         }
         avisar(pedido.getVendedor(), pedido, "Nuevo pedido " + pedido.getFolio(),
                 pedido.getCliente().getNombre() + " quiere " + pedido.getMuebleNombre() + ".", resumen);
+    }
+
+    private static Long idVariante(Pedido pedido) {
+        return pedido.getVariante() == null ? null : pedido.getVariante().getId();
     }
 
     private static void validarEntrega(DatosSolicitud datos) {

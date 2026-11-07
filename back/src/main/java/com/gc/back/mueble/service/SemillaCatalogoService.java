@@ -4,6 +4,7 @@ import com.gc.back.archivo.entity.TipoArchivo;
 import com.gc.back.categoria.entity.Categoria;
 import com.gc.back.categoria.service.CategoriaService;
 import com.gc.back.mueble.dto.MuebleRequest;
+import com.gc.back.mueble.dto.VarianteRequest;
 import com.gc.back.mueble.entity.Mueble;
 import com.gc.back.mueble.repository.MuebleRepository;
 import com.gc.back.security.UsuarioPrincipal;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Carga los muebles hechos en Blender (resources/semilla), publicados y a nombre del
@@ -68,6 +70,17 @@ public class SemillaCatalogoService {
                             "8900.00", 83, 82, 90, "Tela arena, patas de nogal, casquillos de latón", 4))
     );
 
+    /**
+     * Colores de ejemplo. Solo los modelos con material GC_Color cambian de color en el visor.
+     * Si el mueble de ejemplo ya existe sin colores, se le agregan al arrancar.
+     */
+    private static final Map<String, List<VarianteRequest>> COLORES = Map.of(
+            "sillon-alba", List.of(
+                    new VarianteRequest(null, "Arena", "#D9C4A0", 2),
+                    new VarianteRequest(null, "Terracota", "#B8643F", 1),
+                    new VarianteRequest(null, "Salvia", "#8FA184", 1),
+                    new VarianteRequest(null, "Azul noche", "#44506A", 0)));
+
     private final MuebleRepository muebleRepository;
     private final MuebleService muebleService;
     private final CategoriaService categoriaService;
@@ -78,6 +91,7 @@ public class SemillaCatalogoService {
         List<Ejemplo> faltantes = EJEMPLOS.stream()
                 .filter(ejemplo -> !muebleRepository.existsBySlug(ejemplo.archivo()))
                 .toList();
+        asegurarColores();
         if (faltantes.isEmpty()) {
             return;
         }
@@ -86,7 +100,8 @@ public class SemillaCatalogoService {
             Categoria categoria = categoriaService.asegurar(ejemplo.categoria(), ejemplo.descripcionCategoria());
             MuebleDatos d = ejemplo.datos();
             Long id = muebleService.crear(new MuebleRequest(d.nombre(), d.descripcion(), new BigDecimal(d.precio()),
-                    d.ancho(), d.fondo(), d.alto(), d.materiales(), d.existencias(), categoria.getId()), admin).id();
+                    d.ancho(), d.fondo(), d.alto(), d.materiales(), d.existencias(), categoria.getId(),
+                    COLORES.get(ejemplo.archivo())), admin).id();
 
             Mueble mueble = muebleRepository.findWithRelacionesById(id).orElseThrow();
             muebleService.adjuntar(mueble, leer(ejemplo.archivo() + ".glb"), TipoArchivo.MODELO_3D);
@@ -94,6 +109,15 @@ public class SemillaCatalogoService {
             mueble.setPublicado(true);
         }
         log.info("Catálogo de ejemplo: {} muebles agregados", faltantes.size());
+    }
+
+    private void asegurarColores() {
+        COLORES.forEach((slug, colores) -> muebleRepository.findBySlug(slug)
+                .filter(m -> !m.tieneVariantes())
+                .ifPresent(m -> {
+                    muebleService.reemplazarColores(m, colores);
+                    log.info("Colores de ejemplo agregados a {}", slug);
+                }));
     }
 
     private static byte[] leer(String archivo) {

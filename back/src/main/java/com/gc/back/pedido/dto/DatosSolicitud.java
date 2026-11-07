@@ -20,4 +20,9 @@ public interface DatosSolicitud {
     String codigoPostal();
 
     String mensaje();
+
+    /** Color elegido; null si el mueble no se vende por color. */
+    default Long varianteId() {
+        return null;
+    }
 }

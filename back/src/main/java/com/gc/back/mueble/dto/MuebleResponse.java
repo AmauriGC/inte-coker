@@ -5,6 +5,7 @@ import com.gc.back.mueble.entity.Mueble;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * Mueble para el front. modeloUrl e imagenUrl son rutas relativas al servidor del back
@@ -21,6 +22,7 @@ public record MuebleResponse(
         Integer altoCm,
         String materiales,
         int existencias,
+        List<VarianteResponse> variantes,
         int totalMeGusta,
         int totalResenas,
         BigDecimal calificacion,
@@ -36,6 +38,9 @@ public record MuebleResponse(
     public record CategoriaResumen(Long id, String nombre, String slug) {
     }
 
+    public record VarianteResponse(Long id, String nombre, String hex, int existencias) {
+    }
+
     public record VendedorResumen(Long id, String nombre, String slug, String fotoUrl) {
     }
 
@@ -43,6 +48,7 @@ public record MuebleResponse(
         return new MuebleResponse(
                 m.getId(), m.getNombre(), m.getSlug(), m.getDescripcion(), m.getPrecio(),
                 m.getAnchoCm(), m.getFondoCm(), m.getAltoCm(), m.getMateriales(), m.getExistencias(),
+                m.getVariantes().stream().map(v -> new VarianteResponse(v.getId(), v.getNombre(), v.getHex(), v.getExistencias())).toList(),
                 m.getTotalMeGusta(), m.getTotalResenas(), m.getCalificacion(), m.isPublicado(),
                 url(m.getModeloRuta()), url(m.getImagenRuta()),
                 new CategoriaResumen(m.getCategoria().getId(), m.getCategoria().getNombre(), m.getCategoria().getSlug()),

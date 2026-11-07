@@ -2,6 +2,7 @@ package com.gc.back.mueble.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /** Datos del mueble. Los archivos se suben aparte y la publicación se cambia aparte. */
 public record MuebleRequest(
@@ -48,6 +50,11 @@ public record MuebleRequest(
         Integer existencias,
 
         @NotNull(message = "La categoría es obligatoria")
-        Long categoriaId
+        Long categoriaId,
+
+        /** Colores en existencia; vacío o null = el mueble no se vende por color. */
+        @Valid
+        @Size(max = 8, message = "Un mueble admite hasta 8 colores")
+        List<VarianteRequest> variantes
 ) {
 }
