@@ -128,7 +128,7 @@ export default function Visor3D({ mueble, mostrarMedidas = false, ref, className
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="pointer-events-none absolute bottom-[6%] left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-white/85 px-3 py-1.5 text-[12px] font-semibold text-tinta backdrop-blur"
+            className="pointer-events-none absolute bottom-[11%] left-1/2 md:bottom-[6%] inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-white/85 px-3 py-1.5 text-[12px] font-semibold text-tinta backdrop-blur"
           >
             <Move3d className="size-3.5" aria-hidden /> Arrastra para girar 360°
           </motion.span>
