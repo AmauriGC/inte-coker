@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ResenaTest extends PruebaIntegracion {
 
     private static final String ENTREGA = """
-            "tipoEntrega":"DOMICILIO","nombreRecibe":"Ana Ruiz","telefono":"55 1234 5678",
+            "metodoPago":"EFECTIVO","tipoEntrega":"DOMICILIO","nombreRecibe":"Ana Ruiz","telefono":"55 1234 5678",
             "direccion":"Calle Roble 12","ciudad":"CDMX","codigoPostal":"01000\"""";
 
     @Test

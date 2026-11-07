@@ -90,7 +90,7 @@ class ApartadoTest extends PruebaIntegracion {
         return mvc.perform(post("/api/pedidos").header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                        {"muebleId":%d,"cantidad":%d,"apartar":true,"tipoEntrega":"RECOGER",
+                        {"muebleId":%d,"cantidad":%d,"apartar":true,"metodoPago":"EFECTIVO","tipoEntrega":"RECOGER",
                          "nombreRecibe":"Ana Ruiz","telefono":"55 1234 5678"}""".formatted(mueble, cantidad)));
     }
 

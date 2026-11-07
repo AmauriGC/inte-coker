@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ColorTest extends PruebaIntegracion {
 
     private static final String ENTREGA = """
-            "tipoEntrega":"RECOGER","nombreRecibe":"Ana Ruiz","telefono":"55 1234 5678\"""";
+            "metodoPago":"TARJETA","tipoEntrega":"RECOGER","nombreRecibe":"Ana Ruiz","telefono":"55 1234 5678\"""";
 
     @Test
     void lasExistenciasSonLaSumaYSeValidanLosColores() throws Exception {
