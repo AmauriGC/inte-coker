@@ -1,4 +1,4 @@
-import { Info, Minus, Plus } from 'lucide-react';
+import { CalendarClock, Info, Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useSesion } from '../../auth/context/SesionContext';
 import Boton from '../../common/components/Boton';
@@ -24,29 +24,30 @@ const ENTREGA_VACIA = { nombreRecibe: '', telefono: '', direccion: '', ciudad: '
  * Con pedidoId convierte esa consulta en pedido; sin él crea el pedido del mueble.
  * mueble: { id, nombre, precio, existencias, imagenUrl, slug, variantes? }. Si el mueble se
  * vende por color se elige aquí (color = id inicial; alCambiarColor avisa al visor).
+ * apartar = true pide apartarlo con anticipo (el vendedor confirma el monto y la fecha límite).
  */
-export default function HojaComprar({ abierta, alCerrar, mueble, pedidoId, color, alCambiarColor, alListo }) {
+export default function HojaComprar({ abierta, alCerrar, mueble, pedidoId, color, alCambiarColor, apartar = false, alListo }) {
   return (
     <Hoja
       abierta={abierta}
       alCerrar={alCerrar}
-      titulo={pedidoId ? 'Convertir en pedido' : 'Comprar'}
-      pie={<PieCompra />}
+      titulo={apartar ? 'Apartar con anticipo' : pedidoId ? 'Convertir en pedido' : 'Comprar'}
+      pie={<PieCompra apartar={apartar} />}
     >
-      {abierta && <Formulario mueble={mueble} pedidoId={pedidoId} color={color} alCambiarColor={alCambiarColor} alListo={alListo} />}
+      {abierta && <Formulario mueble={mueble} pedidoId={pedidoId} color={color} alCambiarColor={alCambiarColor} apartar={apartar} alListo={alListo} />}
     </Hoja>
   );
 }
 
-function PieCompra() {
+function PieCompra({ apartar }) {
   return (
     <Boton type="submit" form="form-comprar" variante="acento" bloque className="h-14 text-[16px]">
-      Enviar pedido al vendedor
+      {apartar ? 'Pedir apartado' : 'Enviar pedido al vendedor'}
     </Boton>
   );
 }
 
-function Formulario({ mueble, pedidoId, color, alCambiarColor, alListo }) {
+function Formulario({ mueble, pedidoId, color, alCambiarColor, apartar, alListo }) {
   const { usuario } = useSesion();
   const [recordada, setRecordada] = useAlmacen('gc.entrega', ENTREGA_VACIA);
   const [entrega, setEntrega] = useState(() => {
@@ -90,6 +91,7 @@ function Formulario({ mueble, pedidoId, color, alCambiarColor, alListo }) {
     const r = await enviar({
       cantidad: piezas,
       varianteId: variante?.id ?? null,
+      apartar,
       tipoEntrega: tipo,
       ...limpio,
       direccion: domicilio ? limpio.direccion : null,
@@ -112,6 +114,16 @@ function Formulario({ mueble, pedidoId, color, alCambiarColor, alListo }) {
           <p className="text-[13px] text-gris">{precio(mueble.precio)} c/u</p>
         </div>
       </div>
+
+      {apartar && (
+        <p className="flex gap-2.5 rounded-2xl bg-[#F8F0DD] px-4 py-3 text-[13px] leading-relaxed text-[#6B4A12]">
+          <CalendarClock className="mt-0.5 size-4 shrink-0" aria-hidden />
+          <span>
+            Acuerdas el anticipo con el vendedor en la conversación. Cuando lo reciba, confirma el monto y te da hasta 30 días para
+            liquidar; mientras, las piezas quedan reservadas para ti.
+          </span>
+        </p>
+      )}
 
       {error && !Object.keys(errores).length && (
         <p role="alert" className="rounded-2xl bg-[#F6DAD7] px-4 py-3 text-[13.5px] text-[#8C1D17]">{error.message}</p>
