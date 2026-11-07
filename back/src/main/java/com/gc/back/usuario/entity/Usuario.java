@@ -42,6 +42,22 @@ public class Usuario extends EntidadBase {
     @Column(nullable = false)
     private boolean activo = true;
 
+    /** Dirección pública del perfil de vendedor (/vendedor/{slug}). Única. */
+    @Column(unique = true, length = 120)
+    private String slug;
+
+    @Column(length = 280)
+    private String bio;
+
+    @Column(length = 80)
+    private String ciudad;
+
+    @Column(name = "foto_ruta")
+    private String fotoRuta;
+
+    @Column(name = "portada_ruta")
+    private String portadaRuta;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_roles",

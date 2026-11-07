@@ -4,6 +4,7 @@ import com.gc.back.common.exception.RecursoDuplicadoException;
 import com.gc.back.common.exception.RecursoNoEncontradoException;
 import com.gc.back.common.exception.ReglaNegocioException;
 import com.gc.back.common.response.PaginaResponse;
+import com.gc.back.common.util.Slug;
 import com.gc.back.rol.entity.Rol;
 import com.gc.back.rol.entity.RolBase;
 import com.gc.back.rol.service.RolService;
@@ -54,7 +55,34 @@ public class UsuarioService {
         usuario.setVerificado(verificado);
         usuario.setActivo(true);
         usuario.setRoles(rolService.buscarPorNombres(roles));
+        usuario.setSlug(slugUnico(usuario.getNombre()));
         return usuarioRepository.save(usuario);
+    }
+
+    /** Da su dirección pública a las cuentas creadas antes de que existiera. Idempotente. */
+    @Transactional
+    public void asegurarSlugs() {
+        var sinSlug = usuarioRepository.findBySlugIsNull();
+        sinSlug.forEach(u -> {
+            u.setSlug(slugUnico(u.getNombre()));
+            usuarioRepository.saveAndFlush(u);
+        });
+        if (!sinSlug.isEmpty()) {
+            log.info("{} cuentas recibieron su dirección pública", sinSlug.size());
+        }
+    }
+
+    /** "Ana Ruiz" -> "ana-ruiz", y si ya existe "ana-ruiz-2", "ana-ruiz-3"... "yo" queda reservado. */
+    private String slugUnico(String nombre) {
+        String base = Slug.de(nombre);
+        if (base.length() > 110) {
+            base = base.substring(0, 110);
+        }
+        String slug = base;
+        for (int i = 2; "yo".equals(slug) || usuarioRepository.existsBySlug(slug); i++) {
+            slug = base + "-" + i;
+        }
+        return slug;
     }
 
     /** Crea el administrador inicial si no existe. Idempotente. */

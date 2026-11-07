@@ -41,6 +41,7 @@ public class DatosIniciales implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         rolService.asegurarRolesYPermisos();
         usuarioService.asegurarAdmin(adminEmail, adminPassword);
+        usuarioService.asegurarSlugs();
         if (semillaCatalogo) {
             semillaCatalogoService.sembrarFaltantes(adminEmail);
         }

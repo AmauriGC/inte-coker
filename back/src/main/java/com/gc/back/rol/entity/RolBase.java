@@ -17,7 +17,8 @@ public enum RolBase {
             PermisoBase.MUEBLE_CREAR,
             PermisoBase.MUEBLE_EDITAR,
             PermisoBase.MUEBLE_ELIMINAR,
-            PermisoBase.PEDIDO_ATENDER)),
+            PermisoBase.PEDIDO_ATENDER,
+            PermisoBase.PERFIL_VENDEDOR_EDITAR)),
     CLIENTE("Explora el catálogo, usa el visor 3D y AR, guarda favoritos, pide y reseña muebles", EnumSet.of(
             PermisoBase.MUEBLE_VER,
             PermisoBase.FAVORITO_GESTIONAR,
