@@ -18,10 +18,11 @@ public enum RolBase {
             PermisoBase.MUEBLE_EDITAR,
             PermisoBase.MUEBLE_ELIMINAR,
             PermisoBase.PEDIDO_ATENDER)),
-    CLIENTE("Explora el catálogo, usa el visor 3D y AR, guarda favoritos y pide muebles", EnumSet.of(
+    CLIENTE("Explora el catálogo, usa el visor 3D y AR, guarda favoritos, pide y reseña muebles", EnumSet.of(
             PermisoBase.MUEBLE_VER,
             PermisoBase.FAVORITO_GESTIONAR,
-            PermisoBase.PEDIDO_CREAR));
+            PermisoBase.PEDIDO_CREAR,
+            PermisoBase.RESENA_CREAR));
 
     private final String descripcion;
     private final Set<PermisoBase> permisos;
