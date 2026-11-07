@@ -1,4 +1,4 @@
-import { ArrowLeft, LogOut, Package, ReceiptText, Shield, Tags, Users } from 'lucide-react';
+import { ArrowLeft, LogOut, MessageSquareText, Package, ReceiptText, Shield, Tags, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { NavLink, useNavigate } from 'react-router';
@@ -13,6 +13,7 @@ import SalidaAnimada from './SalidaAnimada';
 const SECCIONES = [
   { a: '/panel/muebles', texto: 'Mis muebles', Icono: Package, permisos: ['MUEBLE_CREAR'] },
   { a: '/panel/pedidos', texto: 'Pedidos', Icono: ReceiptText, permisos: ['PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR'], contador: true },
+  { a: '/panel/resenas', texto: 'Reseñas', Icono: MessageSquareText, permisos: ['RESENA_MODERAR'] },
   { a: '/panel/categorias', texto: 'Categorías', Icono: Tags, permisos: ['CATEGORIA_GESTIONAR'] },
   { a: '/panel/usuarios', texto: 'Usuarios', Icono: Users, permisos: ['USUARIO_GESTIONAR'] },
   { a: '/panel/roles', texto: 'Roles y permisos', Icono: Shield, permisos: ['ROL_GESTIONAR'] },
