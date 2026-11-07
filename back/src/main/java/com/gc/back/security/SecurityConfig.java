@@ -44,6 +44,8 @@ public class SecurityConfig {
     private static final String[] LECTURAS_PUBLICAS = {
             "/api/muebles",
             "/api/muebles/*",
+            "/api/muebles/*/resenas",
+            "/api/muebles/*/resenas/resumen",
             "/api/categorias",
             "/api/categorias/*",
             "/uploads/**"
