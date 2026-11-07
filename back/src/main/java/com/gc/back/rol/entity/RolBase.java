@@ -23,7 +23,9 @@ public enum RolBase {
             PermisoBase.MUEBLE_VER,
             PermisoBase.FAVORITO_GESTIONAR,
             PermisoBase.PEDIDO_CREAR,
-            PermisoBase.RESENA_CREAR));
+            PermisoBase.RESENA_CREAR)),
+    TRANSPORTISTA("Lleva los envíos a domicilio que le asignan y confirma la entrega y el cobro", EnumSet.of(
+            PermisoBase.ENTREGA_REALIZAR));
 
     private final String descripcion;
     private final Set<PermisoBase> permisos;

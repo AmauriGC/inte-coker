@@ -19,7 +19,8 @@ public enum PermisoBase {
     PEDIDO_SUPERVISAR("Ver todos los pedidos y cancelarlos por moderación"),
     RESENA_CREAR("Calificar y reseñar los muebles que recibí"),
     RESENA_MODERAR("Ver todas las reseñas y ocultarlas"),
-    PERFIL_VENDEDOR_EDITAR("Editar mi perfil público de vendedor y mi galería de trabajos");
+    PERFIL_VENDEDOR_EDITAR("Editar mi perfil público de vendedor y mi galería de trabajos"),
+    ENTREGA_REALIZAR("Ver las entregas que me asignan y confirmar la entrega y el cobro");
 
     private final String descripcion;
 
