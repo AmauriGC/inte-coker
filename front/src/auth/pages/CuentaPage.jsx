@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronRight, Download, Heart, LogIn, LogOut, MessageSquareText, Package, ReceiptText, Shield, Tags, Users } from 'lucide-react';
+import { BadgeCheck, ChevronRight, Download, Heart, LogIn, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import { confirmar } from '../../common/alertas/alertas';
@@ -18,6 +18,7 @@ import { datosRol } from '../roles';
 const ACCESOS = [
   { a: '/panel/muebles', texto: 'Mis muebles', detalle: 'Crea, sube modelos y publica', Icono: Package, permiso: 'MUEBLE_CREAR' },
   { a: '/panel/pedidos', texto: 'Pedidos', detalle: 'Atiende a tus clientes', Icono: ReceiptText, permiso: 'PEDIDO_ATENDER' },
+  { a: '/panel/perfil', texto: 'Mi perfil de vendedor', detalle: 'Foto, presentación y trabajos', Icono: Store, permiso: 'PERFIL_VENDEDOR_EDITAR' },
   { a: '/panel/resenas', texto: 'Reseñas', detalle: 'Modera las opiniones de clientes', Icono: MessageSquareText, permiso: 'RESENA_MODERAR' },
   { a: '/panel/categorias', texto: 'Categorías', detalle: 'Organiza el catálogo', Icono: Tags, permiso: 'CATEGORIA_GESTIONAR' },
   { a: '/panel/usuarios', texto: 'Usuarios', detalle: 'Roles y cuentas activas', Icono: Users, permiso: 'USUARIO_GESTIONAR' },
