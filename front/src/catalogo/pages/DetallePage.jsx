@@ -282,7 +282,8 @@ export default function DetallePage({ enPanel = false }) {
         conAcciones && !enPanel ? 'pb-24' : ''
       }`}
     >
-      <div className="lg:sticky lg:top-6 lg:self-start">
+      {/* Ampliado, el contenedor sube de capa: sticky lo encerraría bajo la ficha y la barra inferior. */}
+      <div className={ampliado ? 'relative z-[60]' : 'lg:sticky lg:top-6 lg:self-start'}>
         <section
           aria-label="Visor 3D"
           className={ampliado ? 'fixed inset-0 z-[60] bg-crema' : `relative ${alto}`}
