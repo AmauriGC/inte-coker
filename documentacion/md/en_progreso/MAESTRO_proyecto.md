@@ -51,6 +51,14 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 9 — Jenkins: pipeline y despliegue automático de `test` y `main`
 - [x] Fase 10 — Favoritos en el back: guardados en la cuenta y sincronizados al entrar
 - [x] Fase 11 — Pedidos: comprar, preguntar, existencias y conversación cliente-vendedor
+- [ ] Fase 12 — Detalle con el 3D protagonista, bottom bar en el detalle y Sillón Alba
+- [ ] Fase 13 — Me gusta, reseñas y mejores calificados
+- [ ] Fase 14 — Perfil del vendedor y sus trabajos
+- [ ] Fase 15 — Colores en existencia y cambio de color en vivo
+- [ ] Fase 16 — Apartados con anticipo
+- [ ] Fase 17 — Transportista y método de pago
+- [ ] Fase 18 — Métricas: ventas, zonas, muebles y conversión
+- [ ] Fase 19 — Más para el cliente
 
 ## Fases documentadas
 
@@ -68,6 +76,14 @@ el JWT y se validan con `@PreAuthorize`.
 | 9 | `md/hechos/FASE_09_jenkins.md` | hecho |
 | 10 | `md/hechos/FASE_10_favoritos.md` | hecho |
 | 11 | `md/hechos/FASE_11_pedidos.md` | hecho |
+| 12 | `md/pendientes/FASE_12_detalle_3d.md` | pendiente |
+| 13 | `md/pendientes/FASE_13_resenas.md` | pendiente |
+| 14 | `md/pendientes/FASE_14_vendedores.md` | pendiente |
+| 15 | `md/pendientes/FASE_15_colores.md` | pendiente |
+| 16 | `md/pendientes/FASE_16_apartados.md` | pendiente |
+| 17 | `md/pendientes/FASE_17_transportista.md` | pendiente |
+| 18 | `md/pendientes/FASE_18_metricas.md` | pendiente |
+| 19 | `md/pendientes/FASE_19_cliente.md` | pendiente |
 
 ## Pendientes después de las fases
 
@@ -82,6 +98,9 @@ El maestro pasa a `hechos/` cuando se cierren estos pendientes o se descarten.
 
 Pantallas (móvil y paneles web) en el lienzo de diseño:
 https://claude.ai/artifact/2ouk8qCM5BmS6n2W5EiKiL
+
+Detalle del mueble con el 3D protagonista (fase 12):
+https://claude.ai/artifact/Xi7bMwkUwABNnfyUmze5Dh
 
 | Decisión | Valor |
 |---|---|
