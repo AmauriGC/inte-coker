@@ -33,6 +33,9 @@ public record SolicitudRequest(
         String codigoPostal,
 
         @Size(max = 1000, message = "El mensaje admite hasta 1000 caracteres")
-        String mensaje
+        String mensaje,
+
+        /** Obligatorio si el mueble se vende por color. */
+        Long varianteId
 ) implements DatosSolicitud {
 }

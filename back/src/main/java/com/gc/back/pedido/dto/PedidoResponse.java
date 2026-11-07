@@ -23,6 +23,7 @@ public record PedidoResponse(
         Participante cliente,
         Participante vendedor,
         MuebleResumen mueble,
+        Color color,
         BigDecimal precioUnitario,
         int cantidad,
         BigDecimal total,
@@ -51,6 +52,10 @@ public record PedidoResponse(
                                 boolean publicado) {
     }
 
+    /** Color elegido (copia del pedido; sigue aunque el vendedor borre el color). */
+    public record Color(String nombre, String hex) {
+    }
+
     public record Entrega(String nombreRecibe, String telefono, String direccion, String ciudad, String codigoPostal) {
     }
 
@@ -66,7 +71,8 @@ public record PedidoResponse(
                 p.getId(), p.getFolio(), p.getEstado(),
                 new Participante(p.getCliente().getId(), p.getCliente().getNombre()),
                 new Participante(p.getVendedor().getId(), p.getVendedor().getNombre()),
-                mueble, p.getPrecioUnitario(), p.getCantidad(), p.getTotal(), p.getTipoEntrega(),
+                mueble, p.getVarianteNombre() == null ? null : new Color(p.getVarianteNombre(), p.getVarianteHex()),
+                p.getPrecioUnitario(), p.getCantidad(), p.getTotal(), p.getTipoEntrega(),
                 new Entrega(p.getNombreRecibe(), p.getTelefono(), p.getDireccion(), p.getCiudad(), p.getCodigoPostal()),
                 p.getMotivoCierre(), p.getCreadoEn(), p.getSolicitadoEn(), p.getAceptadoEn(), p.getEnCaminoEn(),
                 p.getEntregadoEn(), p.getCerradoEn(), p.getActividadEn(), lado, acciones, puedeEscribir, sinLeer);
