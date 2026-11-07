@@ -63,6 +63,8 @@ export default function InicioPage() {
   const categorias = useConsulta((s) => catalogoApi.categorias(s));
   const destacados = useConsulta((s) => catalogoApi.muebles({ size: 6, sort: 'creadoEn,desc' }, s));
   const lista = destacados.datos?.contenido ?? [];
+  const calificados = useConsulta((s) => catalogoApi.muebles({ size: 8, sort: 'calificacion,desc' }, s));
+  const mejores = (calificados.datos?.contenido ?? []).filter((m) => m.totalResenas > 0);
 
   return (
     <Pagina className="mx-auto max-w-5xl px-4">
@@ -116,6 +118,24 @@ export default function InicioPage() {
           </div>
         )}
       </section>
+
+      {mejores.length > 0 && (
+        <section className="mt-9">
+          <div className="mb-3 flex items-end justify-between">
+            <h2 className="font-display text-xl font-semibold tracking-[-0.02em]">Mejor calificados</h2>
+            <Link to="/catalogo?orden=calificacion,desc" className="inline-flex items-center gap-1 text-[13.5px] font-semibold text-terracota">
+              Ver más <ArrowRight className="size-4" />
+            </Link>
+          </div>
+          <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0">
+            {mejores.slice(0, 8).map((m, i) => (
+              <div key={m.id} className="w-[44%] shrink-0 snap-start md:w-auto">
+                <TarjetaMueble mueble={m} indice={i} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mt-9 grid gap-3 md:grid-cols-3">
         {PASOS.map(({ Icono, titulo, texto }, i) => (

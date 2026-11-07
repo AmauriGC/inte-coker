@@ -77,7 +77,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 10 | `md/hechos/FASE_10_favoritos.md` | hecho |
 | 11 | `md/hechos/FASE_11_pedidos.md` | hecho |
 | 12 | `md/hechos/FASE_12_detalle_3d.md` | hecho |
-| 13 | `md/pendientes/FASE_13_resenas.md` | pendiente |
+| 13 | `md/hechos/FASE_13_resenas.md` | hecho |
 | 14 | `md/pendientes/FASE_14_vendedores.md` | pendiente |
 | 15 | `md/pendientes/FASE_15_colores.md` | pendiente |
 | 16 | `md/pendientes/FASE_16_apartados.md` | pendiente |

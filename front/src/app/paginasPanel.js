@@ -6,3 +6,4 @@ export const CategoriasPage = lazy(() => import('../admin/pages/CategoriasPage')
 export const UsuariosPage = lazy(() => import('../admin/pages/UsuariosPage'));
 export const RolesPage = lazy(() => import('../admin/pages/RolesPage'));
 export const PanelPedidosPage = lazy(() => import('../vendedor/pages/PanelPedidosPage'));
+export const ResenasModeracionPage = lazy(() => import('../admin/pages/ResenasModeracionPage'));

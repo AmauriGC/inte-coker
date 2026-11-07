@@ -1,4 +1,4 @@
-import { ArrowLeft, MapPin, Phone, ReceiptText, User } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, ReceiptText, Star, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useState } from 'react';
 import { Link, useParams } from 'react-router';
@@ -171,7 +171,12 @@ export default function PedidoPage({ enPanel = false }) {
       )}
 
       {!enPanel && pedido.lado === 'CLIENTE' && pedido.estado === 'ENTREGADO' && mueble.slug && (
-        <div className="mt-6 text-center">
+        <div className="mt-6 grid gap-2 text-center">
+          {mueble.publicado && (
+            <Boton variante="acento" icono={Star} a={`/mueble/${mueble.slug}/resenas?escribir=1`}>
+              Califica tu mueble
+            </Boton>
+          )}
           <Boton variante="fantasma" a="/catalogo">
             Seguir explorando el catálogo
           </Boton>

@@ -11,6 +11,8 @@ export const catalogoApi = {
 /** Opciones de orden de la pantalla Catálogo (valor = parámetro sort del back). */
 export const ORDENES = [
   { valor: 'creadoEn,desc', texto: 'Más recientes' },
+  { valor: 'calificacion,desc', texto: 'Mejor calificados' },
+  { valor: 'totalMeGusta,desc', texto: 'Más gustados' },
   { valor: 'precio,asc', texto: 'Menor precio' },
   { valor: 'precio,desc', texto: 'Mayor precio' },
   { valor: 'nombre,asc', texto: 'Nombre (A-Z)' },

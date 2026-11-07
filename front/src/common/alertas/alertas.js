@@ -52,18 +52,29 @@ export function error({ titulo = 'Algo salió mal', texto }) {
  * Pide un texto corto (por ejemplo, el motivo de un rechazo).
  * Devuelve el texto (puede ser "" si no es obligatorio) o null si la persona se arrepiente.
  */
-export async function pedirTexto({ titulo, texto, placeholder, boton = 'Enviar', obligatorio = false, peligro = false, maximo = 300 }) {
+export async function pedirTexto({
+  titulo,
+  texto,
+  placeholder,
+  boton = 'Enviar',
+  obligatorio = false,
+  peligro = false,
+  maximo = 300,
+  inicial = '',
+  vacio = 'Escribe el motivo para continuar',
+}) {
   const r = await base.fire({
     title: titulo,
     text: texto,
     input: 'textarea',
     inputPlaceholder: placeholder,
+    inputValue: inicial,
     inputAttributes: { maxlength: String(maximo), 'aria-label': titulo },
     showCancelButton: true,
     confirmButtonText: boton,
     cancelButtonText: 'Volver',
     customClass: { ...CLASES, input: 'gc-alerta-texto', confirmButton: peligro ? 'gc-boton gc-boton-peligro' : CLASES.confirmButton },
-    inputValidator: (valor) => (obligatorio && !valor.trim() ? 'Escribe el motivo para continuar' : undefined),
+    inputValidator: (valor) => (obligatorio && !valor.trim() ? vacio : undefined),
   });
   return r.isConfirmed ? r.value.trim() : null;
 }

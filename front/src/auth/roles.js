@@ -4,7 +4,7 @@ import { Heart, Package, Shield } from 'lucide-react';
 export const ROLES = {
   ADMIN: { nombre: 'Administrador', detalle: 'Usuarios, roles, categorías, pedidos y todo el catálogo', Icono: Shield, inicio: '/panel' },
   VENDEDOR: { nombre: 'Vendedor', detalle: 'Tus muebles, modelos 3D, publicaciones y pedidos', Icono: Package, inicio: '/panel/muebles' },
-  CLIENTE: { nombre: 'Cliente', detalle: 'Explorar en 3D, guardar favoritos y comprar muebles', Icono: Heart, inicio: '/' },
+  CLIENTE: { nombre: 'Cliente', detalle: 'Explorar en 3D, guardar favoritos, comprar y reseñar', Icono: Heart, inicio: '/' },
 };
 
 const ORDEN = ['ADMIN', 'VENDEDOR', 'CLIENTE'];

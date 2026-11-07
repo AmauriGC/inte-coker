@@ -16,7 +16,8 @@ import Raiz from '../layout/Raiz';
 import AvisosPage from '../notificaciones/pages/AvisosPage';
 import MisPedidosPage from '../pedidos/pages/MisPedidosPage';
 import PedidoPage from '../pedidos/pages/PedidoPage';
-import { CategoriasPage, PanelMueblesPage, PanelPedidosPage, RolesPage, UsuariosPage } from './paginasPanel';
+import ResenasPage from '../resenas/pages/ResenasPage';
+import { CategoriasPage, PanelMueblesPage, PanelPedidosPage, ResenasModeracionPage, RolesPage, UsuariosPage } from './paginasPanel';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
           { index: true, element: <InicioPage /> },
           { path: 'catalogo', element: <CatalogoPage /> },
           { path: 'mueble/:slug', element: <DetallePage /> },
+          { path: 'mueble/:slug/resenas', element: <ResenasPage /> },
           { path: 'favoritos', element: <FavoritosPage /> },
           { path: 'avisos', element: <AvisosPage /> },
           { path: 'pedidos', element: <RutaProtegida><MisPedidosPage /></RutaProtegida> },
@@ -43,7 +45,7 @@ export const router = createBrowserRouter([
       {
         path: 'panel',
         element: (
-          <RutaProtegida permisos={['MUEBLE_CREAR', 'PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR', 'CATEGORIA_GESTIONAR', 'USUARIO_GESTIONAR', 'ROL_GESTIONAR']}>
+          <RutaProtegida permisos={['MUEBLE_CREAR', 'PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR', 'RESENA_MODERAR', 'CATEGORIA_GESTIONAR', 'USUARIO_GESTIONAR', 'ROL_GESTIONAR']}>
             <LayoutPanel />
           </RutaProtegida>
         ),
@@ -53,6 +55,7 @@ export const router = createBrowserRouter([
           { path: 'muebles/:slug', element: <RutaProtegida permisos={['MUEBLE_CREAR']}><DetallePage enPanel /></RutaProtegida> },
           { path: 'pedidos', element: <RutaProtegida permisos={['PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR']}><PanelPedidosPage /></RutaProtegida> },
           { path: 'pedidos/:id', element: <RutaProtegida permisos={['PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR']}><PedidoPage enPanel /></RutaProtegida> },
+          { path: 'resenas', element: <RutaProtegida permisos={['RESENA_MODERAR']}><ResenasModeracionPage /></RutaProtegida> },
           { path: 'categorias', element: <RutaProtegida permisos={['CATEGORIA_GESTIONAR']}><CategoriasPage /></RutaProtegida> },
           { path: 'usuarios', element: <RutaProtegida permisos={['USUARIO_GESTIONAR']}><UsuariosPage /></RutaProtegida> },
           { path: 'roles', element: <RutaProtegida permisos={['ROL_GESTIONAR']}><RolesPage /></RutaProtegida> },
