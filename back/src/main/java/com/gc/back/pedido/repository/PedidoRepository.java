@@ -16,11 +16,24 @@ import java.util.Optional;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
-    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble"})
+    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble", "transportista"})
     Optional<Pedido> findDetalleById(Long id);
 
+    /** Entregas de un transportista en un estado (EN_CAMINO = pendientes). */
+    @EntityGraph(attributePaths = {"vendedor", "mueble"})
+    Page<Pedido> findByTransportistaIdAndEstado(Long transportistaId, EstadoPedido estado, Pageable pageable);
+
+    /** Entregas ya cerradas de un transportista. */
+    @EntityGraph(attributePaths = {"vendedor", "mueble"})
+    Page<Pedido> findByTransportistaIdAndEstadoNot(Long transportistaId, EstadoPedido estado, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble", "transportista"})
+    Optional<Pedido> findByIdAndTransportistaId(Long id, Long transportistaId);
+
+    long countByTransportistaIdAndEstado(Long transportistaId, EstadoPedido estado);
+
     /** La consulta abierta de un cliente sobre un mueble (solo hay una). */
-    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble"})
+    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble", "transportista"})
     Optional<Pedido> findFirstByClienteIdAndMuebleIdAndEstado(Long clienteId, Long muebleId, EstadoPedido estado);
 
     boolean existsByMuebleIdAndEstadoIn(Long muebleId, Collection<EstadoPedido> estados);
@@ -34,19 +47,19 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByEstadoAndAvisoVencimientoFalseAndApartadoHastaBefore(EstadoPedido estado, Instant limite);
 
     /** Mis compras; estado null = todos. */
-    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble"})
+    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble", "transportista"})
     @Query(value = "select p from Pedido p where p.cliente.id = :usuarioId and (:estado is null or p.estado = :estado)",
             countQuery = "select count(p) from Pedido p where p.cliente.id = :usuarioId and (:estado is null or p.estado = :estado)")
     Page<Pedido> compras(@Param("usuarioId") Long usuarioId, @Param("estado") EstadoPedido estado, Pageable pageable);
 
     /** Pedidos de mis muebles; estado null = todos. */
-    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble"})
+    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble", "transportista"})
     @Query(value = "select p from Pedido p where p.vendedor.id = :usuarioId and (:estado is null or p.estado = :estado)",
             countQuery = "select count(p) from Pedido p where p.vendedor.id = :usuarioId and (:estado is null or p.estado = :estado)")
     Page<Pedido> ventas(@Param("usuarioId") Long usuarioId, @Param("estado") EstadoPedido estado, Pageable pageable);
 
     /** Administrador: todos; busca por mueble, cliente, vendedor o folio. */
-    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble"})
+    @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble", "transportista"})
     @Query(value = """
             select p from Pedido p
             where (:estado is null or p.estado = :estado)

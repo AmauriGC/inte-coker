@@ -150,6 +150,6 @@ class AuthFlowTest extends PruebaIntegracion {
 
         mvc.perform(get("/api/roles").header(HttpHeaders.AUTHORIZATION, bearer))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.datos", hasSize(3)));
+                .andExpect(jsonPath("$.datos", hasSize(4)));
     }
 }

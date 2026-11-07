@@ -69,6 +69,8 @@ import static com.gc.back.pedido.entity.EstadoPedido.VENCIDO;
  * - Las existencias se revisan al pedir y se descuentan al aceptar; vuelven si se cancela
  *   un pedido aceptado.
  * - Cada cambio de estado deja un mensaje del sistema y avisa por correo al otro lado.
+ * - Al enviar a domicilio el vendedor puede asignar un transportista (cuenta activa con
+ *   ENTREGA_REALIZAR); el transportista no entra a la conversación.
  */
 @Service
 @RequiredArgsConstructor
@@ -77,6 +79,7 @@ public class PedidoService {
     private static final String CREAR = "PEDIDO_CREAR";
     private static final String ATENDER = "PEDIDO_ATENDER";
     private static final String SUPERVISAR = "PEDIDO_SUPERVISAR";
+    public static final String ENTREGAR = "ENTREGA_REALIZAR";
     private static final Locale MX = Locale.forLanguageTag("es-MX");
     private static final int MAX_APARTADOS = 3;
     private static final ZoneId ZONA = ZoneId.of("America/Mexico_City");
@@ -297,8 +300,16 @@ public class PedidoService {
                         pedido.getCantidad());
                 pedido.setAceptadoEn(ahora);
             }
-            case EN_CAMINO -> pedido.setEnCaminoEn(ahora);
-            case ENTREGADO -> pedido.setEntregadoEn(ahora);
+            case EN_CAMINO -> {
+                pedido.setEnCaminoEn(ahora);
+                asignarTransportista(pedido, request.transportistaId(), ahora);
+            }
+            case ENTREGADO -> {
+                pedido.setEntregadoEn(ahora);
+                if (esVendedor(pedido, actual)) {
+                    pedido.setCobradoEn(ahora);
+                }
+            }
             default -> {
                 pedido.setCerradoEn(ahora);
                 pedido.setMotivoCierre(motivo);
@@ -311,7 +322,54 @@ public class PedidoService {
         String texto = textoCambio(pedido, anterior, cliente, esVendedor(pedido, actual), motivo);
         agregarMensaje(pedido, null, texto, actual);
         avisarCambio(pedido, texto, actual);
+        if (destino == EN_CAMINO && pedido.getTransportista() != null) {
+            avisarTransportista(pedido);
+        }
         return respuesta(pedido, actual);
+    }
+
+    private void asignarTransportista(Pedido pedido, Long transportistaId, Instant ahora) {
+        if (transportistaId == null) {
+            return;
+        }
+        if (pedido.getTipoEntrega() != TipoEntrega.DOMICILIO) {
+            throw new ReglaNegocioException("Solo los envíos a domicilio llevan transportista");
+        }
+        Usuario transportista = usuarioService.obtenerEntidad(transportistaId);
+        if (!transportista.isActivo() || !tienePermiso(transportista, ENTREGAR)) {
+            throw new ReglaNegocioException("Esa cuenta no es un transportista activo");
+        }
+        pedido.setTransportista(transportista);
+        pedido.setAsignadoEn(ahora);
+    }
+
+    /** El usuario tiene el permiso por alguno de sus roles. */
+    public static boolean tienePermiso(Usuario usuario, String permiso) {
+        return usuario.getRoles().stream().flatMap(r -> r.getPermisos().stream())
+                .anyMatch(p -> p.getNombre().equals(permiso));
+    }
+
+    private void avisarTransportista(Pedido p) {
+        Usuario t = p.getTransportista();
+        String titulo = "Nueva entrega " + p.getFolio();
+        String texto = "%d × %s para %s, %s. Cobro: %s.".formatted(p.getCantidad(), p.getMuebleNombre(),
+                p.getNombreRecibe(), p.getCiudad(), cobro(p));
+        eventos.publishEvent(new AvisoCorreo(t.getEmail(), t.getNombre(), titulo, titulo, texto, "Ver la entrega",
+                "/entregas/" + p.getId()));
+    }
+
+    /** Lo que el transportista cobra al entregar: nada si fue un apartado ya liquidado. */
+    public static BigDecimal porCobrar(Pedido p) {
+        return p.isApartado() ? BigDecimal.ZERO : p.getTotal();
+    }
+
+    /** "$5,200.00 en efectivo" o "ya pagado". */
+    public static String cobro(Pedido p) {
+        BigDecimal monto = porCobrar(p);
+        if (monto.signum() == 0) {
+            return "ya pagado";
+        }
+        return dinero(monto) + (p.getMetodoPago() == null ? "" : " en " + p.getMetodoPago().getDescripcion());
     }
 
     // ---------- Mensajes ----------
@@ -414,6 +472,7 @@ public class PedidoService {
         pedido.setCantidad(datos.cantidad());
         pedido.setTotal(mueble.getPrecio().multiply(BigDecimal.valueOf(datos.cantidad())));
         pedido.setTipoEntrega(datos.tipoEntrega());
+        pedido.setMetodoPago(datos.metodoPago());
         boolean domicilio = datos.tipoEntrega() == TipoEntrega.DOMICILIO;
         pedido.setNombreRecibe(limpio(datos.nombreRecibe()));
         pedido.setTelefono(limpio(datos.telefono()));
@@ -423,9 +482,10 @@ public class PedidoService {
         pedido.setEstado(SOLICITADO);
         pedido.setSolicitadoEn(Instant.now());
 
-        String resumen = "%s: %d × %s, %s. Total: %s.".formatted(
+        String resumen = "%s: %d × %s, %s, pago en %s. Total: %s.".formatted(
                 apartar ? "Apartado solicitado (con anticipo)" : "Pedido solicitado", pedido.getCantidad(),
-                pedido.getMuebleNombre() + (variante == null ? "" : " (" + variante.getNombre() + ")"), pedido.getTipoEntrega().getDescripcion(), dinero(pedido.getTotal()));
+                pedido.getMuebleNombre() + (variante == null ? "" : " (" + variante.getNombre() + ")"),
+                pedido.getTipoEntrega().getDescripcion(), datos.metodoPago().getDescripcion(), dinero(pedido.getTotal()));
         agregarMensaje(pedido, null, resumen, actual);
         if (StringUtils.hasText(datos.mensaje())) {
             agregarMensaje(pedido, pedido.getCliente(), datos.mensaje().trim(), actual);
@@ -540,8 +600,10 @@ public class PedidoService {
                     : "Pedido aceptado. Acuerden aquí el pago y la entrega.";
             case RECHAZADO -> (anterior == CONSULTA ? "El vendedor cerró la consulta." : "Pedido rechazado.") + conMotivo;
             case EN_CAMINO -> p.getTipoEntrega() == TipoEntrega.RECOGER
-                    ? "El pedido está listo para recoger." : "El pedido va en camino.";
-            case ENTREGADO -> "Pedido entregado.";
+                    ? "El pedido está listo para recoger."
+                    : p.getTransportista() == null ? "El pedido va en camino."
+                    : "El pedido va en camino con " + p.getTransportista().getNombre() + ".";
+            case ENTREGADO -> p.getCobradoEn() == null ? "Pedido entregado." : "Pedido entregado y cobrado (" + cobro(p) + ").";
             case CANCELADO -> (cliente
                     ? (anterior == CONSULTA ? "El cliente cerró la consulta." : "El cliente canceló el pedido.")
                     : "Un administrador canceló el pedido.") + conMotivo;
@@ -639,7 +701,7 @@ public class PedidoService {
         return estado.getEtiqueta().toLowerCase(MX);
     }
 
-    private static String dinero(BigDecimal valor) {
+    static String dinero(BigDecimal valor) {
         return String.format(MX, "$%,.2f", valor);
     }
 }

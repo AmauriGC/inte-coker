@@ -285,13 +285,13 @@ class PedidoTest extends PruebaIntegracion {
     private ResultActions pedir(Integer muebleId, int cantidad, String entrega, String token) throws Exception {
         return mvc.perform(post("/api/pedidos").header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"muebleId\":%d,\"cantidad\":%d,%s}".formatted(muebleId, cantidad, entrega)));
+                .content("{\"muebleId\":%d,\"cantidad\":%d,\"metodoPago\":\"EFECTIVO\",%s}".formatted(muebleId, cantidad, entrega)));
     }
 
     private ResultActions solicitar(Integer id, int cantidad, String entrega, String token) throws Exception {
         return mvc.perform(patch("/api/pedidos/{id}/solicitar", id).header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"cantidad\":%d,%s}".formatted(cantidad, entrega)));
+                .content("{\"cantidad\":%d,\"metodoPago\":\"EFECTIVO\",%s}".formatted(cantidad, entrega)));
     }
 
     private ResultActions cambiar(Integer id, String estado, String motivo, String token) throws Exception {

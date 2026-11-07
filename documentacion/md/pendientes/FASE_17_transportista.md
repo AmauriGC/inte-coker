@@ -1,7 +1,7 @@
 # FASE 17 · Transportista y método de pago
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: Pendiente
+- Estado: En progreso (17a hecha)
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_crecimiento.md` (§9, D3 y D8)
 
@@ -12,13 +12,23 @@ llamar y si cobra en efectivo o con tarjeta, y que confirme la entrega y el cobr
 
 ## Partes
 
-- [ ] 17a · Back
-  - Rol base `TRANSPORTISTA` con `ENTREGA_REALIZAR`.
-  - `Pedido.metodoPago` (obligatorio al pedir), `transportista`, `asignadoEn`, `cobradoEn`.
-  - Asignación al pasar a `EN_CAMINO`; `GET /api/transportistas`.
-  - `GET /api/entregas` y acciones "Entregado y cobrado" y "No se pudo entregar".
-  - Datos de entrega visibles solo para el transportista asignado y mientras el pedido siga abierto.
-  - Pruebas con MySQL.
+- [x] 17a · Back
+  - Rol base `TRANSPORTISTA` con `ENTREGA_REALIZAR` (`RolService` lo crea al arrancar).
+  - `MetodoPago` (`EFECTIVO`, `TARJETA`): obligatorio en `POST /api/pedidos` y en
+    `PATCH /api/pedidos/{id}/solicitar`; aparece en el mensaje del sistema del pedido.
+  - `Pedido`: `metodoPago`, `transportista` (SET_NULL), `asignadoEn` y `cobradoEn`.
+    `PedidoResponse` suma `metodoPago`, `transportista` y `cobradoEn`.
+  - `PATCH /api/pedidos/{id}/estado` con `EN_CAMINO` acepta `transportistaId` (opcional;
+    solo a domicilio y solo cuentas activas con `ENTREGA_REALIZAR`). Sin transportista lo
+    entrega el vendedor; cuando el vendedor marca `ENTREGADO` queda registrado el cobro.
+  - `GET /api/transportistas` (`PEDIDO_ATENDER`): activos y cuántas entregas llevan.
+  - `GET /api/entregas?pendientes=true|false`, `GET /api/entregas/{id}`,
+    `POST /api/entregas/{id}/entregada` y `POST /api/entregas/{id}/no-entregada`
+    (`{motivo}`; el pedido vuelve a `ACEPTADO` sin transportista).
+  - El transportista solo ve los suyos (404 a los demás), no entra a `/api/pedidos/{id}` ni
+    a la conversación, y la dirección y el teléfono solo llegan mientras va `EN_CAMINO`.
+  - `porCobrar`: el total, o 0 si fue un apartado ya liquidado.
+  - `EntregaTest` con MySQL (2 casos).
 - [ ] 17b · Front
   - Método de pago en la hoja de compra.
   - Selector de transportista al enviar.
@@ -28,3 +38,4 @@ llamar y si cobra en efectivo o con tarjeta, y que confirme la entrega y el cobr
 ## Verificación
 
 - `./mvnw verify` en `back/`; `npm run lint` y `npm run build` en `front/`.
+- 17a: `./mvnw verify` con 30 pruebas en verde.

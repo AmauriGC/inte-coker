@@ -38,7 +38,8 @@ import java.time.Instant;
 @Entity
 @Table(name = "pedidos", indexes = {
         @Index(name = "ix_pedido_cliente", columnList = "cliente_id, actividad_en"),
-        @Index(name = "ix_pedido_vendedor", columnList = "vendedor_id, actividad_en")
+        @Index(name = "ix_pedido_vendedor", columnList = "vendedor_id, actividad_en"),
+        @Index(name = "ix_pedido_transportista", columnList = "transportista_id, estado")
 })
 public class Pedido extends EntidadBase {
 
@@ -77,6 +78,24 @@ public class Pedido extends EntidadBase {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "tipo_entrega", length = 20)
     private TipoEntrega tipoEntrega;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "metodo_pago", length = 20)
+    private MetodoPago metodoPago;
+
+    /** Quien lleva el envío a domicilio; lo asigna el vendedor al pasarlo a EN_CAMINO. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transportista_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private Usuario transportista;
+
+    @Column(name = "asignado_en")
+    private Instant asignadoEn;
+
+    /** Cuándo se confirmó el cobro al entregar (transportista o vendedor). */
+    @Column(name = "cobrado_en")
+    private Instant cobradoEn;
 
     @Column(name = "nombre_recibe", length = 100)
     private String nombreRecibe;
