@@ -8,6 +8,7 @@ import com.gc.back.mueble.entity.Mueble;
 import com.gc.back.mueble.entity.VarianteColor;
 import com.gc.back.mueble.service.MuebleService;
 import com.gc.back.pedido.dto.CambioEstadoRequest;
+import com.gc.back.pedido.dto.ConfirmarApartadoRequest;
 import com.gc.back.pedido.dto.ConsultaRequest;
 import com.gc.back.pedido.dto.ConteoSinLeer;
 import com.gc.back.pedido.dto.DatosSolicitud;
@@ -37,7 +38,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -49,12 +53,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.gc.back.pedido.entity.EstadoPedido.ACEPTADO;
+import static com.gc.back.pedido.entity.EstadoPedido.APARTADO;
 import static com.gc.back.pedido.entity.EstadoPedido.CANCELADO;
 import static com.gc.back.pedido.entity.EstadoPedido.CONSULTA;
 import static com.gc.back.pedido.entity.EstadoPedido.ENTREGADO;
 import static com.gc.back.pedido.entity.EstadoPedido.EN_CAMINO;
 import static com.gc.back.pedido.entity.EstadoPedido.RECHAZADO;
 import static com.gc.back.pedido.entity.EstadoPedido.SOLICITADO;
+import static com.gc.back.pedido.entity.EstadoPedido.VENCIDO;
 
 /**
  * Pedidos y su conversación. Reglas:
@@ -72,6 +78,9 @@ public class PedidoService {
     private static final String ATENDER = "PEDIDO_ATENDER";
     private static final String SUPERVISAR = "PEDIDO_SUPERVISAR";
     private static final Locale MX = Locale.forLanguageTag("es-MX");
+    private static final int MAX_APARTADOS = 3;
+    private static final ZoneId ZONA = ZoneId.of("America/Mexico_City");
+    private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("d 'de' MMMM, h:mm a", MX);
 
     private final PedidoRepository pedidoRepository;
     private final MensajePedidoRepository mensajeRepository;
@@ -129,6 +138,84 @@ public class PedidoService {
         return respuesta(pedido, actual);
     }
 
+    // ---------- Apartados ----------
+
+    /** El vendedor confirma que recibió el anticipo: las piezas se reservan hasta la fecha límite. */
+    @Transactional
+    public PedidoResponse confirmarApartado(Long id, ConfirmarApartadoRequest request, UsuarioPrincipal actual) {
+        Pedido pedido = obtenerVisible(id, actual);
+        if (!acciones(pedido, actual).contains(APARTADO)) {
+            throw pedido.isApartado() && pedido.getEstado() == SOLICITADO
+                    ? new AccionPedidoNoPermitidaException(quienPuede(APARTADO))
+                    : new ReglaNegocioException("Este pedido no espera un anticipo");
+        }
+        if (request.anticipo().compareTo(pedido.getTotal()) >= 0) {
+            throw new ReglaNegocioException("El anticipo debe ser menor que el total (" + dinero(pedido.getTotal())
+                    + "); si ya pagó todo, acepta el pedido");
+        }
+        if (pedido.getMueble() == null) {
+            throw new ReglaNegocioException("El mueble ya no existe");
+        }
+        muebleService.descontarExistencias(pedido.getMueble(), idVariante(pedido), pedido.getVarianteNombre(),
+                pedido.getCantidad());
+        Instant ahora = Instant.now();
+        pedido.setAnticipo(request.anticipo());
+        pedido.setApartadoEn(ahora);
+        pedido.setApartadoHasta(ahora.plus(Duration.ofDays(request.dias())));
+        pedido.setEstado(APARTADO);
+        String texto = "Apartado confirmado: anticipo de %s. Resta %s; liquida antes del %s.".formatted(
+                dinero(request.anticipo()), dinero(pedido.getTotal().subtract(request.anticipo())),
+                fecha(pedido.getApartadoHasta()));
+        agregarMensaje(pedido, null, texto, actual);
+        avisarCambio(pedido, texto, actual);
+        return respuesta(pedido, actual);
+    }
+
+    /** Tarea programada: vence los apartados pasados de fecha y devuelve sus piezas. */
+    @Transactional
+    public int vencerApartados(Instant ahora) {
+        List<Pedido> vencidos = pedidoRepository.findByEstadoAndApartadoHastaBefore(APARTADO, ahora);
+        for (Pedido p : vencidos) {
+            if (p.getMueble() != null) {
+                muebleService.devolverExistencias(p.getMueble(), idVariante(p), p.getCantidad());
+            }
+            p.setEstado(VENCIDO);
+            p.setCerradoEn(ahora);
+            p.setMotivoCierre("No se liquidó antes de la fecha límite");
+            String texto = "El apartado venció sin liquidarse; las piezas regresaron al inventario.";
+            mensajeDelSistema(p, texto);
+            String titulo = "Apartado " + p.getFolio() + " vencido";
+            avisar(p.getCliente(), p, titulo, titulo, texto);
+            avisar(p.getVendedor(), p, titulo, titulo, texto);
+        }
+        return vencidos.size();
+    }
+
+    /** Tarea programada: avisa una vez al cliente cuando le quedan menos de 24 horas. */
+    @Transactional
+    public int avisarApartadosPorVencer(Instant ahora) {
+        List<Pedido> porVencer = pedidoRepository.findByEstadoAndAvisoVencimientoFalseAndApartadoHastaBefore(
+                APARTADO, ahora.plus(Duration.ofHours(24)));
+        for (Pedido p : porVencer) {
+            p.setAvisoVencimiento(true);
+            String texto = "Quedan menos de 24 horas para liquidar el apartado (vence el %s)."
+                    .formatted(fecha(p.getApartadoHasta()));
+            mensajeDelSistema(p, texto);
+            String titulo = "Tu apartado " + p.getFolio() + " está por vencer";
+            avisar(p.getCliente(), p, titulo, titulo, texto);
+        }
+        return porVencer.size();
+    }
+
+    private void mensajeDelSistema(Pedido pedido, String texto) {
+        mensajeRepository.save(new MensajePedido(pedido, null, texto));
+        pedido.setActividadEn(Instant.now());
+    }
+
+    private static String fecha(Instant instante) {
+        return FECHA.format(instante.atZone(ZONA));
+    }
+
     // ---------- Consultar ----------
 
     @Transactional(readOnly = true)
@@ -172,6 +259,12 @@ public class PedidoService {
         if (destino == SOLICITADO) {
             throw new ReglaNegocioException("Para convertir la consulta en pedido usa la opción Pedir");
         }
+        if (destino == APARTADO) {
+            throw new ReglaNegocioException("Para apartar confirma el anticipo y la fecha límite");
+        }
+        if (destino == VENCIDO) {
+            throw new ReglaNegocioException("Los apartados vencen solos al pasar la fecha límite");
+        }
         if (!anterior.siguientes().contains(destino)) {
             throw new ReglaNegocioException(anterior.abierto()
                     ? "Un pedido %s no puede pasar a %s".formatted(minus(anterior), minus(destino))
@@ -192,6 +285,11 @@ public class PedidoService {
         Instant ahora = Instant.now();
         switch (destino) {
             case ACEPTADO -> {
+                if (anterior == APARTADO) {
+                    // Liquidado: las piezas ya se descontaron al confirmar el anticipo.
+                    pedido.setAceptadoEn(ahora);
+                    break;
+                }
                 if (pedido.getMueble() == null) {
                     throw new ReglaNegocioException("El mueble ya no existe");
                 }
@@ -204,13 +302,13 @@ public class PedidoService {
             default -> {
                 pedido.setCerradoEn(ahora);
                 pedido.setMotivoCierre(motivo);
-                if (anterior == ACEPTADO && pedido.getMueble() != null) {
+                if ((anterior == ACEPTADO || anterior == APARTADO) && pedido.getMueble() != null) {
                     muebleService.devolverExistencias(pedido.getMueble(), idVariante(pedido), pedido.getCantidad());
                 }
             }
         }
         pedido.setEstado(destino);
-        String texto = textoCambio(pedido, anterior, cliente, motivo);
+        String texto = textoCambio(pedido, anterior, cliente, esVendedor(pedido, actual), motivo);
         agregarMensaje(pedido, null, texto, actual);
         avisarCambio(pedido, texto, actual);
         return respuesta(pedido, actual);
@@ -301,6 +399,13 @@ public class PedidoService {
         } else if (datos.cantidad() > mueble.getExistencias()) {
             throw new ReglaNegocioException("Solo quedan " + mueble.getExistencias() + " piezas de este mueble");
         }
+        boolean apartar = Boolean.TRUE.equals(datos.apartar());
+        if (apartar && pedidoRepository.countByClienteIdAndApartadoTrueAndEstadoIn(
+                pedido.getCliente().getId(), EnumSet.of(SOLICITADO, APARTADO)) >= MAX_APARTADOS) {
+            throw new ReglaNegocioException("Ya tienes " + MAX_APARTADOS
+                    + " apartados abiertos; liquida o cancela uno para apartar otro");
+        }
+        pedido.setApartado(apartar);
         pedido.setVariante(variante);
         pedido.setVarianteNombre(variante == null ? null : variante.getNombre());
         pedido.setVarianteHex(variante == null ? null : variante.getHex());
@@ -318,13 +423,14 @@ public class PedidoService {
         pedido.setEstado(SOLICITADO);
         pedido.setSolicitadoEn(Instant.now());
 
-        String resumen = "Pedido solicitado: %d × %s, %s. Total: %s.".formatted(pedido.getCantidad(),
+        String resumen = "%s: %d × %s, %s. Total: %s.".formatted(
+                apartar ? "Apartado solicitado (con anticipo)" : "Pedido solicitado", pedido.getCantidad(),
                 pedido.getMuebleNombre() + (variante == null ? "" : " (" + variante.getNombre() + ")"), pedido.getTipoEntrega().getDescripcion(), dinero(pedido.getTotal()));
         agregarMensaje(pedido, null, resumen, actual);
         if (StringUtils.hasText(datos.mensaje())) {
             agregarMensaje(pedido, pedido.getCliente(), datos.mensaje().trim(), actual);
         }
-        avisar(pedido.getVendedor(), pedido, "Nuevo pedido " + pedido.getFolio(),
+        avisar(pedido.getVendedor(), pedido, (apartar ? "Nuevo apartado " : "Nuevo pedido ") + pedido.getFolio(),
                 pedido.getCliente().getNombre() + " quiere " + pedido.getMuebleNombre() + ".", resumen);
     }
 
@@ -389,7 +495,12 @@ public class PedidoService {
             }
             case SOLICITADO -> {
                 if (vendedor) acciones.addAll(EnumSet.of(ACEPTADO, RECHAZADO));
+                if (vendedor && p.isApartado()) acciones.add(APARTADO);
                 if (cliente || supervisor) acciones.add(CANCELADO);
+            }
+            case APARTADO -> {
+                if (vendedor) acciones.add(ACEPTADO);
+                if (cliente || vendedor || supervisor) acciones.add(CANCELADO);
             }
             case ACEPTADO -> {
                 if (vendedor) acciones.add(EN_CAMINO);
@@ -412,14 +523,21 @@ public class PedidoService {
             case EN_CAMINO -> "Solo el vendedor puede marcar el pedido en camino";
             case ENTREGADO -> "Solo el cliente o el vendedor pueden marcarlo como entregado";
             case CANCELADO -> "Solo el cliente o un administrador pueden cancelar el pedido";
+            case APARTADO -> "Solo el vendedor puede confirmar el anticipo";
             default -> "No puedes hacer ese cambio";
         };
     }
 
-    private static String textoCambio(Pedido p, EstadoPedido anterior, boolean cliente, String motivo) {
+    private static String textoCambio(Pedido p, EstadoPedido anterior, boolean cliente, boolean vendedor, String motivo) {
         String conMotivo = motivo == null ? "" : " Motivo: " + motivo;
+        if (anterior == APARTADO && p.getEstado() == CANCELADO) {
+            return (cliente ? "El cliente canceló el apartado." : vendedor ? "El vendedor canceló el apartado."
+                    : "Un administrador canceló el apartado.") + " Las piezas regresaron al inventario." + conMotivo;
+        }
         return switch (p.getEstado()) {
-            case ACEPTADO -> "Pedido aceptado. Acuerden aquí el pago y la entrega.";
+            case ACEPTADO -> anterior == APARTADO
+                    ? "Apartado liquidado. Acuerden aquí la entrega."
+                    : "Pedido aceptado. Acuerden aquí el pago y la entrega.";
             case RECHAZADO -> (anterior == CONSULTA ? "El vendedor cerró la consulta." : "Pedido rechazado.") + conMotivo;
             case EN_CAMINO -> p.getTipoEntrega() == TipoEntrega.RECOGER
                     ? "El pedido está listo para recoger." : "El pedido va en camino.";

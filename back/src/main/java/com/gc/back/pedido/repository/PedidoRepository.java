@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
@@ -24,6 +26,12 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     boolean existsByMuebleIdAndEstadoIn(Long muebleId, Collection<EstadoPedido> estados);
 
     long countByVendedorIdAndEstado(Long vendedorId, EstadoPedido estado);
+
+    long countByClienteIdAndApartadoTrueAndEstadoIn(Long clienteId, Collection<EstadoPedido> estados);
+
+    List<Pedido> findByEstadoAndApartadoHastaBefore(EstadoPedido estado, Instant limite);
+
+    List<Pedido> findByEstadoAndAvisoVencimientoFalseAndApartadoHastaBefore(EstadoPedido estado, Instant limite);
 
     /** Mis compras; estado null = todos. */
     @EntityGraph(attributePaths = {"cliente", "vendedor", "mueble"})

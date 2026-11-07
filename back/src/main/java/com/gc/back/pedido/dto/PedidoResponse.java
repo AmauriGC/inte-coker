@@ -24,6 +24,7 @@ public record PedidoResponse(
         Participante vendedor,
         MuebleResumen mueble,
         Color color,
+        Apartado apartado,
         BigDecimal precioUnitario,
         int cantidad,
         BigDecimal total,
@@ -56,6 +57,13 @@ public record PedidoResponse(
     public record Color(String nombre, String hex) {
     }
 
+    /**
+     * Datos del apartado (null si es una compra normal). anticipo y hasta llegan cuando el
+     * vendedor confirma; resta = total - anticipo.
+     */
+    public record Apartado(BigDecimal anticipo, BigDecimal resta, Instant hasta, Instant confirmadoEn) {
+    }
+
     public record Entrega(String nombreRecibe, String telefono, String direccion, String ciudad, String codigoPostal) {
     }
 
@@ -72,6 +80,9 @@ public record PedidoResponse(
                 new Participante(p.getCliente().getId(), p.getCliente().getNombre()),
                 new Participante(p.getVendedor().getId(), p.getVendedor().getNombre()),
                 mueble, p.getVarianteNombre() == null ? null : new Color(p.getVarianteNombre(), p.getVarianteHex()),
+                !p.isApartado() ? null : new Apartado(p.getAnticipo(),
+                        p.getAnticipo() == null ? null : p.getTotal().subtract(p.getAnticipo()),
+                        p.getApartadoHasta(), p.getApartadoEn()),
                 p.getPrecioUnitario(), p.getCantidad(), p.getTotal(), p.getTipoEntrega(),
                 new Entrega(p.getNombreRecibe(), p.getTelefono(), p.getDireccion(), p.getCiudad(), p.getCodigoPostal()),
                 p.getMotivoCierre(), p.getCreadoEn(), p.getSolicitadoEn(), p.getAceptadoEn(), p.getEnCaminoEn(),

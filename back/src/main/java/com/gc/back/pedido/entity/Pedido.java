@@ -16,8 +16,11 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -64,11 +67,14 @@ public class Pedido extends EntidadBase {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
 
+    // VARCHAR y no ENUM nativo de MySQL: así un estado nuevo no exige alterar la columna.
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(nullable = false, length = 20)
     private EstadoPedido estado;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "tipo_entrega", length = 20)
     private TipoEntrega tipoEntrega;
 
@@ -98,6 +104,26 @@ public class Pedido extends EntidadBase {
 
     @Column(name = "variante_hex", length = 7)
     private String varianteHex;
+
+    /** El cliente pidió apartarlo (con anticipo acordado fuera de la app). */
+    @ColumnDefault("false")
+    @Column(nullable = false)
+    private boolean apartado;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal anticipo;
+
+    /** Fecha límite para liquidar; al pasarla el apartado vence solo. */
+    @Column(name = "apartado_hasta")
+    private Instant apartadoHasta;
+
+    @Column(name = "apartado_en")
+    private Instant apartadoEn;
+
+    /** Ya se avisó que faltan menos de 24 horas (para no repetir el aviso). */
+    @ColumnDefault("false")
+    @Column(name = "aviso_vencimiento", nullable = false)
+    private boolean avisoVencimiento;
 
     @Column(name = "motivo_cierre", length = 300)
     private String motivoCierre;

@@ -39,6 +39,9 @@ public record PedidoRequest(
         String mensaje,
 
         /** Obligatorio si el mueble se vende por color. */
-        Long varianteId
+        Long varianteId,
+
+        /** true = apartarlo con anticipo. */
+        Boolean apartar
 ) implements DatosSolicitud {
 }

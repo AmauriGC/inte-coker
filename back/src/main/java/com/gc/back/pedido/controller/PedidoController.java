@@ -3,6 +3,7 @@ package com.gc.back.pedido.controller;
 import com.gc.back.common.response.ApiResponse;
 import com.gc.back.common.response.PaginaResponse;
 import com.gc.back.pedido.dto.CambioEstadoRequest;
+import com.gc.back.pedido.dto.ConfirmarApartadoRequest;
 import com.gc.back.pedido.dto.ConsultaRequest;
 import com.gc.back.pedido.dto.MensajeRequest;
 import com.gc.back.pedido.dto.MensajeResponse;
@@ -115,6 +116,15 @@ public class PedidoController {
             @PathVariable Long id, @Valid @RequestBody CambioEstadoRequest request,
             @AuthenticationPrincipal UsuarioPrincipal actual) {
         return ResponseEntity.ok(ApiResponse.ok("Pedido actualizado", pedidoService.cambiarEstado(id, request, actual)));
+    }
+
+    @Operation(summary = "El vendedor confirma el anticipo de un apartado y el plazo para liquidarlo")
+    @PreAuthorize("hasAuthority('PEDIDO_ATENDER')")
+    @PatchMapping("/{id}/apartado")
+    public ResponseEntity<ApiResponse<PedidoResponse>> confirmarApartado(
+            @PathVariable Long id, @Valid @RequestBody ConfirmarApartadoRequest request,
+            @AuthenticationPrincipal UsuarioPrincipal actual) {
+        return ResponseEntity.ok(ApiResponse.ok("Apartado confirmado", pedidoService.confirmarApartado(id, request, actual)));
     }
 
     @Operation(summary = "Convierte mi consulta en pedido")
