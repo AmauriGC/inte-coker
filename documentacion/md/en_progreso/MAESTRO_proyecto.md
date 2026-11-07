@@ -51,7 +51,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 9 — Jenkins: pipeline y despliegue automático de `test` y `main`
 - [x] Fase 10 — Favoritos en el back: guardados en la cuenta y sincronizados al entrar
 - [x] Fase 11 — Pedidos: comprar, preguntar, existencias y conversación cliente-vendedor
-- [ ] Fase 12 — Detalle con el 3D protagonista, bottom bar en el detalle y Sillón Alba
+- [x] Fase 12 — Detalle con el 3D protagonista, bottom bar en el detalle y Sillón Alba
 - [ ] Fase 13 — Me gusta, reseñas y mejores calificados
 - [ ] Fase 14 — Perfil del vendedor y sus trabajos
 - [ ] Fase 15 — Colores en existencia y cambio de color en vivo
@@ -76,7 +76,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 9 | `md/hechos/FASE_09_jenkins.md` | hecho |
 | 10 | `md/hechos/FASE_10_favoritos.md` | hecho |
 | 11 | `md/hechos/FASE_11_pedidos.md` | hecho |
-| 12 | `md/pendientes/FASE_12_detalle_3d.md` | pendiente |
+| 12 | `md/hechos/FASE_12_detalle_3d.md` | hecho |
 | 13 | `md/pendientes/FASE_13_resenas.md` | pendiente |
 | 14 | `md/pendientes/FASE_14_vendedores.md` | pendiente |
 | 15 | `md/pendientes/FASE_15_colores.md` | pendiente |
