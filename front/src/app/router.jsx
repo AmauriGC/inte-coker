@@ -6,6 +6,8 @@ import OlvidePasswordPage from '../auth/pages/OlvidePasswordPage';
 import RestablecerPasswordPage from '../auth/pages/RestablecerPasswordPage';
 import VerificarPage from '../auth/pages/VerificarPage';
 import CatalogoPage from '../catalogo/pages/CatalogoPage';
+import EntregaPage from '../entregas/pages/EntregaPage';
+import EntregasPage from '../entregas/pages/EntregasPage';
 import DetallePage from '../catalogo/pages/DetallePage';
 import InicioPage from '../catalogo/pages/InicioPage';
 import NoEncontradoPage from '../common/components/NoEncontradoPage';
@@ -36,6 +38,8 @@ export const router = createBrowserRouter([
           { path: 'avisos', element: <AvisosPage /> },
           { path: 'pedidos', element: <RutaProtegida><MisPedidosPage /></RutaProtegida> },
           { path: 'pedidos/:id', element: <RutaProtegida><PedidoPage /></RutaProtegida> },
+          { path: 'entregas', element: <RutaProtegida permisos={['ENTREGA_REALIZAR']}><EntregasPage /></RutaProtegida> },
+          { path: 'entregas/:id', element: <RutaProtegida permisos={['ENTREGA_REALIZAR']}><EntregaPage /></RutaProtegida> },
           { path: 'cuenta', element: <CuentaPage /> },
           { path: 'entrar', element: <LoginPage /> },
           { path: 'verificar', element: <VerificarPage /> },

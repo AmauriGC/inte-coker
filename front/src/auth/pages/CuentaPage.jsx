@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronRight, Download, Heart, LogIn, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Users } from 'lucide-react';
+import { BadgeCheck, ChevronRight, Download, Heart, LogIn, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Truck, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import { confirmar } from '../../common/alertas/alertas';
@@ -16,6 +16,7 @@ import { useSesion } from '../context/SesionContext';
 import { datosRol } from '../roles';
 
 const ACCESOS = [
+  { a: '/entregas', texto: 'Mis entregas', detalle: 'Envíos que te asignaron', Icono: Truck, permiso: 'ENTREGA_REALIZAR' },
   { a: '/panel/muebles', texto: 'Mis muebles', detalle: 'Crea, sube modelos y publica', Icono: Package, permiso: 'MUEBLE_CREAR' },
   { a: '/panel/pedidos', texto: 'Pedidos', detalle: 'Atiende a tus clientes', Icono: ReceiptText, permiso: 'PEDIDO_ATENDER' },
   { a: '/panel/perfil', texto: 'Mi perfil de vendedor', detalle: 'Foto, presentación y trabajos', Icono: Store, permiso: 'PERFIL_VENDEDOR_EDITAR' },
