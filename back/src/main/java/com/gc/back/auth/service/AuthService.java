@@ -10,6 +10,7 @@ import com.gc.back.auth.entity.TipoTokenCorreo;
 import com.gc.back.auth.exception.CredencialesInvalidasException;
 import com.gc.back.auth.exception.CuentaNoDisponibleException;
 import com.gc.back.correo.service.CorreoService;
+import com.gc.back.notificacion.service.NotificacionService;
 import com.gc.back.rol.entity.RolBase;
 import com.gc.back.security.JwtService;
 import com.gc.back.security.UsuarioPrincipal;
@@ -36,6 +37,7 @@ public class AuthService {
     private final UsuarioService usuarioService;
     private final TokenCorreoService tokenCorreoService;
     private final CorreoService correoService;
+    private final NotificacionService notificacionService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
@@ -43,6 +45,8 @@ public class AuthService {
     public UsuarioResponse registrar(RegistroRequest request) {
         Usuario usuario = usuarioService.crear(request.nombre(), request.email(), request.password(),
                 Set.of(RolBase.CLIENTE.name()), false);
+        notificacionService.crear(usuario, "novedad", "Bienvenido a GC-Confort",
+                "Gira cada mueble en 3D y pruébalo en tu sala con realidad aumentada.", "/catalogo");
         enviarVerificacion(usuario);
         return UsuarioResponse.desde(usuario);
     }
