@@ -1,7 +1,7 @@
 # FASE 13 · Me gusta, reseñas y mejores calificados
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso (13a hecha)
+- Estado: Hecho
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_crecimiento.md` (§5, D1, D5 y D6)
 
@@ -21,14 +21,21 @@ reseñas viven en su propia vista.
   - Respuesta del vendedor (una), ocultar reseñas (admin), resumen con distribución.
   - Orden del catálogo `mejor-calificados` y `mas-gustados`.
   - `ResenaTest` con MySQL.
-- [ ] 13b · Front
-  - Botón "me gusta" con contador en el detalle y en las tarjetas.
-  - Resumen de calificación en el detalle con enlace a `/mueble/:slug/resenas`.
-  - Vista de reseñas: promedio, barras por estrellas, filtro, lista paginada, escribir y
-    editar la propia, respuesta del vendedor.
-  - "Califica tu mueble" en el pedido entregado; sección "Mejor calificados" en Inicio.
-  - Moderación en el panel del admin.
-- [ ] 13c · Docs
+- [x] 13b · Front
+  - Módulo `front/src/resenas/`: `resenasApi`, `Estrellas` (lectura y selector),
+    `BotonMeGusta` (optimista; sin sesión lleva a `/entrar`), `ResumenResenas`,
+    `TarjetaResena`, `HojaResena` y la página `ResenasPage`.
+  - Detalle: calificación con enlace a `/mueble/:slug/resenas`, botón "me gusta" junto a
+    las existencias y sección "Reseñas" con el resumen. Solo en muebles publicados.
+  - Tarjetas del catálogo: estrella con el promedio cuando el mueble tiene reseñas.
+  - Vista de reseñas: promedio, barras de 5 a 1, filtro por estrellas, orden (recientes,
+    mejores, peores), lista paginada, escribir o editar la propia (`?escribir=1` abre la
+    hoja) y responder (vendedor del mueble o moderador).
+  - Pedido entregado: botón "Califica tu mueble". Inicio: sección "Mejor calificados"
+    (solo aparece si algún mueble tiene reseñas). Catálogo: órdenes "Mejor calificados" y
+    "Más gustados".
+  - Panel: `/panel/resenas` con `RESENA_MODERAR` para buscar, ocultar y volver a mostrar.
+- [x] 13c · Docs
 
 ## API (13a)
 
@@ -50,3 +57,5 @@ reseñas viven en su propia vista.
 
 - `./mvnw verify` en `back/`; `npm run lint` y `npm run build` en `front/`.
 - 13a: `./mvnw verify` con 20 pruebas en verde (`ResenaTest`, 2 casos).
+- 13b: `npm run lint` y `npm run build` sin errores; revisado a 390 px el detalle, la vista
+  de reseñas y el catálogo ordenado por calificación.
