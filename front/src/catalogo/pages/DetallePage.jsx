@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarClock, ChevronRight, Maximize, MessageCircle, Minimize, PackageX, Ruler, ScanLine, Share2, ShoppingBag, WifiOff } from 'lucide-react';
+import { ArrowLeft, Bell, BellOff, CalendarClock, ChevronRight, Columns3, Maximize, MessageCircle, Minimize, PackageX, Ruler, ScanLine, Share2, ShoppingBag, WifiOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
@@ -9,6 +9,8 @@ import EstadoVacio from '../../common/components/EstadoVacio';
 import ImagenMueble from '../../common/components/ImagenMueble';
 import Pagina from '../../common/components/Pagina';
 import { useConsulta } from '../../common/hooks/useConsulta';
+import { comparacion, resumenMueble, useListaLocal, vistosRecientes } from '../../common/utils/listaLocal';
+import { cuentaApi } from '../../cuenta/api/cuentaApi';
 import { precio } from '../../common/utils/formato';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
 import { metricasApi } from '../../metricas/api/metricasApi';
@@ -99,10 +101,20 @@ export default function DetallePage({ enPanel = false }) {
   const agotado = color ? color.existencias === 0 : mueble?.existencias === 0;
   const conAcciones = Boolean(mueble) && (Boolean(mueble.modeloUrl) || puedePedir);
 
-  // Una vista por sesión para las métricas (no en el panel ni en borradores).
+  // Una vista por sesión para las métricas y "vistos recientemente" (no en el panel ni en borradores).
   useEffect(() => {
-    if (!enPanel && mueble?.publicado) metricasApi.vista(mueble.id);
-  }, [enPanel, mueble?.id, mueble?.publicado]);
+    if (enPanel || !mueble?.publicado) return;
+    metricasApi.vista(mueble.id);
+    vistosRecientes.alFrente(resumenMueble(mueble));
+  }, [enPanel, mueble]);
+
+  const enComparacion = useListaLocal(comparacion);
+  const comparando = Boolean(mueble) && enComparacion.some((m) => m.id === mueble.id);
+  // "Avísame cuando haya": solo si lo que se eligió está agotado.
+  const conAviso = Boolean(usuario) && puedePedir && agotado;
+  const avisosC = useConsulta((s) => (conAviso ? cuentaApi.avisos(mueble.id, s) : Promise.resolve([])), [mueble?.id, conAviso]);
+  const esperando = (avisosC.datos ?? []).includes(color?.id ?? null);
+  const [avisando, setAvisando] = useState(false);
 
   // Pantalla completa propia (funciona también en iPhone, donde un div no entra a fullscreen).
   useEffect(() => {
@@ -116,6 +128,36 @@ export default function DetallePage({ enPanel = false }) {
       window.removeEventListener('keydown', alTeclear);
     };
   }, [ampliado]);
+
+  function alternarComparar() {
+    if (comparando) {
+      comparacion.quitar(mueble.id);
+      return;
+    }
+    if (!comparacion.agregar(resumenMueble(mueble))) {
+      notificar({ tipo: 'info', titulo: 'Ya comparas 3 muebles', texto: 'Quita uno en Comparar para agregar este.', guardar: false });
+    }
+  }
+
+  async function alternarAviso() {
+    if (!usuario) {
+      navegar('/entrar', { state: { desde: ubicacion.pathname } });
+      return;
+    }
+    setAvisando(true);
+    try {
+      const varianteId = color?.id ?? null;
+      const lista = esperando ? await cuentaApi.quitarAviso(mueble.id, varianteId) : await cuentaApi.avisame(mueble.id, varianteId);
+      avisosC.mutar(() => lista);
+      if (!esperando) {
+        notificar({ tipo: 'mueble', titulo: 'Te avisaremos por correo', texto: `Cuando vuelva a haber ${mueble.nombre}${color ? ` en ${color.nombre}` : ''}.`, guardar: false });
+      }
+    } catch (err) {
+      notificar({ tipo: 'error', titulo: 'No se pudo guardar el aviso', texto: err.message, guardar: false });
+    } finally {
+      setAvisando(false);
+    }
+  }
 
   function abrir(cual) {
     if (!usuario) {
@@ -194,9 +236,22 @@ export default function DetallePage({ enPanel = false }) {
     <div className="grid gap-2">
       {puedePedir && (
         <div className="flex gap-2">
-          <Boton variante="acento" icono={ShoppingBag} bloque disabled={agotado} onClick={() => abrir('comprar')} className="h-14 whitespace-nowrap text-[16px]">
-            {agotado ? (color ? `Agotado en ${color.nombre}` : 'Agotado por ahora') : `Comprar · ${precio(mueble.precio)}`}
-          </Boton>
+          {agotado ? (
+            <Boton
+              variante={esperando ? 'secundario' : 'acento'}
+              icono={esperando ? BellOff : Bell}
+              bloque
+              cargando={avisando}
+              onClick={alternarAviso}
+              className="h-14 whitespace-nowrap text-[15px]"
+            >
+              {esperando ? 'Ya no avisarme' : color ? `Avísame cuando haya ${color.nombre}` : 'Avísame cuando haya'}
+            </Boton>
+          ) : (
+            <Boton variante="acento" icono={ShoppingBag} bloque onClick={() => abrir('comprar')} className="h-14 whitespace-nowrap text-[16px]">
+              {`Comprar · ${precio(mueble.precio)}`}
+            </Boton>
+          )}
           <Boton variante="secundario" disabled={agotado} onClick={() => abrir('apartar')} className="size-14 shrink-0 px-0 xl:w-auto xl:px-5" aria-label="Apartar con anticipo">
             <CalendarClock className="size-[19px]" aria-hidden />
             <span className="hidden xl:inline">Apartar</span>
@@ -323,8 +378,26 @@ export default function DetallePage({ enPanel = false }) {
                   <span className="font-normal text-gris">({mueble.totalResenas})</span>
                 </Link>
               )}
+              {!enPanel && mueble.publicado && (
+                <span className="ml-auto flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={alternarComparar}
+                    aria-pressed={comparando}
+                    className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] font-semibold transition-colors ${comparando ? 'border-tinta bg-tinta text-crema' : 'border-borde bg-white hover:bg-crema'}`}
+                  >
+                    <Columns3 className="size-4" aria-hidden />
+                    {comparando ? 'Comparando' : 'Comparar'}
+                  </button>
+                  {enComparacion.length > 1 && comparando && (
+                    <Link to="/comparar" className="text-[13px] font-semibold text-terracota hover:underline">
+                      Ver {enComparacion.length}
+                    </Link>
+                  )}
+                </span>
+              )}
               {resumen && (
-                <span className="ml-auto">
+                <span className={!enPanel && mueble.publicado ? '' : 'ml-auto'}>
                   <BotonMeGusta
                     muebleId={mueble.id}
                     meGusta={resumen.meGusta}

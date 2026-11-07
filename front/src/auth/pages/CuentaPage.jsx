@@ -1,9 +1,10 @@
-import { BadgeCheck, BarChart3, ChevronRight, Download, Heart, LogIn, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Truck, Users } from 'lucide-react';
+import { BadgeCheck, BarChart3, ChevronRight, Columns3, MapPin, Pencil, Download, Heart, LogIn, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Truck, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import { confirmar } from '../../common/alertas/alertas';
 import Boton from '../../common/components/Boton';
 import EstadoVacio from '../../common/components/EstadoVacio';
+import { comparacion, useListaLocal } from '../../common/utils/listaLocal';
 import Pagina from '../../common/components/Pagina';
 import { useFavoritos } from '../../favoritos/context/FavoritosContext';
 import { instalar } from '../../pwa/estadoPwa';
@@ -57,6 +58,7 @@ export default function CuentaPage() {
   const { favoritos, enCuenta } = useFavoritos();
   const { instalable } = usePwa();
   const navegar = useNavigate();
+  const comparando = useListaLocal(comparacion);
 
   if (!usuario) {
     return (
@@ -93,11 +95,18 @@ export default function CuentaPage() {
       <motion.section initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="relative overflow-hidden rounded-[28px] bg-tinta p-5 text-crema">
         <div aria-hidden className="absolute -right-14 -top-16 size-48 rounded-full bg-[radial-gradient(circle,rgba(168,70,31,0.5),transparent_70%)]" />
         <div className="relative flex items-center gap-4">
-          <span className="grid size-14 place-items-center rounded-2xl bg-terracota font-display text-2xl font-bold">{usuario.nombre?.[0]?.toUpperCase()}</span>
-          <div className="min-w-0">
+          {usuario.fotoUrl ? (
+            <img src={usuario.fotoUrl} alt="" className="size-14 shrink-0 rounded-2xl object-cover" />
+          ) : (
+            <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-terracota font-display text-2xl font-bold">{usuario.nombre?.[0]?.toUpperCase()}</span>
+          )}
+          <div className="min-w-0 flex-1">
             <p className="truncate font-display text-lg font-semibold">{usuario.nombre}</p>
             <p className="truncate text-[13px] text-crema/60">{usuario.email}</p>
           </div>
+          <Link to="/cuenta/perfil" className="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 hover:bg-white/20" aria-label="Editar perfil">
+            <Pencil className="size-4" />
+          </Link>
         </div>
         {multiRol && (
           <div className="relative mt-4">
@@ -132,8 +141,12 @@ export default function CuentaPage() {
             i={1}
           />
         )}
+        {cuentaTienePermiso('PEDIDO_CREAR') && (
+          <Fila a="/cuenta/direcciones" Icono={MapPin} texto="Mis direcciones" detalle="Para pedir con un toque" i={2} />
+        )}
+        <Fila a="/comparar" Icono={Columns3} texto="Comparar muebles" detalle={comparando.length ? `${comparando.length} en tu lista` : 'Hasta 3, lado a lado'} i={3} />
         {accesos.map((x, i) => (
-          <Fila key={x.a} {...x} cuenta={x.permiso === 'PEDIDO_ATENDER' ? resumen.ventasPorAtender + resumen.ventasSinLeer : 0} i={i + 2} />
+          <Fila key={x.a} {...x} cuenta={x.permiso === 'PEDIDO_ATENDER' ? resumen.ventasPorAtender + resumen.ventasSinLeer : 0} i={i + 4} />
         ))}
       </ul>
 
