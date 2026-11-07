@@ -1,4 +1,5 @@
-import { Ban, CircleCheck, CircleX, PackageCheck, ShoppingBag, Store, Truck } from 'lucide-react';
+import { Ban, CalendarClock, CircleCheck, CircleX, HandCoins, PackageCheck, ShoppingBag, Store, Truck } from 'lucide-react';
+import { precio } from '../../common/utils/formato';
 import { useState } from 'react';
 import { confirmar, pedirTexto } from '../../common/alertas/alertas';
 import Boton from '../../common/components/Boton';
@@ -11,14 +12,30 @@ import { pedidosApi } from '../api/pedidosApi';
  */
 function accion(estado, p) {
   const consulta = p.estado === 'CONSULTA';
+  const apartado = p.estado === 'APARTADO';
   switch (estado) {
+    case 'APARTADO':
+      return { texto: 'Confirmar anticipo', Icono: CalendarClock, variante: 'acento', apartado: true };
     case 'SOLICITADO':
       return { texto: 'Pedir este mueble', Icono: ShoppingBag, variante: 'acento', hoja: true };
     case 'ACEPTADO':
+      if (apartado) {
+        return {
+          texto: 'Marcar liquidado',
+          Icono: HandCoins,
+          variante: 'primario',
+          exito: 'Apartado liquidado',
+          confirmar: {
+            titulo: '¿Ya liquidó el apartado?',
+            texto: `Confirma que recibiste lo que restaba (${precio(p.apartado?.resta ?? 0)}). El pedido sigue como aceptado para acordar la entrega.`,
+            boton: 'Sí, liquidado',
+          },
+        };
+      }
       return {
-        texto: 'Aceptar pedido',
+        texto: p.apartado ? 'Aceptar con pago completo' : 'Aceptar pedido',
         Icono: CircleCheck,
-        variante: 'primario',
+        variante: p.apartado ? 'secundario' : 'primario',
         exito: 'Pedido aceptado',
         confirmar: {
           titulo: '¿Aceptar el pedido?',
@@ -68,6 +85,22 @@ function accion(estado, p) {
         },
       };
     case 'CANCELADO':
+      if (apartado) {
+        return {
+          texto: 'Cancelar apartado',
+          Icono: Ban,
+          variante: 'secundario',
+          exito: 'Apartado cancelado',
+          motivo: {
+            titulo: '¿Cancelar el apartado?',
+            texto: 'Las piezas regresan al inventario. El anticipo lo resuelven entre ustedes.',
+            placeholder: p.lado === 'CLIENTE' ? 'Motivo (opcional)' : 'Motivo de la cancelación',
+            boton: 'Cancelar apartado',
+            obligatorio: p.lado !== 'CLIENTE',
+            peligro: true,
+          },
+        };
+      }
       return {
         texto: consulta ? 'Cerrar consulta' : 'Cancelar pedido',
         Icono: Ban,
@@ -88,7 +121,7 @@ function accion(estado, p) {
 }
 
 /** Botones según pedido.acciones. alSolicitar abre la hoja para convertir la consulta en pedido. */
-export default function AccionesPedido({ pedido, alActualizar, alSolicitar, className = '' }) {
+export default function AccionesPedido({ pedido, alActualizar, alSolicitar, alConfirmarApartado, className = '' }) {
   const { notificar } = useNotificaciones();
   const [enCurso, setEnCurso] = useState(null);
   const lista = pedido.acciones.map((estado) => ({ estado, ...accion(estado, pedido) })).filter((a) => a.texto);
@@ -96,6 +129,7 @@ export default function AccionesPedido({ pedido, alActualizar, alSolicitar, clas
 
   async function ejecutar(a) {
     if (a.hoja) return alSolicitar();
+    if (a.apartado) return alConfirmarApartado();
     let motivo = null;
     if (a.motivo) {
       motivo = await pedirTexto(a.motivo);

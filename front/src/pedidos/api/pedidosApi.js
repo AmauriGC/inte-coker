@@ -16,6 +16,8 @@ export const pedidosApi = {
   todos: ({ estado, buscar, size = 20 }, signal) => obtener('/pedidos', { consulta: { estado, buscar, size }, signal }),
 
   pedido: (id, signal) => obtener(`/pedidos/${id}`, { signal }),
+  /** El vendedor confirma el anticipo de un apartado: { anticipo, dias } (1 a 30). */
+  confirmarApartado: (id, { anticipo, dias }) => obtener(`/pedidos/${id}/apartado`, { metodo: 'PATCH', cuerpo: { anticipo, dias } }),
   cambiarEstado: (id, estado, motivo) => obtener(`/pedidos/${id}/estado`, { metodo: 'PATCH', cuerpo: { estado, motivo } }),
 
   /** Sin despuesDe: los últimos 200. Con despuesDe (id): solo los nuevos. */

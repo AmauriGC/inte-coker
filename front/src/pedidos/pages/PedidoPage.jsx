@@ -1,4 +1,4 @@
-import { ArrowLeft, MapPin, Phone, ReceiptText, Star, User } from 'lucide-react';
+import { ArrowLeft, CalendarClock, MapPin, Phone, ReceiptText, Star, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useState } from 'react';
 import { Link, useParams } from 'react-router';
@@ -15,6 +15,7 @@ import AccionesPedido from '../components/AccionesPedido';
 import ChipEstado from '../components/ChipEstado';
 import Conversacion from '../components/Conversacion';
 import HojaComprar from '../components/HojaComprar';
+import HojaConfirmarApartado from '../components/HojaConfirmarApartado';
 import LineaTiempo from '../components/LineaTiempo';
 import { usePedidos } from '../context/PedidosContext';
 import { ENTREGAS } from '../estados';
@@ -31,6 +32,7 @@ export default function PedidoPage({ enPanel = false }) {
   const { refrescar } = usePedidos();
   const { notificar } = useNotificaciones();
   const [convertir, setConvertir] = useState(false);
+  const [confirmando, setConfirmando] = useState(false);
   const { datos: pedido, error, recargar, mutar } = useConsulta((s) => pedidosApi.pedido(id, s), [id]);
   const salida = enPanel ? '/panel/pedidos' : '/pedidos';
 
@@ -115,6 +117,8 @@ export default function PedidoPage({ enPanel = false }) {
             )}
           </motion.section>
 
+          {pedido.apartado && <TarjetaApartado pedido={pedido} />}
+
           <motion.section {...aparece(1)} className="rounded-[24px] border border-linea bg-white p-4">
             <LineaTiempo pedido={pedido} />
           </motion.section>
@@ -151,7 +155,7 @@ export default function PedidoPage({ enPanel = false }) {
             {!entrega && <Dato Icono={MapPin} etiqueta="Entrega" valor="Se define al convertir la consulta en pedido" />}
           </motion.section>
 
-          <AccionesPedido pedido={pedido} alActualizar={actualizar} alSolicitar={() => setConvertir(true)} />
+          <AccionesPedido pedido={pedido} alActualizar={actualizar} alSolicitar={() => setConvertir(true)} alConfirmarApartado={() => setConfirmando(true)} />
         </div>
 
         <Conversacion
@@ -172,6 +176,19 @@ export default function PedidoPage({ enPanel = false }) {
             setConvertir(false);
             actualizar(nuevo);
             notificar({ tipo: 'pedido', titulo: 'Pedido enviado', texto: `${nuevo.folio}: el vendedor ya puede aceptarlo.` });
+          }}
+        />
+      )}
+
+      {pedido.acciones.includes('APARTADO') && (
+        <HojaConfirmarApartado
+          abierta={confirmando}
+          alCerrar={() => setConfirmando(false)}
+          pedido={pedido}
+          alListo={(nuevo) => {
+            setConfirmando(false);
+            actualizar(nuevo);
+            notificar({ tipo: 'exito', titulo: 'Mueble apartado', texto: `${nuevo.folio}: las piezas quedan reservadas.`, guardar: false });
           }}
         />
       )}
@@ -203,5 +220,49 @@ function Dato({ Icono, etiqueta, valor }) {
         <div className="break-words text-[14px] text-tinta">{valor}</div>
       </div>
     </div>
+  );
+}
+
+const fechaLimite = new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' });
+
+/** Anticipo, lo que resta y la fecha límite; antes de confirmar, explica qué sigue. */
+function TarjetaApartado({ pedido }) {
+  const { anticipo, resta, hasta } = pedido.apartado;
+  const abierto = pedido.estado === 'APARTADO';
+  const [ahora] = useState(() => Date.now());
+  const horas = hasta ? (new Date(hasta).getTime() - ahora) / 3600000 : null;
+  return (
+    <motion.section {...aparece(1)} className="rounded-[24px] border border-[#E2CF9F] bg-[#F8F0DD] p-4">
+      <p className="flex items-center gap-2 font-display text-[15.5px] font-semibold text-[#6B4A12]">
+        <CalendarClock className="size-[18px]" aria-hidden /> {anticipo == null ? 'Apartado por confirmar' : 'Apartado con anticipo'}
+      </p>
+      {anticipo == null ? (
+        <p className="mt-1.5 text-[13.5px] leading-relaxed text-texto">
+          {pedido.lado === 'VENDEDOR'
+            ? 'Acuerda el anticipo con el cliente en la conversación. Cuando lo recibas, confírmalo para reservar las piezas.'
+            : 'Acuerda el anticipo con el vendedor en la conversación. Cuando lo confirme, las piezas quedan reservadas para ti.'}
+        </p>
+      ) : (
+        <dl className="mt-2.5 grid grid-cols-2 gap-2 text-[13px]">
+          <div className="rounded-2xl bg-white/70 px-3 py-2">
+            <dt className="text-gris">Anticipo</dt>
+            <dd className="font-display text-[17px] font-bold">{precio(anticipo)}</dd>
+          </div>
+          <div className="rounded-2xl bg-white/70 px-3 py-2">
+            <dt className="text-gris">Resta</dt>
+            <dd className="font-display text-[17px] font-bold">{precio(resta)}</dd>
+          </div>
+          {hasta && (
+            <div className="col-span-2 rounded-2xl bg-white/70 px-3 py-2">
+              <dt className="text-gris">{abierto ? 'Liquida antes del' : 'Fecha límite'}</dt>
+              <dd className="font-semibold first-letter:uppercase">
+                {fechaLimite.format(new Date(hasta))}
+                {abierto && horas !== null && horas < 24 && <span className="ml-1.5 text-[#8C1D17]">· vence pronto</span>}
+              </dd>
+            </div>
+          )}
+        </dl>
+      )}
+    </motion.section>
   );
 }
