@@ -48,6 +48,9 @@ public class SecurityConfig {
             "/api/muebles/*/resenas/resumen",
             "/api/categorias",
             "/api/categorias/*",
+            "/api/vendedores/*",
+            "/api/vendedores/*/muebles",
+            "/api/vendedores/*/trabajos",
             "/uploads/**"
     };
 
@@ -69,6 +72,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/muebles/gestion").authenticated()
+                        // "yo" no es un slug: mi perfil siempre pide sesión (401 sin token).
+                        .requestMatchers("/api/vendedores/yo", "/api/vendedores/yo/**").authenticated()
                         .requestMatchers(HttpMethod.GET, LECTURAS_PUBLICAS).permitAll()
                         .requestMatchers(RUTAS_PUBLICAS).permitAll()
                         .anyRequest().authenticated())
