@@ -116,7 +116,7 @@ export default function MiPerfilPage() {
               </div>
             </div>
             <div className="flex flex-wrap items-end gap-3 px-4 pb-4">
-              <AvatarVendedor nombre={perfil.nombre} fotoUrl={perfil.fotoUrl} className="-mt-10 size-20 text-[30px] ring-4 ring-white" />
+              <AvatarVendedor nombre={perfil.nombre} fotoUrl={perfil.fotoUrl} className="relative z-10 -mt-10 size-20 text-[30px] ring-4 ring-white" />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-display text-[18px] font-bold">{perfil.nombre}</p>
                 <p className="text-[12.5px] text-gris">gc-confort/vendedor/{perfil.slug}</p>
