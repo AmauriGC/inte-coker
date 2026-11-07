@@ -14,6 +14,7 @@ import com.gc.back.mueble.dto.MuebleResponse;
 import com.gc.back.mueble.dto.VarianteRequest;
 import com.gc.back.mueble.entity.Mueble;
 import com.gc.back.mueble.entity.VarianteColor;
+import com.gc.back.mueble.event.ExistenciasCambiadas;
 import com.gc.back.mueble.exception.MuebleAjenoException;
 import com.gc.back.mueble.repository.MuebleRepository;
 import com.gc.back.security.UsuarioPrincipal;
@@ -21,6 +22,7 @@ import com.gc.back.usuario.service.UsuarioService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,7 @@ public class MuebleService {
     private final AlmacenamientoService almacenamientoService;
     private final EntityManager entityManager;
     private final List<ReglaBorradoMueble> reglasBorrado;
+    private final ApplicationEventPublisher eventos;
 
     @Transactional(readOnly = true)
     public PaginaResponse<MuebleResponse> listarPublicados(FiltroCatalogoRequest filtro, Pageable pageable) {
@@ -91,6 +94,7 @@ public class MuebleService {
     public MuebleResponse actualizar(Long id, MuebleRequest request, UsuarioPrincipal actual) {
         Mueble mueble = obtenerPropio(id, actual);
         aplicar(mueble, request);
+        eventos.publishEvent(new ExistenciasCambiadas(mueble));
         return MuebleResponse.desde(mueble);
     }
 
@@ -101,6 +105,7 @@ public class MuebleService {
             throw new ReglaNegocioException("Sube el modelo 3D y la imagen antes de publicar el mueble");
         }
         mueble.setPublicado(request.publicado());
+        eventos.publishEvent(new ExistenciasCambiadas(mueble));
         return MuebleResponse.desde(mueble);
     }
 
@@ -172,12 +177,13 @@ public class MuebleService {
         entityManager.refresh(mueble, LockModeType.PESSIMISTIC_WRITE);
         if (!mueble.tieneVariantes()) {
             mueble.setExistencias(Math.min(mueble.getExistencias() + cantidad, MAX_EXISTENCIAS));
-            return;
+        } else {
+            variante(mueble, varianteId).ifPresent(v -> {
+                v.setExistencias(Math.min(v.getExistencias() + cantidad, MAX_EXISTENCIAS));
+                mueble.recalcularExistencias();
+            });
         }
-        variante(mueble, varianteId).ifPresent(v -> {
-            v.setExistencias(Math.min(v.getExistencias() + cantidad, MAX_EXISTENCIAS));
-            mueble.recalcularExistencias();
-        });
+        eventos.publishEvent(new ExistenciasCambiadas(mueble));
     }
 
     /** El color del mueble con ese id, si existe. */
