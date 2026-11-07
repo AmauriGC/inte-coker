@@ -1,7 +1,7 @@
 # FASE 16 · Apartados con anticipo
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso (16a hecha)
+- Estado: Hecho
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_crecimiento.md` (§8, D2 y D9)
 
@@ -33,12 +33,26 @@ vence solo y las existencias regresan.
     ENUM nativo de MySQL a VARCHAR(20); la entidad ya los mapea así para que un estado nuevo
     no rompa la base.
   - `ApartadoTest` con MySQL (2 casos).
-- [ ] 16b · Front
-  - Botón "Apartar" en el detalle y hoja con cantidad, color y mensaje.
-  - Fecha límite y anticipo visibles en el pedido; diálogo del vendedor para confirmarlos.
-- [ ] 16c · Docs
+- [x] 16b · Front
+  - Botón "Apartar" en el detalle (entre Comprar y Preguntar; con texto desde `xl`). Abre
+    `HojaComprar` con `apartar`: título "Apartar con anticipo", aviso de cómo se acuerda
+    el anticipo y envío de `apartar: true`.
+  - `estados.js`: estados `APARTADO` y `VENCIDO`; `pasosDe(pedido)` agrega el paso
+    "Apartado" a la línea de tiempo cuando el pedido es un apartado. `LineaTiempo` avisa
+    cuando venció.
+  - `AccionesPedido`: "Confirmar anticipo" (abre `HojaConfirmarApartado`), "Marcar
+    liquidado", "Aceptar con pago completo" y "Cancelar apartado" (motivo obligatorio
+    para el vendedor).
+  - `HojaConfirmarApartado`: anticipo (30 % del total por omisión), plazo de 3, 7, 15 o
+    30 días, lo que resta y la fecha límite.
+  - `PedidoPage`: tarjeta del apartado con anticipo, resta y fecha límite; resalta
+    cuando faltan menos de 24 horas.
+- [x] 16c · Docs
+  - Este documento y el maestro.
 
 ## Verificación
 
 - `./mvnw verify` en `back/`; `npm run lint` y `npm run build` en `front/`.
 - 16a: `./mvnw verify` con 26 pruebas en verde.
+- 16b: lint y build en verde; revisado en el navegador a 390, 1000 y 1300 px.
+- Requiere reiniciar el back para que `AjustesEsquema` convierta las columnas.
