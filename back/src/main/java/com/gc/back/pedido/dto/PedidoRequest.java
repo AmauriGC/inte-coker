@@ -1,5 +1,6 @@
 package com.gc.back.pedido.dto;
 
+import com.gc.back.pedido.entity.MetodoPago;
 import com.gc.back.pedido.entity.TipoEntrega;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -19,6 +20,9 @@ public record PedidoRequest(
 
         @NotNull(message = "Elige cómo quieres recibirlo")
         TipoEntrega tipoEntrega,
+
+        @NotNull(message = "Elige cómo vas a pagar")
+        MetodoPago metodoPago,
 
         @Size(max = 100, message = "El nombre admite hasta 100 caracteres")
         String nombreRecibe,

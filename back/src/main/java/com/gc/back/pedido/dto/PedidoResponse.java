@@ -3,6 +3,7 @@ package com.gc.back.pedido.dto;
 import com.gc.back.config.RecursosEstaticosConfig;
 import com.gc.back.mueble.entity.Mueble;
 import com.gc.back.pedido.entity.EstadoPedido;
+import com.gc.back.pedido.entity.MetodoPago;
 import com.gc.back.pedido.entity.Pedido;
 import com.gc.back.pedido.entity.TipoEntrega;
 
@@ -29,13 +30,16 @@ public record PedidoResponse(
         int cantidad,
         BigDecimal total,
         TipoEntrega tipoEntrega,
+        MetodoPago metodoPago,
         Entrega entrega,
+        Participante transportista,
         String motivoCierre,
         Instant creadoEn,
         Instant solicitadoEn,
         Instant aceptadoEn,
         Instant enCaminoEn,
         Instant entregadoEn,
+        Instant cobradoEn,
         Instant cerradoEn,
         Instant actividadEn,
         Lado lado,
@@ -83,9 +87,11 @@ public record PedidoResponse(
                 !p.isApartado() ? null : new Apartado(p.getAnticipo(),
                         p.getAnticipo() == null ? null : p.getTotal().subtract(p.getAnticipo()),
                         p.getApartadoHasta(), p.getApartadoEn()),
-                p.getPrecioUnitario(), p.getCantidad(), p.getTotal(), p.getTipoEntrega(),
+                p.getPrecioUnitario(), p.getCantidad(), p.getTotal(), p.getTipoEntrega(), p.getMetodoPago(),
                 new Entrega(p.getNombreRecibe(), p.getTelefono(), p.getDireccion(), p.getCiudad(), p.getCodigoPostal()),
+                p.getTransportista() == null ? null
+                        : new Participante(p.getTransportista().getId(), p.getTransportista().getNombre()),
                 p.getMotivoCierre(), p.getCreadoEn(), p.getSolicitadoEn(), p.getAceptadoEn(), p.getEnCaminoEn(),
-                p.getEntregadoEn(), p.getCerradoEn(), p.getActividadEn(), lado, acciones, puedeEscribir, sinLeer);
+                p.getEntregadoEn(), p.getCobradoEn(), p.getCerradoEn(), p.getActividadEn(), lado, acciones, puedeEscribir, sinLeer);
     }
 }
