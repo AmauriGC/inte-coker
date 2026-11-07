@@ -11,6 +11,7 @@ import Pagina from '../../common/components/Pagina';
 import { useConsulta } from '../../common/hooks/useConsulta';
 import { precio } from '../../common/utils/formato';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
+import { metricasApi } from '../../metricas/api/metricasApi';
 import HojaComprar from '../../pedidos/components/HojaComprar';
 import HojaPreguntar from '../../pedidos/components/HojaPreguntar';
 import { resenasApi } from '../../resenas/api/resenasApi';
@@ -97,6 +98,11 @@ export default function DetallePage({ enPanel = false }) {
   const color = variantes.find((v) => v.id === colorId) ?? null;
   const agotado = color ? color.existencias === 0 : mueble?.existencias === 0;
   const conAcciones = Boolean(mueble) && (Boolean(mueble.modeloUrl) || puedePedir);
+
+  // Una vista por sesión para las métricas (no en el panel ni en borradores).
+  useEffect(() => {
+    if (!enPanel && mueble?.publicado) metricasApi.vista(mueble.id);
+  }, [enPanel, mueble?.id, mueble?.publicado]);
 
   // Pantalla completa propia (funciona también en iPhone, donde un div no entra a fullscreen).
   useEffect(() => {
