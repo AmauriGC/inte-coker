@@ -11,6 +11,21 @@ function cargarModelViewer() {
   return promesaVisor;
 }
 
+/** "#RRGGBB" (sRGB) a RGBA lineal, que es como glTF guarda baseColorFactor. */
+function hexALineal(hex) {
+  const canal = (i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  return [canal(1), canal(3), canal(5), 1];
+}
+
+/** Material que se tiñe: GC_Color si el modelo lo trae; si no, el primero. */
+function materialTenible(el) {
+  const materiales = el?.model?.materials ?? [];
+  return materiales.find((m) => m.name === 'GC_Color') ?? materiales[0] ?? null;
+}
+
 /** Líneas de cota encima del visor (tablero Detalle, botón "Medidas"). */
 function Cotas({ mueble }) {
   const linea = 'absolute bg-tinta/70';
@@ -36,9 +51,10 @@ function Cotas({ mueble }) {
 
 /**
  * Visor 3D con model-viewer: girar, zoom y AR a escala real (ar-scale="fixed").
+ * color: "#RRGGBB" para teñir en vivo el material GC_Color (null = color original del modelo).
  * Expone por ref: verEnAR() → true si abrió AR, false si el dispositivo no lo admite.
  */
-export default function Visor3D({ mueble, mostrarMedidas = false, ref, className = '' }) {
+export default function Visor3D({ mueble, mostrarMedidas = false, color = null, ref, className = '' }) {
   const visor = useRef(null);
   const [listo, setListo] = useState(false);
   const [progreso, setProgreso] = useState(0);
@@ -46,6 +62,7 @@ export default function Visor3D({ mueble, mostrarMedidas = false, ref, className
   const [interactuo, setInteractuo] = useState(false);
   const { tinte } = estiloCategoria(mueble.categoria?.slug);
   const src = urlArchivo(mueble.modeloUrl);
+  const original = useRef(null);
 
   useEffect(() => {
     let vivo = true;
@@ -59,7 +76,10 @@ export default function Visor3D({ mueble, mostrarMedidas = false, ref, className
     const el = visor.current;
     if (!listo || !el) return undefined;
     const alProgreso = (e) => setProgreso(e.detail.totalProgress ?? 0);
-    const alCargar = () => setCargado(true);
+    const alCargar = () => {
+      original.current = null;
+      setCargado(true);
+    };
     const alMover = (e) => e.detail?.source === 'user-interaction' && setInteractuo(true);
     el.addEventListener('progress', alProgreso);
     el.addEventListener('load', alCargar);
@@ -70,6 +90,15 @@ export default function Visor3D({ mueble, mostrarMedidas = false, ref, className
       el.removeEventListener('camera-change', alMover);
     };
   }, [listo, src]);
+
+  // Cambia el color sin recargar el modelo; guarda el original para volver a él.
+  useEffect(() => {
+    if (!cargado) return;
+    const pbr = materialTenible(visor.current)?.pbrMetallicRoughness;
+    if (!pbr) return;
+    original.current ??= [...pbr.baseColorFactor];
+    pbr.setBaseColorFactor(color ? hexALineal(color) : original.current);
+  }, [cargado, color]);
 
   useImperativeHandle(ref, () => ({
     verEnAR() {

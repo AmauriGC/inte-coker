@@ -4,9 +4,11 @@ import Campo from '../../common/components/Campo';
 import Selector from '../../common/components/Selector';
 import { useEnvio } from '../../common/hooks/useEnvio';
 import { vendedorApi } from '../api/vendedorApi';
+import { colorNuevo } from '../../common/utils/colores';
+import EditorColores from './EditorColores';
 import SubidaArchivo from './SubidaArchivo';
 
-const VACIO = { nombre: '', descripcion: '', precio: '', anchoCm: '', fondoCm: '', altoCm: '', materiales: '', existencias: '1', categoriaId: '' };
+const VACIO = { nombre: '', descripcion: '', precio: '', anchoCm: '', fondoCm: '', altoCm: '', materiales: '', existencias: '1', categoriaId: '', colores: [] };
 
 function desde(mueble) {
   if (!mueble) return VACIO;
@@ -20,6 +22,7 @@ function desde(mueble) {
     materiales: mueble.materiales ?? '',
     existencias: mueble.existencias ?? '',
     categoriaId: mueble.categoria?.id ?? '',
+    colores: (mueble.variantes ?? []).map((v) => colorNuevo({ id: v.id, nombre: v.nombre, hex: v.hex, existencias: String(v.existencias) })),
   };
 }
 
@@ -39,6 +42,10 @@ export default function FormularioMueble({ mueble, categorias, alGuardar, alCamb
     onChange: (e) => setDatos((d) => ({ ...d, [clave]: e.target.value })),
   });
 
+  // Con colores, las existencias son la suma (el back también la calcula).
+  const conColores = datos.colores.length > 0;
+  const suma = datos.colores.reduce((t, c) => t + (Number(c.existencias) || 0), 0);
+
   async function alEnviar(e) {
     e.preventDefault();
     alEstado?.(true);
@@ -50,8 +57,9 @@ export default function FormularioMueble({ mueble, categorias, alGuardar, alCamb
       fondoCm: numero(datos.fondoCm),
       altoCm: numero(datos.altoCm),
       materiales: datos.materiales.trim() || null,
-      existencias: numero(datos.existencias),
+      existencias: conColores ? suma : numero(datos.existencias),
       categoriaId: numero(datos.categoriaId),
+      variantes: datos.colores.map((c) => ({ id: c.id, nombre: c.nombre.trim(), hex: c.hex, existencias: numero(c.existencias) })),
     });
     alEstado?.(false);
     if (r.ok) alGuardar(r.datos, !mueble?.id);
@@ -68,9 +76,14 @@ export default function FormularioMueble({ mueble, categorias, alGuardar, alCamb
         <Campo etiqueta="Nombre" placeholder="Sofá Nube" {...campo('nombre')} required />
         <div className="grid grid-cols-2 gap-3">
           <Campo etiqueta="Precio (MXN)" type="number" inputMode="decimal" min="0" step="0.01" placeholder="18990" {...campo('precio')} />
-          <Campo etiqueta="Existencias" type="number" inputMode="numeric" min="0" max="9999" step="1" placeholder="5" {...campo('existencias')} />
+          {conColores ? (
+            <Campo etiqueta="Existencias" value={suma} readOnly ayuda="Suma de los colores" />
+          ) : (
+            <Campo etiqueta="Existencias" type="number" inputMode="numeric" min="0" max="9999" step="1" placeholder="5" {...campo('existencias')} />
+          )}
         </div>
         <p className="-mt-2 text-[12.5px] text-gris">Las existencias bajan solas cuando aceptas un pedido; con 0 se muestra como agotado.</p>
+        <EditorColores colores={datos.colores} alCambiar={(colores) => setDatos((d) => ({ ...d, colores }))} errores={errores} />
         <Selector etiqueta="Categoría" opciones={opciones} {...campo('categoriaId')} />
         <fieldset>
           <legend className="mb-1.5 text-[13px] font-semibold text-texto">Medidas reales (cm)</legend>

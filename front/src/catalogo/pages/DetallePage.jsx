@@ -20,6 +20,8 @@ import Estrellas from '../../resenas/components/Estrellas';
 import ResumenResenas from '../../resenas/components/ResumenResenas';
 import { catalogoApi } from '../api/catalogoApi';
 import BotonFavorito from '../components/BotonFavorito';
+import { colorInicial } from '../../common/utils/colores';
+import MuestrasColor from '../components/MuestrasColor';
 import Visor3D from '../components/Visor3D';
 
 const aparece = (i) => ({
@@ -78,6 +80,7 @@ export default function DetallePage({ enPanel = false }) {
   const { notificar } = useNotificaciones();
   const { usuario, cuentaTienePermiso } = useSesion();
   const [hoja, setHoja] = useState(null);
+  const [colorElegido, setColorElegido] = useState(null);
   const cerrarHoja = useCallback(() => setHoja(null), []);
   const { datos: mueble, error, cargando } = useConsulta((s) => catalogoApi.mueble(slug, s), [slug]);
   // Reseñas y me gusta solo de muebles publicados (un borrador no tiene).
@@ -88,7 +91,11 @@ export default function DetallePage({ enPanel = false }) {
   // Comprar es de la cuenta (no del rol activo); nadie compra lo que vende.
   const esMio = Boolean(usuario) && mueble?.vendedor?.id === usuario.id;
   const puedePedir = !enPanel && Boolean(mueble?.publicado) && !esMio && (!usuario || cuentaTienePermiso('PEDIDO_CREAR'));
-  const agotado = mueble?.existencias === 0;
+  // Con colores, lo que se compra (y lo que se ve en el visor) es el color elegido.
+  const variantes = mueble?.variantes ?? [];
+  const colorId = colorInicial(variantes, colorElegido);
+  const color = variantes.find((v) => v.id === colorId) ?? null;
+  const agotado = color ? color.existencias === 0 : mueble?.existencias === 0;
   const conAcciones = Boolean(mueble) && (Boolean(mueble.modeloUrl) || puedePedir);
 
   // Pantalla completa propia (funciona también en iPhone, donde un div no entra a fullscreen).
@@ -182,7 +189,7 @@ export default function DetallePage({ enPanel = false }) {
       {puedePedir && (
         <div className="flex gap-2">
           <Boton variante="acento" icono={ShoppingBag} bloque disabled={agotado} onClick={() => abrir('comprar')} className="h-14 text-[16px]">
-            {agotado ? 'Agotado por ahora' : `Comprar · ${precio(mueble.precio)}`}
+            {agotado ? (color ? `Agotado en ${color.nombre}` : 'Agotado por ahora') : `Comprar · ${precio(mueble.precio)}`}
           </Boton>
           <Boton variante="secundario" onClick={() => abrir('preguntar')} className="size-14 shrink-0 px-0 md:w-auto md:px-5" aria-label="Preguntar al vendedor">
             <MessageCircle className="size-[19px]" aria-hidden />
@@ -218,7 +225,7 @@ export default function DetallePage({ enPanel = false }) {
           {cargando || !mueble ? (
             <div className={`esqueleto h-full ${redondeo}`} />
           ) : mueble.modeloUrl ? (
-            <Visor3D ref={visor} mueble={mueble} mostrarMedidas={medidas} className={`h-full ${redondeo}`} />
+            <Visor3D ref={visor} mueble={mueble} mostrarMedidas={medidas} color={color?.hex} className={`h-full ${redondeo}`} />
           ) : (
             <ImagenMueble mueble={mueble} prioridad redondeo={redondeo} className="h-full" />
           )}
@@ -249,6 +256,12 @@ export default function DetallePage({ enPanel = false }) {
               </div>
             )}
           </div>
+
+          {mueble?.modeloUrl && variantes.length > 0 && (
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-1.5 shadow-[0_6px_18px_-8px_rgba(29,27,24,0.3)] backdrop-blur md:left-5">
+              <MuestrasColor vertical variantes={variantes} valor={colorId} alElegir={setColorElegido} etiqueta="Color del mueble en 3D" />
+            </div>
+          )}
 
           {mueble?.modeloUrl && (
             <div className="absolute right-4 top-[calc(env(safe-area-inset-top)+76px)] flex flex-col gap-1.5 rounded-full bg-white/90 p-1.5 shadow-[0_6px_18px_-8px_rgba(29,27,24,0.3)] backdrop-blur md:right-5 md:top-20">
@@ -314,6 +327,21 @@ export default function DetallePage({ enPanel = false }) {
                 <span className="inline-flex rounded-full bg-crema-2 px-3 py-1 text-[12px] font-semibold text-texto">Borrador · solo lo ves tú</span>
               )}
             </motion.div>
+
+            {color && (
+              <motion.div {...aparece(2)} className="mt-4 rounded-[18px] border border-linea bg-white px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-[13.5px]">
+                    <span className="text-gris">Color </span>
+                    <strong className="font-display">{color.nombre}</strong>
+                  </p>
+                  <Existencias n={color.existencias} />
+                </div>
+                <div className="mt-2.5">
+                  <MuestrasColor variantes={variantes} valor={colorId} alElegir={setColorElegido} />
+                </div>
+              </motion.div>
+            )}
 
             <motion.button
               {...aparece(2)}
@@ -409,7 +437,14 @@ export default function DetallePage({ enPanel = false }) {
 
             {puedePedir && (
               <>
-                <HojaComprar abierta={hoja === 'comprar'} alCerrar={cerrarHoja} mueble={mueble} alListo={(p) => alPedir(p, false)} />
+                <HojaComprar
+                  abierta={hoja === 'comprar'}
+                  alCerrar={cerrarHoja}
+                  mueble={mueble}
+                  color={colorId}
+                  alCambiarColor={setColorElegido}
+                  alListo={(p) => alPedir(p, false)}
+                />
                 <HojaPreguntar abierta={hoja === 'preguntar'} alCerrar={cerrarHoja} mueble={mueble} alListo={(p) => alPedir(p, true)} />
               </>
             )}

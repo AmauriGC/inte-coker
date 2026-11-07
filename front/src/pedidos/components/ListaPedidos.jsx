@@ -36,6 +36,7 @@ export default function ListaPedidos({ pedidos, base }) {
                 </div>
                 <p className="mt-0.5 truncate text-[12.5px] text-gris">
                   {p.folio} · {otro}
+                  {p.color && ` · ${p.color.nombre}`}
                 </p>
                 <p className="mt-1 flex items-center justify-between gap-2 text-[13px]">
                   <span className="font-bold">

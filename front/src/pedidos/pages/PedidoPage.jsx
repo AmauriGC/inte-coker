@@ -94,6 +94,12 @@ export default function PedidoPage({ enPanel = false }) {
                 ) : (
                   <p className="truncate font-display text-[17px] font-semibold">{mueble.nombre}</p>
                 )}
+                {pedido.color && (
+                  <p className="mt-0.5 inline-flex items-center gap-1.5 text-[13px] font-semibold text-texto">
+                    <span className="size-3.5 rounded-full border border-black/10" style={{ backgroundColor: pedido.color.hex }} aria-hidden />
+                    Color {pedido.color.nombre}
+                  </p>
+                )}
                 <p className="text-[13px] text-gris">
                   {pedido.cantidad} × {precio(pedido.precioUnitario)}
                   {mueble.id === null && ' · ya no está en el catálogo'}
@@ -103,7 +109,7 @@ export default function PedidoPage({ enPanel = false }) {
             </div>
             {pedido.lado === 'VENDEDOR' && mueble.existencias != null && ['SOLICITADO', 'ACEPTADO'].includes(pedido.estado) && (
               <p className={`mt-3 rounded-xl px-3 py-2 text-[12.5px] font-semibold ${mueble.existencias < pedido.cantidad && pedido.estado === 'SOLICITADO' ? 'bg-[#F6DAD7] text-[#8C1D17]' : 'bg-crema text-texto'}`}>
-                Existencias actuales: {mueble.existencias}
+                Existencias actuales del mueble: {mueble.existencias}
                 {pedido.estado === 'SOLICITADO' && mueble.existencias < pedido.cantidad && ' · no alcanzan para este pedido'}
               </p>
             )}
