@@ -20,7 +20,9 @@ public enum PermisoBase {
     RESENA_CREAR("Calificar y reseñar los muebles que recibí"),
     RESENA_MODERAR("Ver todas las reseñas y ocultarlas"),
     PERFIL_VENDEDOR_EDITAR("Editar mi perfil público de vendedor y mi galería de trabajos"),
-    ENTREGA_REALIZAR("Ver las entregas que me asignan y confirmar la entrega y el cobro");
+    ENTREGA_REALIZAR("Ver las entregas que me asignan y confirmar la entrega y el cobro"),
+    METRICA_VER("Ver las métricas de mis muebles: ventas, zonas, vistas y conversión"),
+    METRICA_GLOBAL("Ver las métricas de toda la tienda");
 
     private final String descripcion;
 
