@@ -1,5 +1,6 @@
 package com.gc.back.usuario.dto;
 
+import com.gc.back.config.RecursosEstaticosConfig;
 import com.gc.back.rol.entity.Permiso;
 import com.gc.back.rol.entity.Rol;
 import com.gc.back.usuario.entity.Usuario;
@@ -12,7 +13,7 @@ import java.util.TreeMap;
 /**
  * Usuario para el front. permisos = todos los de sus roles (lo que valida el back).
  * permisosPorRol = los de cada rol por separado: el front los usa para el selector de rol
- * cuando la persona tiene más de uno (solo filtra la interfaz).
+ * cuando la persona tiene más de uno (solo filtra la interfaz). fotoUrl: foto de la cuenta o null.
  */
 public record UsuarioResponse(
         Long id,
@@ -23,7 +24,8 @@ public record UsuarioResponse(
         List<String> roles,
         List<String> permisos,
         Map<String, List<String>> permisosPorRol,
-        Instant creadoEn
+        Instant creadoEn,
+        String fotoUrl
 ) {
 
     public static UsuarioResponse desde(Usuario usuario) {
@@ -46,7 +48,8 @@ public record UsuarioResponse(
                 roles,
                 permisos,
                 permisosPorRol,
-                usuario.getCreadoEn()
+                usuario.getCreadoEn(),
+                usuario.getFotoRuta() == null ? null : RecursosEstaticosConfig.RUTA_PUBLICA + usuario.getFotoRuta()
         );
     }
 }
