@@ -1,4 +1,4 @@
-import { Ban, CalendarClock, CircleCheck, CircleX, Hourglass, MessageCircleQuestion, PackageCheck, ShoppingBag, Store, Truck } from 'lucide-react';
+import { Ban, Banknote, CalendarClock, CreditCard, CircleCheck, CircleX, Hourglass, MessageCircleQuestion, PackageCheck, ShoppingBag, Store, Truck } from 'lucide-react';
 
 /** Texto, icono y colores de cada estado del pedido (mismos tonos que los avisos). */
 export const ESTADOS = {
@@ -41,6 +41,12 @@ export const OPCIONES_ESTADO = [
   { valor: '', texto: 'Todos los estados' },
   ...Object.entries(ESTADOS).map(([valor, { texto }]) => ({ valor, texto })),
 ];
+
+/** Cómo paga el cliente al recibirlo. */
+export const PAGOS = {
+  EFECTIVO: { texto: 'Efectivo', Icono: Banknote },
+  TARJETA: { texto: 'Tarjeta', Icono: CreditCard },
+};
 
 export const ENTREGAS = {
   DOMICILIO: { texto: 'Envío a domicilio', Icono: Truck },

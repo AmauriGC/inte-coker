@@ -60,6 +60,9 @@ function accion(estado, p) {
       };
     case 'EN_CAMINO': {
       const recoger = p.tipoEntrega === 'RECOGER';
+      if (!recoger && p.lado === 'VENDEDOR') {
+        return { texto: 'Enviar pedido', Icono: Truck, variante: 'primario', enviar: true };
+      }
       return {
         texto: recoger ? 'Listo para recoger' : 'Marcar en camino',
         Icono: recoger ? Store : Truck,
@@ -121,7 +124,7 @@ function accion(estado, p) {
 }
 
 /** Botones según pedido.acciones. alSolicitar abre la hoja para convertir la consulta en pedido. */
-export default function AccionesPedido({ pedido, alActualizar, alSolicitar, alConfirmarApartado, className = '' }) {
+export default function AccionesPedido({ pedido, alActualizar, alSolicitar, alConfirmarApartado, alEnviar, className = '' }) {
   const { notificar } = useNotificaciones();
   const [enCurso, setEnCurso] = useState(null);
   const lista = pedido.acciones.map((estado) => ({ estado, ...accion(estado, pedido) })).filter((a) => a.texto);
@@ -130,6 +133,7 @@ export default function AccionesPedido({ pedido, alActualizar, alSolicitar, alCo
   async function ejecutar(a) {
     if (a.hoja) return alSolicitar();
     if (a.apartado) return alConfirmarApartado();
+    if (a.enviar) return alEnviar();
     let motivo = null;
     if (a.motivo) {
       motivo = await pedirTexto(a.motivo);
