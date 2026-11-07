@@ -13,6 +13,19 @@ import java.util.Optional;
 
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
+    interface ResumenVendedor {
+        Double getPromedio();
+
+        Long getTotal();
+    }
+
+    /** Promedio y total de las reseñas visibles de todos los muebles de un vendedor. */
+    @Query("""
+            select avg(r.estrellas) as promedio, count(r) as total from Resena r
+            where r.mueble.vendedor.id = :vendedorId and r.oculta = false
+            """)
+    ResumenVendedor resumenDeVendedor(@Param("vendedorId") Long vendedorId);
+
     /** Cuántas reseñas visibles hay de cada número de estrellas. */
     interface ConteoEstrellas {
         int getEstrellas();

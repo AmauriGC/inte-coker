@@ -36,7 +36,7 @@ public record MuebleResponse(
     public record CategoriaResumen(Long id, String nombre, String slug) {
     }
 
-    public record VendedorResumen(Long id, String nombre) {
+    public record VendedorResumen(Long id, String nombre, String slug, String fotoUrl) {
     }
 
     public static MuebleResponse desde(Mueble m) {
@@ -46,7 +46,8 @@ public record MuebleResponse(
                 m.getTotalMeGusta(), m.getTotalResenas(), m.getCalificacion(), m.isPublicado(),
                 url(m.getModeloRuta()), url(m.getImagenRuta()),
                 new CategoriaResumen(m.getCategoria().getId(), m.getCategoria().getNombre(), m.getCategoria().getSlug()),
-                new VendedorResumen(m.getVendedor().getId(), m.getVendedor().getNombre()),
+                new VendedorResumen(m.getVendedor().getId(), m.getVendedor().getNombre(),
+                        m.getVendedor().getSlug(), url(m.getVendedor().getFotoRuta())),
                 m.getCreadoEn(), m.getActualizadoEn());
     }
 
