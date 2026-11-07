@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, Maximize, MessageCircle, Minimize, PackageX, Ruler, ScanLine, Share2, ShoppingBag, WifiOff } from 'lucide-react';
+import { ArrowLeft, CalendarClock, ChevronRight, Maximize, MessageCircle, Minimize, PackageX, Ruler, ScanLine, Share2, ShoppingBag, WifiOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
@@ -188,12 +188,16 @@ export default function DetallePage({ enPanel = false }) {
     <div className="grid gap-2">
       {puedePedir && (
         <div className="flex gap-2">
-          <Boton variante="acento" icono={ShoppingBag} bloque disabled={agotado} onClick={() => abrir('comprar')} className="h-14 text-[16px]">
+          <Boton variante="acento" icono={ShoppingBag} bloque disabled={agotado} onClick={() => abrir('comprar')} className="h-14 whitespace-nowrap text-[16px]">
             {agotado ? (color ? `Agotado en ${color.nombre}` : 'Agotado por ahora') : `Comprar · ${precio(mueble.precio)}`}
           </Boton>
-          <Boton variante="secundario" onClick={() => abrir('preguntar')} className="size-14 shrink-0 px-0 md:w-auto md:px-5" aria-label="Preguntar al vendedor">
+          <Boton variante="secundario" disabled={agotado} onClick={() => abrir('apartar')} className="size-14 shrink-0 px-0 xl:w-auto xl:px-5" aria-label="Apartar con anticipo">
+            <CalendarClock className="size-[19px]" aria-hidden />
+            <span className="hidden xl:inline">Apartar</span>
+          </Boton>
+          <Boton variante="secundario" onClick={() => abrir('preguntar')} className="size-14 shrink-0 px-0 xl:w-auto xl:px-5" aria-label="Preguntar al vendedor">
             <MessageCircle className="size-[19px]" aria-hidden />
-            <span className="hidden md:inline">Preguntar</span>
+            <span className="hidden xl:inline">Preguntar</span>
           </Boton>
         </div>
       )}
@@ -438,7 +442,8 @@ export default function DetallePage({ enPanel = false }) {
             {puedePedir && (
               <>
                 <HojaComprar
-                  abierta={hoja === 'comprar'}
+                  abierta={hoja === 'comprar' || hoja === 'apartar'}
+                  apartar={hoja === 'apartar'}
                   alCerrar={cerrarHoja}
                   mueble={mueble}
                   color={colorId}

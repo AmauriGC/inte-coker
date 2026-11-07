@@ -52,10 +52,10 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 10 — Favoritos en el back: guardados en la cuenta y sincronizados al entrar
 - [x] Fase 11 — Pedidos: comprar, preguntar, existencias y conversación cliente-vendedor
 - [x] Fase 12 — Detalle con el 3D protagonista, bottom bar en el detalle y Sillón Alba
-- [ ] Fase 13 — Me gusta, reseñas y mejores calificados
-- [ ] Fase 14 — Perfil del vendedor y sus trabajos
-- [ ] Fase 15 — Colores en existencia y cambio de color en vivo
-- [ ] Fase 16 — Apartados con anticipo
+- [x] Fase 13 — Me gusta, reseñas y mejores calificados
+- [x] Fase 14 — Perfil del vendedor y sus trabajos
+- [x] Fase 15 — Colores en existencia y cambio de color en vivo
+- [x] Fase 16 — Apartados con anticipo
 - [ ] Fase 17 — Transportista y método de pago
 - [ ] Fase 18 — Métricas: ventas, zonas, muebles y conversión
 - [ ] Fase 19 — Más para el cliente
@@ -80,7 +80,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 13 | `md/hechos/FASE_13_resenas.md` | hecho |
 | 14 | `md/hechos/FASE_14_vendedores.md` | hecho |
 | 15 | `md/hechos/FASE_15_colores.md` | hecho |
-| 16 | `md/pendientes/FASE_16_apartados.md` | pendiente |
+| 16 | `md/hechos/FASE_16_apartados.md` | hecho |
 | 17 | `md/pendientes/FASE_17_transportista.md` | pendiente |
 | 18 | `md/pendientes/FASE_18_metricas.md` | pendiente |
 | 19 | `md/pendientes/FASE_19_cliente.md` | pendiente |
