@@ -1,7 +1,7 @@
 # FASE 19 · Más para el cliente
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso (19a hecha)
+- Estado: Hecho
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_crecimiento.md` (§11)
 
@@ -27,13 +27,24 @@ Se tomaron las cinco propuestas.
   - `MuebleService` publica `ExistenciasCambiadas` al editar, devolver existencias y
     publicar; `AvisoExistenciaService` manda el correo a quien ya puede pedir y borra el aviso.
   - `CuentaTest` con MySQL (3 casos).
-- [ ] 19b · Front
-  - Editar nombre y foto en Cuenta; "Mis direcciones" y elegirlas en la hoja de compra.
-  - "Avísame cuando haya" en el detalle (mueble o color agotado).
-  - Vistos recientemente (en el dispositivo) y comparar hasta 3 muebles.
-- [ ] 19c · Docs
+- [x] 19b · Front
+  - Módulo `cuenta/`: `EditarPerfilPage` (`/cuenta/perfil`: nombre y foto con progreso) y
+    `DireccionesPage` (`/cuenta/direcciones`) con `HojaDireccion`. Cuenta muestra la foto,
+    un lápiz para editar, "Mis direcciones" y "Comparar muebles".
+  - `HojaComprar`: con envío a domicilio muestra las direcciones guardadas; un toque llena
+    los campos.
+  - Detalle: si lo elegido está agotado, el botón principal es "Avísame cuando haya" (o "Ya
+    no avisarme"); sin sesión lleva a entrar.
+  - `common/utils/listaLocal.js`: listas del dispositivo compartidas con
+    `useSyncExternalStore`. `gc.vistos` (12) alimenta "Vistos recientemente" en Inicio;
+    `gc.comparar` (3) alimenta el botón "Comparar" del detalle y `/comparar` (precio,
+    medidas, piezas, colores, materiales, calificación y vendedor; marca el más económico).
+- [x] 19c · Docs
+  - Este documento y el maestro.
 
 ## Verificación
 
 - `./mvnw verify` en `back/`; `npm run lint` y `npm run build` en `front/`.
 - 19a: `./mvnw verify` con 34 pruebas en verde.
+- 19b: lint y build en verde; revisado en el navegador a 390 px (Inicio, detalle, Comparar,
+  Cuenta y Mis direcciones).

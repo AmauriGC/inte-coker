@@ -14,6 +14,7 @@ import { useNotificaciones } from '../../notificaciones/context/NotificacionesCo
 import { catalogoApi } from '../api/catalogoApi';
 import ChipsCategorias from '../components/ChipsCategorias';
 import TarjetaMueble, { TarjetaEsqueleto } from '../components/TarjetaMueble';
+import VistosRecientes from '../components/VistosRecientes';
 
 const PASOS = [
   { Icono: Rotate3d, titulo: 'Gíralo en 3D', texto: 'Mira cada ángulo y sus medidas reales.' },
@@ -96,6 +97,8 @@ export default function InicioPage() {
           alElegir={(id) => navegar(id ? `/catalogo?categoria=${id}` : '/catalogo')}
         />
       </section>
+
+      <VistosRecientes className="mt-7" />
 
       <section className="mt-7">
         <div className="mb-3 flex items-end justify-between">

@@ -6,6 +6,9 @@ import OlvidePasswordPage from '../auth/pages/OlvidePasswordPage';
 import RestablecerPasswordPage from '../auth/pages/RestablecerPasswordPage';
 import VerificarPage from '../auth/pages/VerificarPage';
 import CatalogoPage from '../catalogo/pages/CatalogoPage';
+import CompararPage from '../catalogo/pages/CompararPage';
+import DireccionesPage from '../cuenta/pages/DireccionesPage';
+import EditarPerfilPage from '../cuenta/pages/EditarPerfilPage';
 import EntregaPage from '../entregas/pages/EntregaPage';
 import EntregasPage from '../entregas/pages/EntregasPage';
 import DetallePage from '../catalogo/pages/DetallePage';
@@ -41,6 +44,9 @@ export const router = createBrowserRouter([
           { path: 'entregas', element: <RutaProtegida permisos={['ENTREGA_REALIZAR']}><EntregasPage /></RutaProtegida> },
           { path: 'entregas/:id', element: <RutaProtegida permisos={['ENTREGA_REALIZAR']}><EntregaPage /></RutaProtegida> },
           { path: 'cuenta', element: <CuentaPage /> },
+          { path: 'cuenta/perfil', element: <RutaProtegida><EditarPerfilPage /></RutaProtegida> },
+          { path: 'cuenta/direcciones', element: <RutaProtegida><DireccionesPage /></RutaProtegida> },
+          { path: 'comparar', element: <CompararPage /> },
           { path: 'entrar', element: <LoginPage /> },
           { path: 'verificar', element: <VerificarPage /> },
           { path: 'olvide-password', element: <OlvidePasswordPage /> },
