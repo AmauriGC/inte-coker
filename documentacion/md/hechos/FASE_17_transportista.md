@@ -1,7 +1,7 @@
 # FASE 17 · Transportista y método de pago
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso (17a hecha)
+- Estado: Hecho
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_crecimiento.md` (§9, D3 y D8)
 
@@ -29,13 +29,23 @@ llamar y si cobra en efectivo o con tarjeta, y que confirme la entrega y el cobr
     a la conversación, y la dirección y el teléfono solo llegan mientras va `EN_CAMINO`.
   - `porCobrar`: el total, o 0 si fue un apartado ya liquidado.
   - `EntregaTest` con MySQL (2 casos).
-- [ ] 17b · Front
-  - Método de pago en la hoja de compra.
-  - Selector de transportista al enviar.
-  - `/entregas` y `/entregas/:id` para el transportista, con su bottom bar (Entregas, Avisos, Cuenta).
-- [ ] 17c · Docs
+- [x] 17b · Front
+  - `HojaComprar`: "¿Cómo vas a pagar?" (Efectivo o Tarjeta, sin valor por omisión) y
+    envío de `metodoPago`. `estados.js` agrega `PAGOS`.
+  - `AccionesPedido`: para el vendedor, un envío a domicilio muestra "Enviar pedido", que
+    abre `HojaEnviar` ("Lo llevo yo" o un transportista con sus entregas en camino).
+  - `PedidoPage`: datos "Pago" (con "cobrado" al cerrar) y "Lo lleva".
+  - Módulo `entregas/`: `EntregasPage` (Por entregar y Hechas) y `EntregaPage` (monto por
+    cobrar y método, mueble y color, quién recibe, "Abrir mapa", "Llamar", "Entregado y
+    cobrado" y "No se pudo entregar" con motivo).
+  - Rol `TRANSPORTISTA` en `roles.js` (inicio `/entregas`); con ese rol activo la bottom
+    bar muestra Entregas, Avisos y Cuenta. "Mis entregas" en Cuenta.
+- [x] 17c · Docs
+  - Este documento y el maestro.
 
 ## Verificación
 
 - `./mvnw verify` en `back/`; `npm run lint` y `npm run build` en `front/`.
 - 17a: `./mvnw verify` con 30 pruebas en verde.
+- 17b: lint y build en verde; revisadas en el navegador la protección de `/entregas` y la cuenta.
+  El flujo completo requiere reiniciar el back y dar el rol Transportista a una cuenta.

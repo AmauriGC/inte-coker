@@ -56,7 +56,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 14 — Perfil del vendedor y sus trabajos
 - [x] Fase 15 — Colores en existencia y cambio de color en vivo
 - [x] Fase 16 — Apartados con anticipo
-- [ ] Fase 17 — Transportista y método de pago
+- [x] Fase 17 — Transportista y método de pago
 - [ ] Fase 18 — Métricas: ventas, zonas, muebles y conversión
 - [ ] Fase 19 — Más para el cliente
 
@@ -81,7 +81,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 14 | `md/hechos/FASE_14_vendedores.md` | hecho |
 | 15 | `md/hechos/FASE_15_colores.md` | hecho |
 | 16 | `md/hechos/FASE_16_apartados.md` | hecho |
-| 17 | `md/pendientes/FASE_17_transportista.md` | pendiente |
+| 17 | `md/hechos/FASE_17_transportista.md` | hecho |
 | 18 | `md/pendientes/FASE_18_metricas.md` | pendiente |
 | 19 | `md/pendientes/FASE_19_cliente.md` | pendiente |
 
