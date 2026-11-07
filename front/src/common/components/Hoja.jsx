@@ -1,10 +1,12 @@
 import { X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 /**
  * Panel modal: hoja desde abajo en móvil y cajón lateral en escritorio.
- * Escape o tocar el fondo lo cierran.
+ * Escape o tocar el fondo lo cierran. Se dibuja en <body> para que ninguna capa de la página
+ * (barra de acciones, columna con z-index, barra inferior) la tape.
  */
 export default function Hoja({ abierta, alCerrar, titulo, children, pie }) {
   useEffect(() => {
@@ -19,7 +21,7 @@ export default function Hoja({ abierta, alCerrar, titulo, children, pie }) {
     };
   }, [abierta, alCerrar]);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {abierta && (
         <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={titulo}>
@@ -29,7 +31,7 @@ export default function Hoja({ abierta, alCerrar, titulo, children, pie }) {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 380, damping: 40 }}
-            className="absolute inset-x-0 bottom-0 flex max-h-[92dvh] flex-col rounded-t-[30px] bg-white md:inset-y-0 md:left-auto md:right-0 md:max-h-none md:w-[520px] md:rounded-l-[30px] md:rounded-tr-none"
+            className="absolute inset-x-0 bottom-0 flex max-h-[92dvh] flex-col rounded-t-[30px] bg-white lg:inset-y-0 lg:left-auto lg:right-0 lg:max-h-none lg:w-[520px] lg:rounded-l-[30px] lg:rounded-tr-none"
           >
             <div className="flex items-center gap-3 border-b border-linea px-5 py-4">
               <h2 className="flex-1 font-display text-lg font-semibold">{titulo}</h2>
@@ -42,6 +44,7 @@ export default function Hoja({ abierta, alCerrar, titulo, children, pie }) {
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }
