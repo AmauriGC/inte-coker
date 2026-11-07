@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarClock, MapPin, Phone, ReceiptText, Star, User } from 'lucide-react';
+import { ArrowLeft, CalendarClock, MapPin, Phone, ReceiptText, Star, Truck, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useState } from 'react';
 import { Link, useParams } from 'react-router';
@@ -16,9 +16,10 @@ import ChipEstado from '../components/ChipEstado';
 import Conversacion from '../components/Conversacion';
 import HojaComprar from '../components/HojaComprar';
 import HojaConfirmarApartado from '../components/HojaConfirmarApartado';
+import HojaEnviar from '../components/HojaEnviar';
 import LineaTiempo from '../components/LineaTiempo';
 import { usePedidos } from '../context/PedidosContext';
-import { ENTREGAS } from '../estados';
+import { ENTREGAS, PAGOS } from '../estados';
 
 const aparece = (i) => ({ initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0, transition: { delay: 0.05 * i } } });
 
@@ -33,6 +34,7 @@ export default function PedidoPage({ enPanel = false }) {
   const { notificar } = useNotificaciones();
   const [convertir, setConvertir] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
+  const [enviando, setEnviando] = useState(false);
   const { datos: pedido, error, recargar, mutar } = useConsulta((s) => pedidosApi.pedido(id, s), [id]);
   const salida = enPanel ? '/panel/pedidos' : '/pedidos';
 
@@ -72,6 +74,7 @@ export default function PedidoPage({ enPanel = false }) {
   const entrega = ENTREGAS[pedido.tipoEntrega];
   const otro = pedido.lado === 'CLIENTE' ? { rol: 'Vendedor', ...pedido.vendedor } : { rol: 'Cliente', ...pedido.cliente };
   const datosEntrega = pedido.entrega;
+  const pago = PAGOS[pedido.metodoPago];
 
   return (
     <Pagina className={`mx-auto max-w-5xl px-4 ${enPanel ? 'py-6 lg:px-8 lg:py-8' : 'pb-32'}`}>
@@ -152,10 +155,18 @@ export default function PedidoPage({ enPanel = false }) {
                 }
               />
             )}
+            {pago && (
+              <Dato
+                Icono={pago.Icono}
+                etiqueta="Pago"
+                valor={`${pago.texto} al ${pedido.tipoEntrega === 'RECOGER' ? 'recogerlo' : 'recibirlo'}${pedido.cobradoEn ? ' · cobrado' : ''}`}
+              />
+            )}
+            {pedido.transportista && <Dato Icono={Truck} etiqueta="Lo lleva" valor={pedido.transportista.nombre} />}
             {!entrega && <Dato Icono={MapPin} etiqueta="Entrega" valor="Se define al convertir la consulta en pedido" />}
           </motion.section>
 
-          <AccionesPedido pedido={pedido} alActualizar={actualizar} alSolicitar={() => setConvertir(true)} alConfirmarApartado={() => setConfirmando(true)} />
+          <AccionesPedido pedido={pedido} alActualizar={actualizar} alSolicitar={() => setConvertir(true)} alConfirmarApartado={() => setConfirmando(true)} alEnviar={() => setEnviando(true)} />
         </div>
 
         <Conversacion
@@ -189,6 +200,19 @@ export default function PedidoPage({ enPanel = false }) {
             setConfirmando(false);
             actualizar(nuevo);
             notificar({ tipo: 'exito', titulo: 'Mueble apartado', texto: `${nuevo.folio}: las piezas quedan reservadas.`, guardar: false });
+          }}
+        />
+      )}
+
+      {pedido.acciones.includes('EN_CAMINO') && pedido.tipoEntrega === 'DOMICILIO' && (
+        <HojaEnviar
+          abierta={enviando}
+          alCerrar={() => setEnviando(false)}
+          pedido={pedido}
+          alListo={(nuevo) => {
+            setEnviando(false);
+            actualizar(nuevo);
+            notificar({ tipo: 'exito', titulo: 'Pedido en camino', texto: `${nuevo.folio} · ${nuevo.mueble.nombre}`, guardar: false });
           }}
         />
       )}

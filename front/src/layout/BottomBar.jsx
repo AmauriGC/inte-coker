@@ -1,6 +1,7 @@
-import { Bell, Heart, House, LayoutGrid, User } from 'lucide-react';
+import { Bell, Heart, House, LayoutGrid, Truck, User } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { NavLink } from 'react-router';
+import { useSesion } from '../auth/context/SesionContext';
 import { useNotificaciones } from '../notificaciones/context/NotificacionesContext';
 import { usePedidos } from '../pedidos/context/PedidosContext';
 
@@ -12,8 +13,17 @@ const ENLACES = [
   { a: '/cuenta', texto: 'Cuenta', Icono: User, cuenta: 'pedidos' },
 ];
 
+/** Con el rol Transportista activo: solo sus entregas, avisos y cuenta. */
+const ENLACES_TRANSPORTISTA = [
+  { a: '/entregas', texto: 'Entregas', Icono: Truck },
+  { a: '/avisos', texto: 'Avisos', Icono: Bell, cuenta: 'avisos' },
+  { a: '/cuenta', texto: 'Cuenta', Icono: User },
+];
+
 /** Barra inferior flotante; la píldora negra se desliza al cambiar de pestaña (layoutId). */
 export default function BottomBar() {
+  const { tienePermiso } = useSesion();
+  const enlaces = tienePermiso('ENTREGA_REALIZAR') && !tienePermiso('PEDIDO_CREAR') ? ENLACES_TRANSPORTISTA : ENLACES;
   const { sinLeer } = useNotificaciones();
   const { resumen } = usePedidos();
   // Cuenta lleva el punto de "Mis pedidos" (mensajes nuevos de vendedores).
@@ -25,7 +35,7 @@ export default function BottomBar() {
       className="pb-segura fixed inset-x-0 bottom-0 z-40 px-3 pt-2 md:bottom-4"
     >
       <ul className="mx-auto flex max-w-md items-stretch justify-between rounded-[26px] border border-black/5 bg-white/90 p-1.5 shadow-[0_18px_40px_-20px_rgba(29,27,24,0.45)] backdrop-blur-xl">
-        {ENLACES.map(({ a, texto, Icono, fin, cuenta }) => (
+        {enlaces.map(({ a, texto, Icono, fin, cuenta }) => (
           <li key={a} className="flex-1">
             <NavLink to={a} end={fin} className="relative flex h-14 flex-col items-center justify-center gap-0.5 rounded-[20px]">
               {({ isActive }) => (

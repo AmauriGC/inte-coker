@@ -13,7 +13,7 @@ import MuestrasColor from '../../catalogo/components/MuestrasColor';
 import { colorInicial } from '../../common/utils/colores';
 import { useConsulta } from '../../common/hooks/useConsulta';
 import { pedidosApi } from '../api/pedidosApi';
-import { ENTREGAS } from '../estados';
+import { ENTREGAS, PAGOS } from '../estados';
 
 const MAXIMO_POR_PEDIDO = 10;
 const ENTREGA_VACIA = { nombreRecibe: '', telefono: '', direccion: '', ciudad: '', codigoPostal: '' };
@@ -56,6 +56,7 @@ function Formulario({ mueble, pedidoId, color, alCambiarColor, apartar, alListo 
   });
   const [cantidad, setCantidad] = useState(1);
   const [tipo, setTipo] = useState('DOMICILIO');
+  const [pago, setPago] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const guardar = (cuerpo) => (pedidoId ? pedidosApi.solicitar(pedidoId, cuerpo) : pedidosApi.pedir({ muebleId: mueble.id, ...cuerpo }));
   const { enviar, enviando, error, errores } = useEnvio(guardar);
@@ -93,6 +94,7 @@ function Formulario({ mueble, pedidoId, color, alCambiarColor, apartar, alListo 
       varianteId: variante?.id ?? null,
       apartar,
       tipoEntrega: tipo,
+      metodoPago: pago,
       ...limpio,
       direccion: domicilio ? limpio.direccion : null,
       ciudad: domicilio ? limpio.ciudad : null,
@@ -196,6 +198,28 @@ function Formulario({ mueble, pedidoId, color, alCambiarColor, apartar, alListo 
           <p className="text-[12.5px] text-gris">El vendedor te dirá en la conversación dónde y cuándo pasar por él. El teléfono es opcional.</p>
         )}
       </div>
+
+      <fieldset>
+        <legend className="mb-1.5 text-[13px] font-semibold text-texto">¿Cómo vas a pagar?</legend>
+        <div className="grid grid-cols-2 gap-2" role="radiogroup">
+          {Object.entries(PAGOS).map(([valor, { texto, Icono }]) => (
+            <button
+              key={valor}
+              type="button"
+              role="radio"
+              aria-checked={pago === valor}
+              onClick={() => setPago(valor)}
+              className={`flex h-12 items-center justify-center gap-2 rounded-2xl border text-[14px] font-semibold transition-colors ${pago === valor ? 'border-tinta bg-tinta text-crema' : 'border-borde bg-white hover:bg-crema'}`}
+            >
+              <Icono className="size-[18px]" aria-hidden />
+              {texto}
+            </button>
+          ))}
+        </div>
+        <p className={`mt-1.5 text-[12.5px] ${errores.metodoPago ? 'text-[#B3261E]' : 'text-gris'}`}>
+          {errores.metodoPago ?? (apartar ? 'Para liquidar lo que reste del apartado.' : domicilio ? 'Pagas al recibirlo; quien lo entrega confirma el cobro.' : 'Pagas al recogerlo.')}
+        </p>
+      </fieldset>
 
       <Campo
         etiqueta="Mensaje para el vendedor (opcional)"

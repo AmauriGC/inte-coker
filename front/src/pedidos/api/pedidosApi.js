@@ -5,7 +5,7 @@ import { obtener, peticion } from '../../common/api/cliente';
  * worker: tienen datos privados (dirección, teléfono, mensajes).
  */
 export const pedidosApi = {
-  /** "Comprar": { muebleId, cantidad, tipoEntrega, nombreRecibe, telefono, direccion, ciudad, codigoPostal, mensaje } */
+  /** "Comprar": { muebleId, cantidad, tipoEntrega, metodoPago, nombreRecibe, telefono, direccion, ciudad, codigoPostal, mensaje } */
   pedir: (cuerpo) => obtener('/pedidos', { metodo: 'POST', cuerpo }),
   preguntar: (muebleId, mensaje) => obtener('/pedidos/consultas', { metodo: 'POST', cuerpo: { muebleId, mensaje } }),
   /** Convierte una consulta en pedido (mismo cuerpo que pedir, sin muebleId). */
@@ -18,7 +18,11 @@ export const pedidosApi = {
   pedido: (id, signal) => obtener(`/pedidos/${id}`, { signal }),
   /** El vendedor confirma el anticipo de un apartado: { anticipo, dias } (1 a 30). */
   confirmarApartado: (id, { anticipo, dias }) => obtener(`/pedidos/${id}/apartado`, { metodo: 'PATCH', cuerpo: { anticipo, dias } }),
-  cambiarEstado: (id, estado, motivo) => obtener(`/pedidos/${id}/estado`, { metodo: 'PATCH', cuerpo: { estado, motivo } }),
+  /** transportistaId solo al pasar a EN_CAMINO un envío a domicilio (null = lo lleva el vendedor). */
+  cambiarEstado: (id, estado, motivo, transportistaId = null) =>
+    obtener(`/pedidos/${id}/estado`, { metodo: 'PATCH', cuerpo: { estado, motivo, transportistaId } }),
+  /** Transportistas activos: [{ id, nombre, enCamino }]. */
+  transportistas: (signal) => obtener('/transportistas', { signal }),
 
   /** Sin despuesDe: los últimos 200. Con despuesDe (id): solo los nuevos. */
   mensajes: (id, despuesDe, signal) => obtener(`/pedidos/${id}/mensajes`, { consulta: { despuesDe }, signal }),
