@@ -52,6 +52,11 @@ public interface MuebleRepository extends JpaRepository<Mueble, Long> {
                                   @Param("precioMax") BigDecimal precioMax,
                                   Pageable pageable);
 
+    @EntityGraph(attributePaths = {"categoria", "vendedor"})
+    Page<Mueble> findByVendedorIdAndPublicadoTrue(Long vendedorId, Pageable pageable);
+
+    long countByVendedorIdAndPublicadoTrue(Long vendedorId);
+
     /** Panel: publicados y borradores; vendedorId null = todos (administrador). */
     @EntityGraph(attributePaths = {"categoria", "vendedor"})
     @Query(value = """
