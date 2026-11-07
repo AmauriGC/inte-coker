@@ -1,5 +1,6 @@
-import { CalendarClock, Info, Minus, Plus } from 'lucide-react';
+import { CalendarClock, Info, MapPin, Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { useSesion } from '../../auth/context/SesionContext';
 import Boton from '../../common/components/Boton';
 import Campo from '../../common/components/Campo';
@@ -13,6 +14,7 @@ import MuestrasColor from '../../catalogo/components/MuestrasColor';
 import { colorInicial } from '../../common/utils/colores';
 import { useConsulta } from '../../common/hooks/useConsulta';
 import { pedidosApi } from '../api/pedidosApi';
+import { cuentaApi } from '../../cuenta/api/cuentaApi';
 import { ENTREGAS, PAGOS } from '../estados';
 
 const MAXIMO_POR_PEDIDO = 10;
@@ -57,6 +59,11 @@ function Formulario({ mueble, pedidoId, color, alCambiarColor, apartar, alListo 
   const [cantidad, setCantidad] = useState(1);
   const [tipo, setTipo] = useState('DOMICILIO');
   const [pago, setPago] = useState(null);
+  // Direcciones guardadas en la cuenta: un toque llena los campos.
+  const direccionesC = useConsulta((s) => (usuario ? cuentaApi.direcciones(s) : Promise.resolve([])), [usuario?.id]);
+  const guardadas = direccionesC.datos ?? [];
+  const usarDireccion = (d) =>
+    setEntrega({ nombreRecibe: d.nombreRecibe, telefono: d.telefono, direccion: d.direccion, ciudad: d.ciudad, codigoPostal: d.codigoPostal });
   const [mensaje, setMensaje] = useState('');
   const guardar = (cuerpo) => (pedidoId ? pedidosApi.solicitar(pedidoId, cuerpo) : pedidosApi.pedir({ muebleId: mueble.id, ...cuerpo }));
   const { enviar, enviando, error, errores } = useEnvio(guardar);
@@ -180,6 +187,34 @@ function Formulario({ mueble, pedidoId, color, alCambiarColor, apartar, alListo 
           })}
         </div>
       </fieldset>
+
+      {domicilio && guardadas.length > 0 && (
+        <div>
+          <div className="mb-1.5 flex items-center justify-between">
+            <p className="text-[13px] font-semibold text-texto">Tus direcciones</p>
+            <Link to="/cuenta/direcciones" className="text-[12.5px] font-semibold text-terracota hover:underline">
+              Administrar
+            </Link>
+          </div>
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+            {guardadas.map((d) => {
+              const elegida = entrega.direccion === d.direccion && entrega.codigoPostal === d.codigoPostal;
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => usarDireccion(d)}
+                  aria-pressed={elegida}
+                  className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-[13px] font-semibold transition-colors ${elegida ? 'border-tinta bg-tinta text-crema' : 'border-borde bg-white hover:bg-crema'}`}
+                >
+                  <MapPin className="size-3.5" aria-hidden />
+                  {d.alias}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-3">
         <div className="grid grid-cols-2 gap-3">
