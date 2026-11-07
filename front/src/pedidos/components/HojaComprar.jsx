@@ -8,6 +8,10 @@ import ImagenMueble from '../../common/components/ImagenMueble';
 import { useAlmacen } from '../../common/hooks/useAlmacen';
 import { useEnvio } from '../../common/hooks/useEnvio';
 import { precio } from '../../common/utils/formato';
+import { catalogoApi } from '../../catalogo/api/catalogoApi';
+import MuestrasColor from '../../catalogo/components/MuestrasColor';
+import { colorInicial } from '../../common/utils/colores';
+import { useConsulta } from '../../common/hooks/useConsulta';
 import { pedidosApi } from '../api/pedidosApi';
 import { ENTREGAS } from '../estados';
 
@@ -18,9 +22,10 @@ const ENTREGA_VACIA = { nombreRecibe: '', telefono: '', direccion: '', ciudad: '
  * Formulario de compra: cantidad, cómo recibirlo, datos de entrega y un mensaje.
  * Los datos de entrega se recuerdan en el dispositivo para el siguiente pedido.
  * Con pedidoId convierte esa consulta en pedido; sin él crea el pedido del mueble.
- * mueble: { id, nombre, precio, existencias, imagenUrl, categoria? }
+ * mueble: { id, nombre, precio, existencias, imagenUrl, slug, variantes? }. Si el mueble se
+ * vende por color se elige aquí (color = id inicial; alCambiarColor avisa al visor).
  */
-export default function HojaComprar({ abierta, alCerrar, mueble, pedidoId, alListo }) {
+export default function HojaComprar({ abierta, alCerrar, mueble, pedidoId, color, alCambiarColor, alListo }) {
   return (
     <Hoja
       abierta={abierta}
@@ -28,7 +33,7 @@ export default function HojaComprar({ abierta, alCerrar, mueble, pedidoId, alLis
       titulo={pedidoId ? 'Convertir en pedido' : 'Comprar'}
       pie={<PieCompra />}
     >
-      {abierta && <Formulario mueble={mueble} pedidoId={pedidoId} alListo={alListo} />}
+      {abierta && <Formulario mueble={mueble} pedidoId={pedidoId} color={color} alCambiarColor={alCambiarColor} alListo={alListo} />}
     </Hoja>
   );
 }
@@ -41,7 +46,7 @@ function PieCompra() {
   );
 }
 
-function Formulario({ mueble, pedidoId, alListo }) {
+function Formulario({ mueble, pedidoId, color, alCambiarColor, alListo }) {
   const { usuario } = useSesion();
   const [recordada, setRecordada] = useAlmacen('gc.entrega', ENTREGA_VACIA);
   const [entrega, setEntrega] = useState(() => {
@@ -54,7 +59,23 @@ function Formulario({ mueble, pedidoId, alListo }) {
   const guardar = (cuerpo) => (pedidoId ? pedidosApi.solicitar(pedidoId, cuerpo) : pedidosApi.pedir({ muebleId: mueble.id, ...cuerpo }));
   const { enviar, enviando, error, errores } = useEnvio(guardar);
 
-  const tope = Math.max(1, Math.min(MAXIMO_POR_PEDIDO, mueble.existencias ?? MAXIMO_POR_PEDIDO));
+  // Desde una consulta el mueble llega resumido: sus colores se piden aparte.
+  const variantesC = useConsulta(
+    (s) => (mueble.variantes === undefined && mueble.slug ? catalogoApi.mueble(mueble.slug, s).then((m) => m.variantes ?? []) : Promise.resolve(mueble.variantes ?? [])),
+    [mueble.slug],
+  );
+  const variantes = variantesC.datos ?? [];
+  const [elegido, setElegido] = useState(color ?? null);
+  const colorId = colorInicial(variantes, elegido);
+  const variante = variantes.find((v) => v.id === colorId) ?? null;
+  const disponibles = variante ? variante.existencias : mueble.existencias;
+  const tope = Math.max(1, Math.min(MAXIMO_POR_PEDIDO, disponibles ?? MAXIMO_POR_PEDIDO));
+  const piezas = Math.min(cantidad, tope);
+
+  function elegirColor(id) {
+    setElegido(id);
+    alCambiarColor?.(id);
+  }
   const domicilio = tipo === 'DOMICILIO';
   const campo = (clave) => ({
     value: entrega[clave],
@@ -67,7 +88,8 @@ function Formulario({ mueble, pedidoId, alListo }) {
     if (enviando) return;
     const limpio = Object.fromEntries(Object.entries(entrega).map(([k, v]) => [k, v.trim() || null]));
     const r = await enviar({
-      cantidad,
+      cantidad: piezas,
+      varianteId: variante?.id ?? null,
       tipoEntrega: tipo,
       ...limpio,
       direccion: domicilio ? limpio.direccion : null,
@@ -95,19 +117,29 @@ function Formulario({ mueble, pedidoId, alListo }) {
         <p role="alert" className="rounded-2xl bg-[#F6DAD7] px-4 py-3 text-[13.5px] text-[#8C1D17]">{error.message}</p>
       )}
 
+      {variantes.length > 0 && (
+        <fieldset>
+          <legend className="mb-2 text-[13px] font-semibold text-texto">
+            Color <span className="font-normal text-gris">· {variante?.nombre}</span>
+          </legend>
+          <MuestrasColor grande variantes={variantes} valor={colorId} alElegir={elegirColor} />
+          {variante?.existencias === 0 && <p className="mt-2 text-[12.5px] text-[#8C1D17]">Este color está agotado; elige otro o pregúntale al vendedor.</p>}
+        </fieldset>
+      )}
+
       <fieldset>
         <legend className="mb-1.5 text-[13px] font-semibold text-texto">Cantidad</legend>
         <div className="flex items-center gap-3">
           <div className="inline-flex items-center rounded-full border border-borde bg-white p-1">
-            <button type="button" onClick={() => setCantidad((n) => Math.max(1, n - 1))} disabled={cantidad <= 1} className="grid size-10 place-items-center rounded-full hover:bg-crema disabled:opacity-40" aria-label="Una pieza menos">
+            <button type="button" onClick={() => setCantidad(() => Math.max(1, piezas - 1))} disabled={piezas <= 1} className="grid size-10 place-items-center rounded-full hover:bg-crema disabled:opacity-40" aria-label="Una pieza menos">
               <Minus className="size-4" />
             </button>
-            <output aria-live="polite" className="w-10 text-center font-display text-[18px] font-bold">{cantidad}</output>
-            <button type="button" onClick={() => setCantidad((n) => Math.min(tope, n + 1))} disabled={cantidad >= tope} className="grid size-10 place-items-center rounded-full hover:bg-crema disabled:opacity-40" aria-label="Una pieza más">
+            <output aria-live="polite" className="w-10 text-center font-display text-[18px] font-bold">{piezas}</output>
+            <button type="button" onClick={() => setCantidad(() => Math.min(tope, piezas + 1))} disabled={piezas >= tope} className="grid size-10 place-items-center rounded-full hover:bg-crema disabled:opacity-40" aria-label="Una pieza más">
               <Plus className="size-4" />
             </button>
           </div>
-          {mueble.existencias != null && <p className="text-[12.5px] text-gris">Hay {mueble.existencias} disponibles</p>}
+          {disponibles != null && <p className="text-[12.5px] text-gris">Hay {disponibles} disponibles{variante ? ` en ${variante.nombre}` : ''}</p>}
         </div>
       </fieldset>
 
@@ -165,7 +197,7 @@ function Formulario({ mueble, pedidoId, alListo }) {
 
       <div className="flex items-center justify-between rounded-2xl bg-crema px-4 py-3">
         <span className="text-[13.5px] font-semibold text-texto">Total</span>
-        <span className="font-display text-[22px] font-bold">{precio(Number(mueble.precio) * cantidad)}</span>
+        <span className="font-display text-[22px] font-bold">{precio(Number(mueble.precio) * piezas)}</span>
       </div>
       <p className="-mt-2 flex gap-2 text-[12.5px] leading-snug text-gris">
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
