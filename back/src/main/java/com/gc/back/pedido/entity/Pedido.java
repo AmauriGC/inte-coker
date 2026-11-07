@@ -2,6 +2,7 @@ package com.gc.back.pedido.entity;
 
 import com.gc.back.common.entity.EntidadBase;
 import com.gc.back.mueble.entity.Mueble;
+import com.gc.back.mueble.entity.VarianteColor;
 import com.gc.back.usuario.entity.Usuario;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -85,6 +86,18 @@ public class Pedido extends EntidadBase {
 
     @Column(name = "codigo_postal", length = 10)
     private String codigoPostal;
+
+    /** Color elegido. Si el vendedor lo borra, el pedido conserva el nombre y el hex. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "variante_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private VarianteColor variante;
+
+    @Column(name = "variante_nombre", length = 40)
+    private String varianteNombre;
+
+    @Column(name = "variante_hex", length = 7)
+    private String varianteHex;
 
     @Column(name = "motivo_cierre", length = 300)
     private String motivoCierre;

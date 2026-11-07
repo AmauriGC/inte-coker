@@ -11,7 +11,9 @@ import com.gc.back.mueble.dto.FiltroCatalogoRequest;
 import com.gc.back.mueble.dto.MueblePublicacionRequest;
 import com.gc.back.mueble.dto.MuebleRequest;
 import com.gc.back.mueble.dto.MuebleResponse;
+import com.gc.back.mueble.dto.VarianteRequest;
 import com.gc.back.mueble.entity.Mueble;
+import com.gc.back.mueble.entity.VarianteColor;
 import com.gc.back.mueble.exception.MuebleAjenoException;
 import com.gc.back.mueble.repository.MuebleRepository;
 import com.gc.back.security.UsuarioPrincipal;
@@ -25,8 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -135,19 +142,54 @@ public class MuebleService {
      * Falla con 400 si ya no alcanzan (otro pedido se las llevó primero).
      */
     @Transactional
-    public void descontarExistencias(Mueble mueble, int cantidad) {
+    public void descontarExistencias(Mueble mueble, Long varianteId, String varianteNombre, int cantidad) {
         entityManager.refresh(mueble, LockModeType.PESSIMISTIC_WRITE);
-        if (mueble.getExistencias() < cantidad) {
-            throw new ReglaNegocioException("Ya no hay existencias suficientes: quedan " + mueble.getExistencias());
+        if (!mueble.tieneVariantes()) {
+            if (mueble.getExistencias() < cantidad) {
+                throw new ReglaNegocioException("Ya no hay existencias suficientes: quedan " + mueble.getExistencias());
+            }
+            mueble.setExistencias(mueble.getExistencias() - cantidad);
+            return;
         }
-        mueble.setExistencias(mueble.getExistencias() - cantidad);
+        VarianteColor variante = variante(mueble, varianteId).orElseThrow(() -> new ReglaNegocioException(
+                varianteNombre == null
+                        ? "Este mueble ahora se vende por color y el pedido no tiene uno; recházalo para que el cliente elija"
+                        : "El color " + varianteNombre + " ya no está disponible"));
+        if (variante.getExistencias() < cantidad) {
+            throw new ReglaNegocioException("Ya no hay existencias suficientes en " + variante.getNombre()
+                    + ": quedan " + variante.getExistencias());
+        }
+        variante.setExistencias(variante.getExistencias() - cantidad);
+        mueble.recalcularExistencias();
     }
 
-    /** Para el módulo pedido: devuelve existencias al cancelar un pedido aceptado. */
+    /**
+     * Para el módulo pedido: devuelve existencias al cancelar un pedido aceptado. Si el color
+     * del pedido ya no existe y el mueble sigue vendiéndose por color, no hay a dónde devolverlas.
+     */
     @Transactional
-    public void devolverExistencias(Mueble mueble, int cantidad) {
+    public void devolverExistencias(Mueble mueble, Long varianteId, int cantidad) {
         entityManager.refresh(mueble, LockModeType.PESSIMISTIC_WRITE);
-        mueble.setExistencias(Math.min(mueble.getExistencias() + cantidad, MAX_EXISTENCIAS));
+        if (!mueble.tieneVariantes()) {
+            mueble.setExistencias(Math.min(mueble.getExistencias() + cantidad, MAX_EXISTENCIAS));
+            return;
+        }
+        variante(mueble, varianteId).ifPresent(v -> {
+            v.setExistencias(Math.min(v.getExistencias() + cantidad, MAX_EXISTENCIAS));
+            mueble.recalcularExistencias();
+        });
+    }
+
+    /** El color del mueble con ese id, si existe. */
+    public static Optional<VarianteColor> variante(Mueble mueble, Long varianteId) {
+        return varianteId == null ? Optional.empty()
+                : mueble.getVariantes().stream().filter(v -> v.getId().equals(varianteId)).findFirst();
+    }
+
+    /** Reemplaza los colores de un mueble (lo usa la semilla del catálogo). */
+    @Transactional
+    void reemplazarColores(Mueble mueble, List<VarianteRequest> colores) {
+        aplicarVariantes(mueble, colores);
     }
 
     /** Adjunta un archivo ya leído (lo usa la semilla del catálogo). */
@@ -191,6 +233,37 @@ public class MuebleService {
         mueble.setMateriales(StringUtils.hasText(request.materiales()) ? request.materiales().trim() : null);
         mueble.setExistencias(request.existencias());
         mueble.setCategoria(categoriaService.obtenerEntidad(request.categoriaId()));
+        aplicarVariantes(mueble, request.variantes() == null ? List.of() : request.variantes());
+    }
+
+    /**
+     * Deja los colores del mueble como vienen en la petición: edita los que traen id,
+     * crea los nuevos y quita los que faltan (los pedidos que los usaban conservan el nombre).
+     */
+    private void aplicarVariantes(Mueble mueble, List<VarianteRequest> pedidas) {
+        Set<String> nombres = new HashSet<>();
+        for (VarianteRequest v : pedidas) {
+            if (!nombres.add(v.nombre().trim().toLowerCase(Locale.ROOT))) {
+                throw new ReglaNegocioException("El color \"" + v.nombre().trim() + "\" está repetido");
+            }
+        }
+        List<VarianteColor> nuevas = new ArrayList<>();
+        for (int i = 0; i < pedidas.size(); i++) {
+            VarianteRequest r = pedidas.get(i);
+            VarianteColor v = variante(mueble, r.id()).orElseGet(() -> {
+                VarianteColor nueva = new VarianteColor();
+                nueva.setMueble(mueble);
+                return nueva;
+            });
+            v.setNombre(r.nombre().trim());
+            v.setHex(r.hex().toUpperCase(Locale.ROOT));
+            v.setExistencias(r.existencias());
+            v.setOrden(i);
+            nuevas.add(v);
+        }
+        mueble.getVariantes().clear();
+        mueble.getVariantes().addAll(nuevas);
+        mueble.recalcularExistencias();
     }
 
     private String slugUnico(String nombre, Long idActual) {
