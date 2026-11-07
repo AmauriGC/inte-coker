@@ -1,7 +1,7 @@
 # FASE 14 · Perfil del vendedor y sus trabajos
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso (14a hecha)
+- Estado: Hecho
 - Fecha: 06/11/2026
 - Análisis: `md/analisis/ANALISIS_crecimiento.md` (§6 y D7)
 
@@ -21,11 +21,17 @@ publicados y una galería de trabajos realizados.
   - `MuebleResponse.vendedor` incluye `slug` y `fotoUrl` para enlazar al perfil.
   - Tiene perfil una cuenta activa con rol VENDEDOR o con algún mueble publicado.
   - `VendedorTest` con MySQL (2 casos).
-- [ ] 14b · Front
-  - `/vendedor/:slug`: portada, foto, datos, pestañas "Muebles" y "Trabajos".
-  - Tarjeta del vendedor en el detalle del mueble con enlace al perfil.
-  - "Mi perfil" en el panel: datos, foto, portada y galería.
-- [ ] 14c · Docs
+- [x] 14b · Front
+  - `/vendedor/:slug` (`PerfilVendedorPage`): portada, foto o inicial, ciudad, año desde
+    que vende, presentación, cifras (calificación, ventas, muebles) y pestañas "Muebles" y
+    "Trabajos" (`?ver=trabajos`); cada trabajo se abre en una hoja. Botón para compartir y,
+    si es el propio perfil, "Editar perfil".
+  - Detalle del mueble: la tarjeta del vendedor muestra su foto y enlaza al perfil.
+  - `/panel/perfil` (`MiPerfilPage`, permiso `PERFIL_VENDEDOR_EDITAR`): portada y foto
+    (cambiar o quitar), ciudad y presentación, y galería con agregar (foto, título,
+    descripción), editar, subir o bajar en el orden y borrar.
+  - `AvatarVendedor` reutilizable; `perfilApi` en `front/src/vendedor/api/`.
+- [x] 14c · Docs
 
 ## API (14a)
 
@@ -44,3 +50,6 @@ publicados y una galería de trabajos realizados.
 
 - `./mvnw verify` en `back/`; `npm run lint` y `npm run build` en `front/`.
 - 14a: `./mvnw verify` con 22 pruebas en verde.
+- 14b: `npm run lint` y `npm run build` sin errores; revisado a 390 px el perfil, la
+  pestaña de trabajos y la tarjeta del vendedor en el detalle.
+- Quien ya tenía sesión como vendedor debe volver a entrar para recibir el permiso nuevo.

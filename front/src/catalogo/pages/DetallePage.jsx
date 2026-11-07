@@ -15,6 +15,7 @@ import HojaComprar from '../../pedidos/components/HojaComprar';
 import HojaPreguntar from '../../pedidos/components/HojaPreguntar';
 import { resenasApi } from '../../resenas/api/resenasApi';
 import BotonMeGusta from '../../resenas/components/BotonMeGusta';
+import AvatarVendedor from '../../vendedor/components/AvatarVendedor';
 import Estrellas from '../../resenas/components/Estrellas';
 import ResumenResenas from '../../resenas/components/ResumenResenas';
 import { catalogoApi } from '../api/catalogoApi';
@@ -376,13 +377,18 @@ export default function DetallePage({ enPanel = false }) {
 
               {mueble.vendedor && (
                 <motion.div {...aparece(9)} className="flex items-center gap-3 rounded-[22px] border border-linea bg-white p-3.5">
-                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-terracota font-display text-[19px] font-bold text-white" aria-hidden>
-                    {mueble.vendedor.nombre?.[0]?.toUpperCase()}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[12px] text-gris">Lo vende</span>
-                    <span className="block truncate text-[15px] font-bold">{mueble.vendedor.nombre}</span>
-                  </span>
+                  <Link
+                    to={mueble.vendedor.slug && !enPanel ? `/vendedor/${mueble.vendedor.slug}` : '#'}
+                    onClick={(e) => (!mueble.vendedor.slug || enPanel) && e.preventDefault()}
+                    className="group flex min-w-0 flex-1 items-center gap-3"
+                  >
+                    <AvatarVendedor nombre={mueble.vendedor.nombre} fotoUrl={mueble.vendedor.fotoUrl} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[12px] text-gris">Lo vende</span>
+                      <span className="block truncate text-[15px] font-bold group-hover:text-terracota">{mueble.vendedor.nombre}</span>
+                      {mueble.vendedor.slug && !enPanel && <span className="block text-[12px] font-semibold text-terracota">Ver perfil y trabajos</span>}
+                    </span>
+                  </Link>
                   {puedePedir && (
                     <button type="button" onClick={() => abrir('preguntar')} className="shrink-0 text-[13px] font-semibold text-terracota hover:text-terracota-osc">
                       Preguntar
