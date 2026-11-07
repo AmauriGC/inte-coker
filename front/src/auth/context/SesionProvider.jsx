@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { alExpirarSesion } from '../../common/api/cliente';
 import { tokens } from '../../common/api/tokens';
 import { useAlmacen } from '../../common/hooks/useAlmacen';
+import { asignarDueno } from '../../common/utils/listaLocal';
 import { limpiarCacheApi } from '../../pwa/estadoPwa';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
 import { authApi } from '../api/authApi';
@@ -36,6 +37,9 @@ export default function SesionProvider({ children }) {
       });
     return () => control.abort();
   }, []);
+
+  // Vistos, comparar y datos de entrega no pasan de una cuenta a otra en el mismo dispositivo.
+  useEffect(() => asignarDueno(usuario?.id ?? null), [usuario?.id]);
 
   useEffect(
     () =>
