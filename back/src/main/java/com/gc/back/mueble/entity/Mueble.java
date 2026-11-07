@@ -21,6 +21,7 @@ import java.math.BigDecimal;
  * el modelo 3D (que está en metros) para que la realidad aumentada mida bien.
  * Las rutas de archivos son relativas a UPLOADS_DIR. Las existencias bajan cuando el
  * vendedor acepta un pedido; los muebles que ya existían al agregar la columna quedan con 5.
+ * totalMeGusta, totalResenas y calificacion los mantiene el módulo resena (sirven para ordenar).
  */
 @Getter
 @Setter
@@ -56,6 +57,18 @@ public class Mueble extends EntidadBase {
     @ColumnDefault("5")
     @Column(nullable = false)
     private int existencias;
+
+    @ColumnDefault("0")
+    @Column(name = "total_me_gusta", nullable = false)
+    private int totalMeGusta;
+
+    @ColumnDefault("0")
+    @Column(name = "total_resenas", nullable = false)
+    private int totalResenas;
+
+    @ColumnDefault("0")
+    @Column(nullable = false, precision = 2, scale = 1)
+    private BigDecimal calificacion = BigDecimal.ZERO;
 
     @Column(nullable = false)
     private boolean publicado;

@@ -16,7 +16,9 @@ public enum PermisoBase {
     FAVORITO_GESTIONAR("Guardar y quitar muebles favoritos"),
     PEDIDO_CREAR("Preguntar por muebles, pedirlos y seguir mis compras"),
     PEDIDO_ATENDER("Ver y atender los pedidos de mis muebles"),
-    PEDIDO_SUPERVISAR("Ver todos los pedidos y cancelarlos por moderación");
+    PEDIDO_SUPERVISAR("Ver todos los pedidos y cancelarlos por moderación"),
+    RESENA_CREAR("Calificar y reseñar los muebles que recibí"),
+    RESENA_MODERAR("Ver todas las reseñas y ocultarlas");
 
     private final String descripcion;
 
