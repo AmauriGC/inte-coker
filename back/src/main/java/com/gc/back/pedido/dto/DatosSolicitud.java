@@ -21,6 +21,11 @@ public interface DatosSolicitud {
 
     String mensaje();
 
+    /** true = apartar con anticipo en vez de comprar de contado. */
+    default Boolean apartar() {
+        return false;
+    }
+
     /** Color elegido; null si el mueble no se vende por color. */
     default Long varianteId() {
         return null;
