@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 
 /**
- * Cada hora (APARTADOS_REVISION_MS) vence los apartados pasados de fecha, devuelve sus
+ * Cada hora (propiedad app.apartados.revision-ms) vence los apartados pasados de fecha, devuelve sus
  * existencias y avisa a quien tiene uno por vencer en las próximas 24 horas.
  */
 @Slf4j
