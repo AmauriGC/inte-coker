@@ -4,9 +4,10 @@
  * variantes: [{ id, nombre, hex, existencias }]; valor: id elegido.
  */
 export default function MuestrasColor({ variantes, valor, alElegir, vertical = false, grande = false, etiqueta = 'Color' }) {
-  const tamano = grande ? 'size-10' : 'size-8';
+  const tamano = grande ? 'size-11' : 'size-9';
+  // El anillo de la elegida va dentro del botón (borde + hueco): no crece ni se encima.
   return (
-    <div role="radiogroup" aria-label={etiqueta} className={`flex gap-1.5 ${vertical ? 'flex-col' : 'flex-wrap'}`}>
+    <div role="radiogroup" aria-label={etiqueta} className={`flex gap-1 ${vertical ? 'flex-col' : 'flex-wrap'}`}>
       {variantes.map((v) => {
         const elegido = v.id === valor;
         const agotado = v.existencias === 0;
@@ -19,8 +20,8 @@ export default function MuestrasColor({ variantes, valor, alElegir, vertical = f
             aria-label={`${v.nombre}${agotado ? ', agotado' : ''}`}
             title={`${v.nombre}${agotado ? ' (agotado)' : ''}`}
             onClick={() => alElegir(v.id)}
-            className={`relative grid ${tamano} shrink-0 place-items-center rounded-full transition-transform ${
-              elegido ? 'scale-110 ring-2 ring-tinta ring-offset-2 ring-offset-white' : 'hover:scale-105'
+            className={`relative grid ${tamano} shrink-0 place-items-center rounded-full border-2 p-[3px] transition-colors ${
+              elegido ? 'border-tinta' : 'border-transparent hover:border-borde'
             }`}
           >
             <span
