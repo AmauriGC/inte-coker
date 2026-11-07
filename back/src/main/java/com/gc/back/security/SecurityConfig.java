@@ -75,6 +75,7 @@ public class SecurityConfig {
                         // "yo" no es un slug: mi perfil siempre pide sesión (401 sin token).
                         .requestMatchers("/api/vendedores/yo", "/api/vendedores/yo/**").authenticated()
                         .requestMatchers(HttpMethod.GET, LECTURAS_PUBLICAS).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/muebles/*/vista").permitAll()
                         .requestMatchers(RUTAS_PUBLICAS).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService),
