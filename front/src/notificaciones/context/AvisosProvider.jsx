@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { router } from '../../app/router';
 import { useSesion } from '../../auth/context/SesionContext';
+import { ponerInsignia } from '../../pwa/estadoPwa';
 import { avisosApi } from '../api/avisosApi';
 import { AvisosContext } from './AvisosContext';
 import { useNotificaciones } from './NotificacionesContext';
@@ -10,6 +11,7 @@ const INTERVALO = 30_000;
 /**
  * Cuenta los avisos sin leer de la cuenta cada 30 s mientras la pestaña está visible. Si llega
  * uno nuevo, lo muestra en un toast con su botón; los de pedidos ya los avisa PedidosProvider.
+ * El total también va en el icono de la app instalada (Badging API).
  */
 export default function AvisosProvider({ children }) {
   const { usuario, cuentaTienePermiso } = useSesion();
@@ -53,6 +55,9 @@ export default function AvisosProvider({ children }) {
       control.abort();
     };
   }, [usuarioId, version]);
+
+  // Con la app instalada, el icono muestra cuántos avisos faltan por leer (0 sin sesión la limpia).
+  useEffect(() => ponerInsignia(usuarioId ? sinLeer : 0), [usuarioId, sinLeer]);
 
   /** Vuelve a contar ya (después de leer o borrar en la bandeja). */
   const refrescar = useCallback(() => setVersion((v) => v + 1), []);
