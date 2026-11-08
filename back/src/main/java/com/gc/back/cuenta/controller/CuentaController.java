@@ -1,6 +1,7 @@
 package com.gc.back.cuenta.controller;
 
 import com.gc.back.common.response.ApiResponse;
+import com.gc.back.cuenta.dto.CambiarPasswordRequest;
 import com.gc.back.cuenta.dto.DireccionRequest;
 import com.gc.back.cuenta.dto.DireccionResponse;
 import com.gc.back.cuenta.dto.PerfilRequest;
@@ -29,8 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-/** Mi cuenta (cualquier rol con sesión): nombre, foto y direcciones de entrega. */
-@Tag(name = "Cuenta", description = "Perfil, foto y direcciones guardadas")
+/** Mi cuenta (cualquier rol con sesión): nombre, foto, portada, contraseña y direcciones de entrega. */
+@Tag(name = "Cuenta", description = "Perfil, foto, portada, contraseña y direcciones guardadas")
 @RestController
 @RequestMapping("/api/cuenta")
 @RequiredArgsConstructor
@@ -49,13 +50,34 @@ public class CuentaController {
     @PostMapping(value = "/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<UsuarioResponse>> subirFoto(
             @RequestPart("archivo") MultipartFile archivo, @AuthenticationPrincipal UsuarioPrincipal actual) {
-        return ResponseEntity.ok(ApiResponse.ok("Foto actualizada", cuentaService.subirFoto(archivo, actual)));
+        return ResponseEntity.ok(ApiResponse.ok("Foto actualizada", cuentaService.subirImagen(false, archivo, actual)));
     }
 
     @Operation(summary = "Quita mi foto")
     @DeleteMapping("/foto")
     public ResponseEntity<ApiResponse<UsuarioResponse>> quitarFoto(@AuthenticationPrincipal UsuarioPrincipal actual) {
-        return ResponseEntity.ok(ApiResponse.ok("Foto quitada", cuentaService.quitarFoto(actual)));
+        return ResponseEntity.ok(ApiResponse.ok("Foto quitada", cuentaService.quitarImagen(false, actual)));
+    }
+
+    @Operation(summary = "Sube o reemplaza mi portada (PNG, JPG o WEBP, máximo 5 MB)")
+    @PostMapping(value = "/portada", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<UsuarioResponse>> subirPortada(
+            @RequestPart("archivo") MultipartFile archivo, @AuthenticationPrincipal UsuarioPrincipal actual) {
+        return ResponseEntity.ok(ApiResponse.ok("Portada actualizada", cuentaService.subirImagen(true, archivo, actual)));
+    }
+
+    @Operation(summary = "Quita mi portada")
+    @DeleteMapping("/portada")
+    public ResponseEntity<ApiResponse<UsuarioResponse>> quitarPortada(@AuthenticationPrincipal UsuarioPrincipal actual) {
+        return ResponseEntity.ok(ApiResponse.ok("Portada quitada", cuentaService.quitarImagen(true, actual)));
+    }
+
+    @Operation(summary = "Cambia mi contraseña con la actual")
+    @PutMapping("/password")
+    public ResponseEntity<ApiResponse<Void>> cambiarPassword(
+            @Valid @RequestBody CambiarPasswordRequest request, @AuthenticationPrincipal UsuarioPrincipal actual) {
+        cuentaService.cambiarPassword(request, actual);
+        return ResponseEntity.ok(ApiResponse.ok("Contraseña actualizada"));
     }
 
     @Operation(summary = "Mis direcciones (la predeterminada primero)")

@@ -50,6 +50,14 @@ Decisiones tomadas con el usuario (07/11/2026):
     publica muebles. Roles muestra los permisos fijos de ADMIN.
 - [x] 21d · Docs
   - Este documento y el maestro.
+- [x] 21e · Perfil y seguridad
+  - Back: `PUT /api/cuenta/password` (`CambiarPasswordRequest`: actual, nueva y
+    confirmación; avisa por correo) y `POST`/`DELETE /api/cuenta/portada` para cualquier
+    rol; `UsuarioResponse` trae `portadaUrl`.
+  - Front: el perfil tiene portada, foto y "Cambiar contraseña" (`HojaPassword`, con los
+    requisitos marcados al escribir). Cuenta muestra Favoritos y Comparar solo si el rol
+    activo ve el catálogo (`MUEBLE_VER`), así el transportista ya no los ve. En Usuarios el
+    rol Transportista se ve marcado, con candado.
 
 ## Verificación
 

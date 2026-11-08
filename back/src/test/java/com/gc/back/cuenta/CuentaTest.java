@@ -57,6 +57,50 @@ class CuentaTest extends PruebaIntegracion {
     }
 
     @Test
+    void suboYQuitoMiPortada() throws Exception {
+        String chofer = usuarioConRoles("portada.cuenta@prueba.com", "CLIENTE");
+        mvc.perform(multipart("/api/cuenta/portada").file(new MockMultipartFile("archivo", "portada.png",
+                        MediaType.APPLICATION_OCTET_STREAM_VALUE, PNG)).header(HttpHeaders.AUTHORIZATION, chofer))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.datos.portadaUrl").value(startsWith("/uploads/usuarios/")))
+                .andExpect(jsonPath("$.datos.fotoUrl").value(nullValue()));
+        mvc.perform(delete("/api/cuenta/portada").header(HttpHeaders.AUTHORIZATION, chofer))
+                .andExpect(jsonPath("$.datos.portadaUrl").value(nullValue()));
+    }
+
+    @Test
+    void cambioMiContrasenaConLaActual() throws Exception {
+        String email = "password.cuenta@prueba.com";
+        String yo = usuarioConRoles(email, "CLIENTE");
+
+        cambiar(yo, "Otra2026x", "Nueva2026x", "Nueva2026x")
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value("Tu contraseña actual no es correcta"));
+        cambiar(yo, PASSWORD, "Nueva2026x", "Distinta2026x")
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value("La confirmación no coincide con la nueva contraseña"));
+        cambiar(yo, PASSWORD, PASSWORD, PASSWORD)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value("La nueva contraseña debe ser distinta de la actual"));
+        cambiar(yo, PASSWORD, "corta", "corta")
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.nueva").exists());
+
+        cambiar(yo, PASSWORD, "Nueva2026x", "Nueva2026x").andExpect(status().isOk());
+        login(email, PASSWORD).andExpect(status().isUnauthorized());
+        login(email, "Nueva2026x").andExpect(status().isOk());
+        verify(correoService, timeout(5000)).enviarAviso(argThat((AvisoCorreo a) -> a.email().equals(email)
+                && a.asunto().equals("Cambiaste tu contraseña")));
+        cambiar(null, PASSWORD, "Nueva2026x", "Nueva2026x").andExpect(status().isUnauthorized());
+    }
+
+    private ResultActions cambiar(String token, String actual, String nueva, String confirmacion) throws Exception {
+        var peticion = put("/api/cuenta/password").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"actual\":\"%s\",\"nueva\":\"%s\",\"confirmacion\":\"%s\"}".formatted(actual, nueva, confirmacion));
+        return mvc.perform(token == null ? peticion : peticion.header(HttpHeaders.AUTHORIZATION, token));
+    }
+
+    @Test
     void guardoHastaCincoDireccionesConUnaPredeterminada() throws Exception {
         String ana = usuarioConRoles("cliente.direcciones@prueba.com", "CLIENTE");
         String beto = usuarioConRoles("otro.direcciones@prueba.com", "CLIENTE");
