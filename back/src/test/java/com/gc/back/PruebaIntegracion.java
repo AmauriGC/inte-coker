@@ -18,6 +18,7 @@ import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -63,6 +64,25 @@ public abstract class PruebaIntegracion {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(correoService).enviarVerificacion(eq(email), anyString(), captor.capture());
         return captor.getValue();
+    }
+
+    /** Token del último correo de invitación que recibió un transportista. */
+    protected String tokenDeInvitacion(String email) {
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(correoService, atLeastOnce()).enviarInvitacion(eq(email), anyString(), anyString(), captor.capture());
+        return captor.getValue();
+    }
+
+    /** El vendedor registra a su transportista y este activa la cuenta; devuelve su "Bearer ...". */
+    protected String transportistaDe(String vendedor, String email) throws Exception {
+        mvc.perform(post("/api/transportistas").header(HttpHeaders.AUTHORIZATION, vendedor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nombre\":\"Usuario %s\",\"email\":\"%s\",\"telefono\":\"55 9876 5432\"}".formatted(email, email)))
+                .andExpect(status().isCreated());
+        mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"token\":\"%s\",\"password\":\"%s\"}".formatted(tokenDeInvitacion(email), PASSWORD)))
+                .andExpect(status().isOk());
+        return "Bearer " + accessToken(email, PASSWORD);
     }
 
     /** Registra, verifica y asigna roles con el admin; devuelve el "Bearer ..." del usuario. */

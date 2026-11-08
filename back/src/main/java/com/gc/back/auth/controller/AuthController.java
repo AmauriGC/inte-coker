@@ -72,6 +72,13 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("Si el correo está registrado, te enviamos un enlace"));
     }
 
+    @Operation(summary = "Activa una cuenta invitada (transportista) poniendo su contraseña")
+    @PostMapping("/activar")
+    public ResponseEntity<ApiResponse<Void>> activar(@Valid @RequestBody RestablecerPasswordRequest request) {
+        authService.activar(request);
+        return ResponseEntity.ok(ApiResponse.ok("Cuenta activada, ya puedes entrar"));
+    }
+
     @Operation(summary = "Guarda la nueva contraseña usando el token del enlace")
     @PostMapping("/restablecer-password")
     public ResponseEntity<ApiResponse<Void>> restablecerPassword(

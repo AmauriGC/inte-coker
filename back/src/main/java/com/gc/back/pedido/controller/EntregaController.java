@@ -4,7 +4,6 @@ import com.gc.back.common.response.ApiResponse;
 import com.gc.back.common.response.PaginaResponse;
 import com.gc.back.pedido.dto.EntregaResponse;
 import com.gc.back.pedido.dto.NoEntregadaRequest;
-import com.gc.back.pedido.dto.TransportistaResponse;
 import com.gc.back.pedido.service.EntregaService;
 import com.gc.back.security.UsuarioPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 /** Entregas a domicilio: el vendedor elige transportista y el transportista confirma la entrega y el cobro. */
 @Tag(name = "Entregas", description = "Transportistas y entregas a domicilio")
@@ -35,13 +33,6 @@ import java.util.List;
 public class EntregaController {
 
     private final EntregaService entregaService;
-
-    @Operation(summary = "Transportistas activos para asignar un envío")
-    @PreAuthorize("hasAuthority('PEDIDO_ATENDER')")
-    @GetMapping("/transportistas")
-    public ResponseEntity<ApiResponse<List<TransportistaResponse>>> transportistas() {
-        return ResponseEntity.ok(ApiResponse.ok("Transportistas", entregaService.transportistas()));
-    }
 
     @Operation(summary = "Mis entregas: pendientes (en camino) o ya cerradas")
     @PreAuthorize("hasAuthority('ENTREGA_REALIZAR')")

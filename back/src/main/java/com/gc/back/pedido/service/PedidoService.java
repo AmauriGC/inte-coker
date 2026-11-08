@@ -69,7 +69,7 @@ import static com.gc.back.pedido.entity.EstadoPedido.VENCIDO;
  * - Las existencias se revisan al pedir y se descuentan al aceptar; vuelven si se cancela
  *   un pedido aceptado.
  * - Cada cambio de estado deja un mensaje del sistema y avisa por correo al otro lado.
- * - Al enviar a domicilio el vendedor puede asignar un transportista (cuenta activa con
+ * - Al enviar a domicilio el vendedor puede asignar uno de sus transportistas (cuenta activa con
  *   ENTREGA_REALIZAR); el transportista no entra a la conversación.
  */
 @Service
@@ -336,8 +336,11 @@ public class PedidoService {
             throw new ReglaNegocioException("Solo los envíos a domicilio llevan transportista");
         }
         Usuario transportista = usuarioService.obtenerEntidad(transportistaId);
-        if (!transportista.isActivo() || !tienePermiso(transportista, ENTREGAR)) {
+        if (!transportista.puedeEntrar() || !tienePermiso(transportista, ENTREGAR)) {
             throw new ReglaNegocioException("Esa cuenta no es un transportista activo");
+        }
+        if (transportista.getEmpleador() == null || !transportista.getEmpleador().getId().equals(pedido.getVendedor().getId())) {
+            throw new ReglaNegocioException("Ese transportista no trabaja contigo");
         }
         pedido.setTransportista(transportista);
         pedido.setAsignadoEn(ahora);

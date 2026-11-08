@@ -53,6 +53,16 @@ public class CorreoService {
         enviar(email, "Restablece tu contraseña de GC-Confort", "recuperacion", Map.of("nombre", nombre, "enlace", enlace));
     }
 
+    /** El vendedor registró a un transportista: el enlace le deja poner su contraseña. */
+    public void enviarInvitacion(String email, String nombre, String vendedor, String token) {
+        enviar(email, vendedor + " te invitó a GC-Confort", "aviso", Map.of(
+                "nombre", nombre,
+                "titulo", "Ya eres transportista de " + vendedor,
+                "texto", "Pon tu contraseña para ver las entregas que te asignen. El enlace dura 72 horas.",
+                "boton", "Activar mi cuenta",
+                "enlace", urlFront + "/activar?token=" + token));
+    }
+
     /** Aviso de un módulo (pedidos): título, texto y un botón que lleva al front. */
     public void enviarAviso(AvisoCorreo aviso) {
         enviar(aviso.email(), aviso.asunto(), "aviso", Map.of(

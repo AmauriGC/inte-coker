@@ -32,6 +32,7 @@ public class SecurityConfig {
             "/api/auth/reenviar-verificacion",
             "/api/auth/olvide-password",
             "/api/auth/restablecer-password",
+            "/api/auth/activar",
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",

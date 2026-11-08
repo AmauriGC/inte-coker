@@ -6,7 +6,9 @@ import java.time.Duration;
 public enum TipoTokenCorreo {
 
     VERIFICACION(Duration.ofHours(24)),
-    RECUPERACION(Duration.ofMinutes(30));
+    RECUPERACION(Duration.ofMinutes(30)),
+    /** Un vendedor registró al transportista: con el enlace pone su contraseña. */
+    INVITACION(Duration.ofHours(72));
 
     private final Duration vigencia;
 

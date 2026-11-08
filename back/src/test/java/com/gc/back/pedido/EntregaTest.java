@@ -26,8 +26,8 @@ class EntregaTest extends PruebaIntegracion {
     void elTransportistaEntregaYCobra() throws Exception {
         String vendedor = usuarioConRoles("vende.entrega@prueba.com", "VENDEDOR");
         String cliente = usuarioConRoles("cliente.entrega@prueba.com", "CLIENTE");
-        String chofer = usuarioConRoles("chofer.uno@prueba.com", "TRANSPORTISTA");
-        String otro = usuarioConRoles("chofer.dos@prueba.com", "TRANSPORTISTA");
+        String chofer = transportistaDe(vendedor, "chofer.uno@prueba.com");
+        String otro = transportistaDe(vendedor, "chofer.dos@prueba.com");
         Integer mueble = muebleListo("Mesa Entrega", 5, vendedor);
         Integer idChofer = idUsuario("chofer.uno@prueba.com");
 
@@ -74,7 +74,7 @@ class EntregaTest extends PruebaIntegracion {
     void siNoSePuedeEntregarRegresaAlVendedor() throws Exception {
         String vendedor = usuarioConRoles("vende.falla@prueba.com", "VENDEDOR");
         String cliente = usuarioConRoles("cliente.falla@prueba.com", "CLIENTE");
-        String chofer = usuarioConRoles("chofer.falla@prueba.com", "TRANSPORTISTA");
+        String chofer = transportistaDe(vendedor, "chofer.falla@prueba.com");
         Integer mueble = muebleListo("Mesa Falla", 5, vendedor);
         Integer idChofer = idUsuario("chofer.falla@prueba.com");
 

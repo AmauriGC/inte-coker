@@ -59,6 +59,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 17 — Transportista y método de pago
 - [x] Fase 18 — Métricas: ventas, zonas, muebles y conversión
 - [x] Fase 19 — Más para el cliente
+- [ ] Fase 20 — Avisos en la cuenta, solicitud de vendedor y transportistas del vendedor
 
 ## Fases documentadas
 
@@ -84,6 +85,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 17 | `md/hechos/FASE_17_transportista.md` | hecho |
 | 18 | `md/hechos/FASE_18_metricas.md` | hecho |
 | 19 | `md/hechos/FASE_19_cliente.md` | hecho |
+| 20 | `md/pendientes/FASE_20_cuentas.md` | pendiente |
 
 ## Pendientes después de las fases
 
