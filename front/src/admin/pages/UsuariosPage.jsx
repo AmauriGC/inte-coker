@@ -14,8 +14,11 @@ import EncabezadoPanel from '../../layout/EncabezadoPanel';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
 import { adminApi } from '../api/adminApi';
 
-/** Roles base que se pueden asignar, de menor a mayor alcance. */
-const ROLES = ['CLIENTE', 'VENDEDOR', 'TRANSPORTISTA', 'ADMIN'];
+/**
+ * Roles que el administrador asigna, de menor a mayor alcance. Transportista no: lo registra
+ * cada vendedor desde su panel; aquí solo se muestra como etiqueta.
+ */
+const ROLES = ['CLIENTE', 'VENDEDOR', 'ADMIN'];
 
 /** Chips para activar o quitar roles (multirol). Al menos un rol debe quedar. */
 function ChipsRoles({ usuario, alCambiar, ocupado }) {
@@ -38,6 +41,11 @@ function ChipsRoles({ usuario, alCambiar, ocupado }) {
           </button>
         );
       })}
+      {usuario.roles.includes('TRANSPORTISTA') && (
+        <span className="inline-flex h-8 items-center rounded-full border border-dashed border-borde px-3 text-[12.5px] font-semibold text-gris" title="Lo registró un vendedor">
+          {datosRol('TRANSPORTISTA').nombre}
+        </span>
+      )}
     </div>
   );
 }
