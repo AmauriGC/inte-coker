@@ -95,6 +95,21 @@ public class UsuarioService {
         log.info("Administrador inicial creado: {}", normalizarEmail(email));
     }
 
+    /**
+     * Crea el vendedor de ejemplo, dueño de los muebles de la semilla, si no existe. Idempotente.
+     * Así los pedidos de esos muebles los atiende un vendedor y no el administrador.
+     */
+    @Transactional
+    public Usuario asegurarVendedorDemo(String email, String password) {
+        return usuarioRepository.findByEmail(normalizarEmail(email)).orElseGet(() -> {
+            Usuario vendedor = crear("Taller GC-Confort", email, password, Set.of(RolBase.VENDEDOR.name()), true);
+            vendedor.setCiudad("Ciudad de México");
+            vendedor.setBio("Muebles de ejemplo de GC-Confort, modelados en 3D para verlos en tu espacio.");
+            log.info("Vendedor de ejemplo creado: {}", vendedor.getEmail());
+            return vendedor;
+        });
+    }
+
     @Transactional(readOnly = true)
     public Optional<Usuario> buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(normalizarEmail(email));

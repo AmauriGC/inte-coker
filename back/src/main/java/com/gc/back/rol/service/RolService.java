@@ -38,7 +38,7 @@ public class RolService {
 
     /**
      * Crea los permisos y roles base que falten. Es idempotente: no pisa los permisos
-     * que un administrador ya cambió, salvo ADMIN, que siempre queda con todos.
+     * que un administrador ya cambió, salvo ADMIN, que siempre queda con los de {@link RolBase}.
      * Un permiso que se crea por primera vez se agrega a los roles base existentes que lo
      * traen en {@link RolBase} (así CLIENTE y VENDEDOR reciben los permisos de módulos nuevos).
      */
@@ -65,7 +65,9 @@ public class RolService {
                 rolRepository.save(rol);
                 log.info("Rol {} creado con {} permisos", base.name(), iniciales.size());
             } else if (base == RolBase.ADMIN) {
-                rol.setPermisos(new HashSet<>(permisos.values()));
+                Set<Permiso> fijos = new HashSet<>();
+                base.getPermisos().forEach(p -> fijos.add(permisos.get(p.name())));
+                rol.setPermisos(fijos);
             } else {
                 List<Permiso> agregar = base.getPermisos().stream().filter(nuevos::contains)
                         .map(p -> permisos.get(p.name())).toList();
@@ -92,7 +94,7 @@ public class RolService {
         Rol rol = rolRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("El rol no existe"));
         if (RolBase.ADMIN.name().equals(rol.getNombre())) {
-            throw new ReglaNegocioException("El rol ADMIN siempre tiene todos los permisos y no se puede modificar");
+            throw new ReglaNegocioException("El rol ADMIN tiene permisos fijos de supervisión y no se puede modificar");
         }
         Set<String> nombres = normalizar(request.permisos());
         List<Permiso> encontrados = permisoRepository.findByNombreIn(nombres);

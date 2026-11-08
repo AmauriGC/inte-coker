@@ -8,6 +8,7 @@ import com.gc.back.mueble.dto.VarianteRequest;
 import com.gc.back.mueble.entity.Mueble;
 import com.gc.back.mueble.repository.MuebleRepository;
 import com.gc.back.security.UsuarioPrincipal;
+import com.gc.back.usuario.entity.Usuario;
 import com.gc.back.usuario.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,8 @@ import java.util.Map;
 
 /**
  * Carga los muebles hechos en Blender (resources/semilla), publicados y a nombre del
- * administrador. Solo agrega los que faltan (por slug): un modelo nuevo aparece al
+ * vendedor de ejemplo (el administrador no vende). Los ejemplos que una versión anterior
+ * dejó a nombre de otra cuenta pasan a ese vendedor. Solo agrega los que faltan (por slug): un modelo nuevo aparece al
  * reiniciar sin tocar los existentes. Un ejemplo borrado vuelve en el siguiente arranque;
  * para evitarlo se apaga con SEMILLA_CATALOGO=false. Los precios son de ejemplo.
  */
@@ -87,7 +89,8 @@ public class SemillaCatalogoService {
     private final UsuarioService usuarioService;
 
     @Transactional
-    public void sembrarFaltantes(String adminEmail) {
+    public void sembrarFaltantes(Usuario vendedor) {
+        reasignar(vendedor);
         List<Ejemplo> faltantes = EJEMPLOS.stream()
                 .filter(ejemplo -> !muebleRepository.existsBySlug(ejemplo.archivo()))
                 .toList();
@@ -95,13 +98,13 @@ public class SemillaCatalogoService {
         if (faltantes.isEmpty()) {
             return;
         }
-        UsuarioPrincipal admin = UsuarioPrincipal.desde(usuarioService.obtenerPorEmail(adminEmail));
+        UsuarioPrincipal dueno = UsuarioPrincipal.desde(vendedor);
         for (Ejemplo ejemplo : faltantes) {
             Categoria categoria = categoriaService.asegurar(ejemplo.categoria(), ejemplo.descripcionCategoria());
             MuebleDatos d = ejemplo.datos();
             Long id = muebleService.crear(new MuebleRequest(d.nombre(), d.descripcion(), new BigDecimal(d.precio()),
                     d.ancho(), d.fondo(), d.alto(), d.materiales(), d.existencias(), categoria.getId(),
-                    COLORES.get(ejemplo.archivo())), admin).id();
+                    COLORES.get(ejemplo.archivo())), dueno).id();
 
             Mueble mueble = muebleRepository.findWithRelacionesById(id).orElseThrow();
             muebleService.adjuntar(mueble, leer(ejemplo.archivo() + ".glb"), TipoArchivo.MODELO_3D);
@@ -109,6 +112,17 @@ public class SemillaCatalogoService {
             mueble.setPublicado(true);
         }
         log.info("Catálogo de ejemplo: {} muebles agregados", faltantes.size());
+    }
+
+    private void reasignar(Usuario vendedor) {
+        long movidos = EJEMPLOS.stream()
+                .map(ejemplo -> muebleRepository.findBySlug(ejemplo.archivo()).orElse(null))
+                .filter(m -> m != null && !m.getVendedor().getId().equals(vendedor.getId()))
+                .peek(m -> m.setVendedor(vendedor))
+                .count();
+        if (movidos > 0) {
+            log.info("Catálogo de ejemplo: {} muebles pasaron a {}", movidos, vendedor.getEmail());
+        }
     }
 
     private void asegurarColores() {

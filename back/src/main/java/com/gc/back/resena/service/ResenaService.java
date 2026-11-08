@@ -146,12 +146,12 @@ public class ResenaService {
         return ResenaResponse.desde(resena, actual.id(), false);
     }
 
-    /** El vendedor del mueble (o el administrador) responde; responder otra vez corrige la respuesta. */
+    /** Solo el vendedor del mueble responde; responder otra vez corrige la respuesta. */
     @Transactional
     public ResenaResponse responder(Long resenaId, RespuestaRequest request, UsuarioPrincipal actual) {
         Resena resena = obtener(resenaId);
         boolean esVendedor = resena.getMueble().getVendedor().getId().equals(actual.id());
-        if (!esVendedor && !actual.esAdmin()) {
+        if (!esVendedor) {
             throw new ResenaNoPermitidaException("Solo quien vende el mueble responde sus reseñas");
         }
         resena.setRespuesta(request.texto().trim());

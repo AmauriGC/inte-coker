@@ -2,6 +2,7 @@ package com.gc.back.mueble;
 
 import com.gc.back.PruebaIntegracion;
 import com.gc.back.mueble.service.SemillaCatalogoService;
+import com.gc.back.usuario.service.UsuarioService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ class CatalogoTest extends PruebaIntegracion {
 
     @Autowired
     private SemillaCatalogoService semillaCatalogoService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @Test
     void catalogoPublicoTraeLosMueblesDeEjemploYSusArchivos() throws Exception {
@@ -82,11 +86,12 @@ class CatalogoTest extends PruebaIntegracion {
                 .andExpect(jsonPath("$.datos.categoria.nombre").value("Mesas"))
                 .andExpect(jsonPath("$.datos.modeloUrl", startsWith("/uploads/muebles/")));
 
-        semillaCatalogoService.sembrarFaltantes(ADMIN_EMAIL);
+        semillaCatalogoService.sembrarFaltantes(usuarioService.asegurarVendedorDemo("taller@prueba.com", "Taller123*"));
 
         mvc.perform(get("/api/muebles").param("buscar", "duna"))
                 .andExpect(jsonPath("$.datos.contenido", hasSize(1)))
-                .andExpect(jsonPath("$.datos.contenido[0].slug").value("sofa-duna"));
+                .andExpect(jsonPath("$.datos.contenido[0].slug").value("sofa-duna"))
+                .andExpect(jsonPath("$.datos.contenido[0].vendedor.nombre").value("Taller GC-Confort"));
     }
 
     @Test
@@ -128,14 +133,18 @@ class CatalogoTest extends PruebaIntegracion {
         mvc.perform(get("/api/muebles/gestion").header(HttpHeaders.AUTHORIZATION, vendedor))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.datos.contenido", hasSize(1)));
+        // El administrador supervisa: ve el borrador, pero no gestiona ni publica muebles ajenos.
         mvc.perform(get("/api/muebles/gestion").header(HttpHeaders.AUTHORIZATION, admin))
-                .andExpect(jsonPath("$.datos.totalElementos", greaterThanOrEqualTo(5)));
+                .andExpect(status().isForbidden());
 
         mvc.perform(put("/api/muebles/{id}", id).header(HttpHeaders.AUTHORIZATION, otroVendedor)
                         .contentType(MediaType.APPLICATION_JSON).content(mueble("Robada", idMesas)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.mensaje").value("Solo puedes modificar tus propios muebles"));
-        publicar(id, admin, false).andExpect(status().isOk());
+        publicar(id, admin, false).andExpect(status().isForbidden());
+        publicar(id, vendedor, false).andExpect(status().isOk());
+        mvc.perform(get("/api/muebles/mesa-taller-nandu").header(HttpHeaders.AUTHORIZATION, admin))
+                .andExpect(status().isOk());
 
         mvc.perform(delete("/api/muebles/{id}", id).header(HttpHeaders.AUTHORIZATION, vendedor))
                 .andExpect(status().isOk());
@@ -147,6 +156,7 @@ class CatalogoTest extends PruebaIntegracion {
     void validacionesYPermisosDelCatalogo() throws Exception {
         String admin = "Bearer " + accessToken(ADMIN_EMAIL, ADMIN_PASSWORD);
         String cliente = usuarioConRoles("cliente.catalogo@prueba.com", "CLIENTE");
+        String vendedor = usuarioConRoles("vende.validacion@prueba.com", "VENDEDOR");
         Integer idMesas = idCategoria("Mesas");
 
         mvc.perform(post("/api/muebles").contentType(MediaType.APPLICATION_JSON).content(mueble("X", idMesas)))
@@ -156,7 +166,7 @@ class CatalogoTest extends PruebaIntegracion {
                         .contentType(MediaType.APPLICATION_JSON).content(mueble("X", idMesas)))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(post("/api/muebles").header(HttpHeaders.AUTHORIZATION, admin)
+        mvc.perform(post("/api/muebles").header(HttpHeaders.AUTHORIZATION, vendedor)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Silla\",\"precio\":-5,\"anchoCm\":0,\"fondoCm\":40,\"altoCm\":80,\"existencias\":-1,\"categoriaId\":" + idMesas + "}"))
                 .andExpect(status().isBadRequest())

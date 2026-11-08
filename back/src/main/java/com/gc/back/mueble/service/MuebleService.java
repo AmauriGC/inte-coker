@@ -67,16 +67,15 @@ public class MuebleService {
     @Transactional(readOnly = true)
     public MuebleResponse obtenerPorSlug(String slug, UsuarioPrincipal actual) {
         Mueble mueble = muebleRepository.findBySlug(slug)
-                .filter(m -> m.isPublicado() || puedeModificar(m, actual))
+                .filter(m -> m.isPublicado() || puedeModificar(m, actual) || (actual != null && actual.esAdmin()))
                 .orElseThrow(() -> new RecursoNoEncontradoException("El mueble no existe"));
         return MuebleResponse.desde(mueble);
     }
 
-    /** Panel: el vendedor ve los suyos; el administrador ve todos. */
+    /** Panel: cada vendedor ve y gestiona solo los suyos. */
     @Transactional(readOnly = true)
     public PaginaResponse<MuebleResponse> listarGestion(String buscar, Pageable pageable, UsuarioPrincipal actual) {
-        Long vendedorId = actual.esAdmin() ? null : actual.id();
-        return PaginaResponse.desde(muebleRepository.buscarGestion(vendedorId, texto(buscar), pageable)
+        return PaginaResponse.desde(muebleRepository.buscarGestion(actual.id(), texto(buscar), pageable)
                 .map(MuebleResponse::desde));
     }
 
@@ -225,7 +224,7 @@ public class MuebleService {
     }
 
     private boolean puedeModificar(Mueble mueble, UsuarioPrincipal actual) {
-        return actual != null && (actual.esAdmin() || mueble.getVendedor().getId().equals(actual.id()));
+        return actual != null && mueble.getVendedor().getId().equals(actual.id());
     }
 
     private void aplicar(Mueble mueble, MuebleRequest request) {
