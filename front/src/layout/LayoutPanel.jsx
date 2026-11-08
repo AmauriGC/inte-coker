@@ -1,4 +1,4 @@
-import { ArrowLeft, BarChart3, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, UserPlus, Users } from 'lucide-react';
+import { ArrowLeft, BarChart3, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Truck, UserPlus, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { NavLink, useNavigate } from 'react-router';
@@ -14,6 +14,7 @@ const SECCIONES = [
   { a: '/panel/muebles', texto: 'Mis muebles', Icono: Package, permisos: ['MUEBLE_CREAR'] },
   { a: '/panel/pedidos', texto: 'Pedidos', Icono: ReceiptText, permisos: ['PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR'], contador: true },
   { a: '/panel/metricas', texto: 'Métricas', Icono: BarChart3, permisos: ['METRICA_VER', 'METRICA_GLOBAL'] },
+  { a: '/panel/transportistas', texto: 'Transportistas', Icono: Truck, permisos: ['TRANSPORTISTA_GESTIONAR'] },
   { a: '/panel/perfil', texto: 'Mi perfil', Icono: Store, permisos: ['PERFIL_VENDEDOR_EDITAR'] },
   { a: '/panel/resenas', texto: 'Reseñas', Icono: MessageSquareText, permisos: ['RESENA_MODERAR'] },
   { a: '/panel/categorias', texto: 'Categorías', Icono: Tags, permisos: ['CATEGORIA_GESTIONAR'] },

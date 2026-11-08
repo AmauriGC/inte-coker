@@ -4,6 +4,8 @@ import Boton from '../../common/components/Boton';
 import Hoja from '../../common/components/Hoja';
 import { useConsulta } from '../../common/hooks/useConsulta';
 import { useEnvio } from '../../common/hooks/useEnvio';
+import { Link } from 'react-router';
+import { disponible, transportistasApi } from '../../transportistas/api/transportistasApi';
 import { pedidosApi } from '../api/pedidosApi';
 
 /** El vendedor manda el pedido a domicilio: elige transportista o lo lleva él mismo. */
@@ -25,10 +27,10 @@ export default function HojaEnviar({ abierta, alCerrar, pedido, alListo }) {
 }
 
 function Formulario({ pedido, alListo }) {
-  const { datos, cargando, error: errorLista } = useConsulta((s) => pedidosApi.transportistas(s), []);
+  const { datos, cargando, error: errorLista } = useConsulta((s) => transportistasApi.listar(s), []);
   const [elegido, setElegido] = useState(null);
   const { enviar, enviando, error } = useEnvio((id) => pedidosApi.cambiarEstado(pedido.id, 'EN_CAMINO', null, id));
-  const lista = datos ?? [];
+  const lista = (datos ?? []).filter(disponible);
 
   async function alEnviar(e) {
     e.preventDefault();
@@ -75,7 +77,13 @@ function Formulario({ pedido, alListo }) {
           opcion(t.id, t.nombre, t.enCamino ? `${t.enCamino} ${t.enCamino === 1 ? 'entrega' : 'entregas'} en camino` : 'Sin entregas ahora', Truck),
         )}
         {!cargando && !lista.length && (
-          <p className="text-[12.5px] text-gris">Aún no hay transportistas. Un administrador puede dar el rol Transportista en Usuarios.</p>
+          <p className="text-[12.5px] text-gris">
+            Aún no tienes transportistas activos.{' '}
+            <Link to="/panel/transportistas" className="font-semibold text-terracota underline-offset-2 hover:underline">
+              Regístralos aquí
+            </Link>
+            .
+          </p>
         )}
       </div>
     </form>

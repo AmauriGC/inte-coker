@@ -8,5 +8,6 @@ export const RolesPage = lazy(() => import('../admin/pages/RolesPage'));
 export const PanelPedidosPage = lazy(() => import('../vendedor/pages/PanelPedidosPage'));
 export const MiPerfilPage = lazy(() => import('../vendedor/pages/MiPerfilPage'));
 export const MetricasPage = lazy(() => import('../metricas/pages/MetricasPage'));
+export const TransportistasPage = lazy(() => import('../transportistas/pages/TransportistasPage'));
 export const SolicitudesPage = lazy(() => import('../admin/pages/SolicitudesPage'));
 export const ResenasModeracionPage = lazy(() => import('../admin/pages/ResenasModeracionPage'));

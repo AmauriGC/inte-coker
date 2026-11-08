@@ -21,6 +21,7 @@ const ACCESOS = [
   { a: '/panel/muebles', texto: 'Mis muebles', detalle: 'Crea, sube modelos y publica', Icono: Package, permiso: 'MUEBLE_CREAR' },
   { a: '/panel/pedidos', texto: 'Pedidos', detalle: 'Atiende a tus clientes', Icono: ReceiptText, permiso: 'PEDIDO_ATENDER' },
   { a: '/panel/metricas', texto: 'Métricas', detalle: 'Ventas, zonas y conversión', Icono: BarChart3, permiso: 'METRICA_VER' },
+  { a: '/panel/transportistas', texto: 'Mis transportistas', detalle: 'Quién lleva tus envíos', Icono: Truck, permiso: 'TRANSPORTISTA_GESTIONAR' },
   { a: '/panel/perfil', texto: 'Mi perfil de vendedor', detalle: 'Foto, presentación y trabajos', Icono: Store, permiso: 'PERFIL_VENDEDOR_EDITAR' },
   { a: '/panel/resenas', texto: 'Reseñas', detalle: 'Modera las opiniones de clientes', Icono: MessageSquareText, permiso: 'RESENA_MODERAR' },
   { a: '/panel/categorias', texto: 'Categorías', detalle: 'Organiza el catálogo', Icono: Tags, permiso: 'CATEGORIA_GESTIONAR' },
