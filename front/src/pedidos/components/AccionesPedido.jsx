@@ -32,10 +32,24 @@ function accion(estado, p) {
           },
         };
       }
+      if (p.apartado) {
+        // El cliente pidió apartar, pero el vendedor puede aceptarlo como venta normal.
+        return {
+          texto: 'Aceptar con pago completo',
+          Icono: CircleCheck,
+          variante: 'secundario',
+          exito: 'Pedido aceptado con pago completo',
+          confirmar: {
+            titulo: '¿Aceptar con pago completo?',
+            texto: `Ya no se aparta: el cliente paga el total (${precio(p.total)}) en lugar del anticipo. Se descuentan ${p.cantidad} de las existencias de ${p.mueble.nombre}.`,
+            boton: 'Aceptar',
+          },
+        };
+      }
       return {
-        texto: p.apartado ? 'Aceptar con pago completo' : 'Aceptar pedido',
+        texto: 'Aceptar pedido',
         Icono: CircleCheck,
-        variante: p.apartado ? 'secundario' : 'primario',
+        variante: 'primario',
         exito: 'Pedido aceptado',
         confirmar: {
           titulo: '¿Aceptar el pedido?',
@@ -153,7 +167,8 @@ export default function AccionesPedido({ pedido, alActualizar, alSolicitar, alCo
     return undefined;
   }
 
-  // Lo principal primero y a todo lo ancho; cancelar o rechazar quedan como secundarios.
+  // Lo principal primero y a todo lo ancho. Los secundarios miden según su texto y crecen:
+  // si dos no caben en una fila, cada uno baja a la suya en lugar de cortar o desbordar el texto.
   const orden = (a) => (a.variante === 'secundario' ? 1 : 0);
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
@@ -165,7 +180,7 @@ export default function AccionesPedido({ pedido, alActualizar, alSolicitar, alCo
           cargando={enCurso === a.estado}
           disabled={Boolean(enCurso)}
           onClick={() => ejecutar(a)}
-          className={a.variante === 'secundario' ? 'flex-1' : 'w-full'}
+          className={`whitespace-nowrap ${a.variante === 'secundario' ? 'flex-auto' : 'w-full'}`}
         >
           {a.texto}
         </Boton>
