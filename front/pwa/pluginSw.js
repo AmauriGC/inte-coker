@@ -18,9 +18,11 @@ function origenApi(apiUrl) {
 
 /**
  * Genera /sw.js a partir de pwa/sw.js al compilar:
- * - __PRECACHE__: index.html, el JS que carga al inicio, el CSS y los archivos de public/.
+ * - __PRECACHE__: index.html, el JS que carga al inicio, el CSS y los archivos de public/
+ *   (menos public/capturas, que son del manifest).
  *   Los chunks diferidos (panel, model-viewer) no se precargan: se guardan cuando se usan.
- * - __VERSION__: hash de la lista, para que cada build tenga su caché estática.
+ * - __VERSION__: hash de la lista, del código del SW y de public, para que cada cambio tenga
+ *   su caché estática.
  * - __API_ORIGEN__: origen de VITE_API_URL (para reconocer /api y /uploads). Si la URL es
  *   relativa ("/api", nginx en Docker), el back está en el mismo origen que la página.
  */
@@ -36,10 +38,15 @@ export default function pluginSw({ apiUrl }) {
       const entrada = Object.values(bundle)
         .filter((b) => (b.type === 'chunk' ? !b.isDynamicEntry : b.fileName.endsWith('.css')))
         .map((b) => '/' + b.fileName);
-      const publicos = archivosPublicos(join(raiz, 'public'));
+      // Las capturas del manifest solo las pide el diálogo de instalación: no se precargan.
+      const publicos = archivosPublicos(join(raiz, 'public')).filter((ruta) => !ruta.startsWith('/capturas/'));
       const precache = [...new Set(['/index.html', ...entrada, ...publicos])].sort();
-      const version = createHash('sha256').update(precache.join('|')).digest('hex').slice(0, 10);
       const plantilla = readFileSync(join(raiz, 'pwa', 'sw.js'), 'utf8');
+      // Lista + código del SW + contenido de public: cambiar el manifest o una estrategia también
+      // estrena caché (los assets ya traen su hash en el nombre).
+      const huella = createHash('sha256').update(precache.join('|')).update(plantilla);
+      for (const ruta of publicos) huella.update(readFileSync(join(raiz, 'public', ruta)));
+      const version = huella.digest('hex').slice(0, 10);
 
       this.emitFile({
         type: 'asset',
