@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter } from 'react-router';
 import RutaProtegida from '../auth/components/RutaProtegida';
 import CuentaPage from '../auth/pages/CuentaPage';
 import LoginPage from '../auth/pages/LoginPage';
@@ -17,6 +17,7 @@ import InicioPage from '../catalogo/pages/InicioPage';
 import NoEncontradoPage from '../common/components/NoEncontradoPage';
 import FavoritosPage from '../favoritos/pages/FavoritosPage';
 import LayoutMovil from '../layout/LayoutMovil';
+import InicioPanel from '../layout/InicioPanel';
 import LayoutPanel from '../layout/LayoutPanel';
 import Raiz from '../layout/Raiz';
 import AvisosPage from '../notificaciones/pages/AvisosPage';
@@ -65,7 +66,7 @@ export const router = createBrowserRouter([
           </RutaProtegida>
         ),
         children: [
-          { index: true, element: <Navigate to="muebles" replace /> },
+          { index: true, element: <InicioPanel /> },
           { path: 'muebles', element: <RutaProtegida permisos={['MUEBLE_CREAR']}><PanelMueblesPage /></RutaProtegida> },
           { path: 'muebles/:slug', element: <RutaProtegida permisos={['MUEBLE_CREAR']}><DetallePage enPanel /></RutaProtegida> },
           { path: 'pedidos', element: <RutaProtegida permisos={['PEDIDO_ATENDER', 'PEDIDO_SUPERVISAR']}><PanelPedidosPage /></RutaProtegida> },
