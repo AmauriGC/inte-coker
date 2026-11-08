@@ -107,6 +107,14 @@ public class AuthService {
         }
     }
 
+    /** El transportista pone su contraseña con el enlace de la invitación; la cuenta queda verificada. */
+    @Transactional
+    public void activar(RestablecerPasswordRequest request) {
+        Usuario usuario = tokenCorreoService.consumir(request.token(), TipoTokenCorreo.INVITACION);
+        usuarioService.cambiarPassword(usuario, request.password());
+        usuarioService.marcarVerificado(usuario);
+    }
+
     @Transactional(readOnly = true)
     public UsuarioResponse perfil(String email) {
         return usuarioService.obtenerPerfil(email);

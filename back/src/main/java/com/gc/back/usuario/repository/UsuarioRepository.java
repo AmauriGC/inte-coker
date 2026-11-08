@@ -29,6 +29,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             """)
     List<Usuario> activosConPermiso(@Param("permiso") String permiso);
 
+    /** Transportistas que registró un vendedor. */
+    List<Usuario> findByEmpleadorIdOrderByNombre(Long empleadorId);
+
+    Optional<Usuario> findByIdAndEmpleadorId(Long id, Long empleadorId);
+
+    long countByEmpleadorId(Long empleadorId);
+
     Page<Usuario> findByNombreContainingIgnoreCaseOrEmailContainingIgnoreCase(
             String nombre, String email, Pageable pageable);
 }

@@ -22,7 +22,8 @@ public enum PermisoBase {
     PERFIL_VENDEDOR_EDITAR("Editar mi perfil público de vendedor y mi galería de trabajos"),
     ENTREGA_REALIZAR("Ver las entregas que me asignan y confirmar la entrega y el cobro"),
     METRICA_VER("Ver las métricas de mis muebles: ventas, zonas, vistas y conversión"),
-    METRICA_GLOBAL("Ver las métricas de toda la tienda");
+    METRICA_GLOBAL("Ver las métricas de toda la tienda"),
+    TRANSPORTISTA_GESTIONAR("Registrar a mis transportistas, reenviarles la invitación y darlos de baja");
 
     private final String descripcion;
 

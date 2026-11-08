@@ -8,10 +8,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,6 +60,15 @@ public class Usuario extends EntidadBase {
 
     @Column(name = "portada_ruta")
     private String portadaRuta;
+
+    @Column(length = 20)
+    private String telefono;
+
+    /** Vendedor que registró a este transportista; solo él se lo asigna a sus envíos. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empleador_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private Usuario empleador;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
