@@ -3,7 +3,7 @@ import BottomBar from './BottomBar';
 import SalidaAnimada from './SalidaAnimada';
 
 /** Rutas a pantalla completa: sin barra inferior (flujos de cuenta). El detalle sí la lleva. */
-const SIN_BARRA = [/^\/entrar/, /^\/verificar/, /^\/olvide-password/, /^\/restablecer-password/];
+const SIN_BARRA = [/^\/entrar/, /^\/verificar/, /^\/olvide-password/, /^\/restablecer-password/, /^\/activar/];
 
 /** Layout de la parte pública: columna centrada y bottom bar. */
 export default function LayoutMovil() {

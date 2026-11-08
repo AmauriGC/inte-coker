@@ -53,6 +53,7 @@ export const router = createBrowserRouter([
           { path: 'verificar', element: <VerificarPage /> },
           { path: 'olvide-password', element: <OlvidePasswordPage /> },
           { path: 'restablecer-password', element: <RestablecerPasswordPage /> },
+          { path: 'activar', element: <RestablecerPasswordPage activacion /> },
           { path: '*', element: <NoEncontradoPage /> },
         ],
       },
