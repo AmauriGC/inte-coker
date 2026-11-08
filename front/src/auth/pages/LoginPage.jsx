@@ -47,7 +47,7 @@ function FormEntrar({ alPendiente }) {
         setRolesPorElegir(roles);
         return;
       }
-      const destino = state?.desde ?? (r.datos.permisos?.includes('MUEBLE_CREAR') ? '/panel/muebles' : '/');
+      const destino = state?.desde ?? datosRol(roles[0]).inicio;
       navegar(destino, { replace: true });
     } else if (r.error.estado === 403 && /verifica/i.test(r.error.message)) {
       alPendiente(datos.email.trim());
