@@ -6,14 +6,12 @@ import com.gc.back.common.response.PaginaResponse;
 import com.gc.back.correo.dto.AvisoCorreo;
 import com.gc.back.pedido.dto.EntregaResponse;
 import com.gc.back.pedido.dto.NoEntregadaRequest;
-import com.gc.back.pedido.dto.TransportistaResponse;
 import com.gc.back.pedido.entity.MensajePedido;
 import com.gc.back.pedido.entity.Pedido;
 import com.gc.back.pedido.repository.MensajePedidoRepository;
 import com.gc.back.pedido.repository.PedidoRepository;
 import com.gc.back.security.UsuarioPrincipal;
 import com.gc.back.usuario.entity.Usuario;
-import com.gc.back.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
 
 import static com.gc.back.pedido.entity.EstadoPedido.ACEPTADO;
 import static com.gc.back.pedido.entity.EstadoPedido.ENTREGADO;
@@ -39,17 +36,7 @@ public class EntregaService {
 
     private final PedidoRepository pedidoRepository;
     private final MensajePedidoRepository mensajeRepository;
-    private final UsuarioRepository usuarioRepository;
     private final ApplicationEventPublisher eventos;
-
-    /** Para el vendedor: transportistas activos y cuántas entregas llevan ahora. */
-    @Transactional(readOnly = true)
-    public List<TransportistaResponse> transportistas() {
-        return usuarioRepository.activosConPermiso(PedidoService.ENTREGAR).stream()
-                .map(u -> new TransportistaResponse(u.getId(), u.getNombre(),
-                        pedidoRepository.countByTransportistaIdAndEstado(u.getId(), EN_CAMINO)))
-                .toList();
-    }
 
     /** pendientes = las que van en camino; si no, las ya cerradas. */
     @Transactional(readOnly = true)
