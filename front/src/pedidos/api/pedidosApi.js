@@ -21,8 +21,6 @@ export const pedidosApi = {
   /** transportistaId solo al pasar a EN_CAMINO un envío a domicilio (null = lo lleva el vendedor). */
   cambiarEstado: (id, estado, motivo, transportistaId = null) =>
     obtener(`/pedidos/${id}/estado`, { metodo: 'PATCH', cuerpo: { estado, motivo, transportistaId } }),
-  /** Transportistas activos: [{ id, nombre, enCamino }]. */
-  transportistas: (signal) => obtener('/transportistas', { signal }),
 
   /** Sin despuesDe: los últimos 200. Con despuesDe (id): solo los nuevos. */
   mensajes: (id, despuesDe, signal) => obtener(`/pedidos/${id}/mensajes`, { consulta: { despuesDe }, signal }),

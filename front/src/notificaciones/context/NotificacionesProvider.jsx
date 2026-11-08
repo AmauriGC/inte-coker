@@ -1,26 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAlmacen } from '../../common/hooks/useAlmacen';
 import Toaster from '../components/Toaster';
 import { NotificacionesContext } from './NotificacionesContext';
 
-const MAXIMO = 30;
-const BIENVENIDA = [
-  {
-    id: 'bienvenida',
-    tipo: 'novedad',
-    titulo: 'Bienvenido a GC-Confort',
-    texto: 'Gira cada mueble en 3D y pruébalo en tu sala con realidad aumentada.',
-    fecha: new Date().toISOString(),
-    leido: false,
-  },
-];
 
 function nuevoId() {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+/**
+ * Toasts de la app. La bandeja de avisos vive en la cuenta (AvisosProvider y la API); lo que
+ * antes se guardaba en el navegador se borra al abrir.
+ */
 export default function NotificacionesProvider({ children }) {
-  const [avisos, setAvisos] = useAlmacen('gc.avisos', BIENVENIDA);
   const [toasts, setToasts] = useState([]);
   const temporizadores = useRef(new Map());
 
@@ -31,21 +22,24 @@ export default function NotificacionesProvider({ children }) {
   }, []);
 
   const notificar = useCallback(
-    ({ titulo, texto, tipo = 'info', accion, guardar = true, duracion = 3800 }) => {
+    ({ titulo, texto, tipo = 'info', accion, duracion = 3800 }) => {
       const id = nuevoId();
       setToasts((lista) => [...lista.slice(-2), { id, titulo, texto, tipo, accion }]);
       temporizadores.current.set(id, setTimeout(() => cerrarToast(id), duracion));
-      if (guardar) {
-        setAvisos((lista) =>
-          [{ id, tipo, titulo, texto, fecha: new Date().toISOString(), leido: false }, ...lista].slice(0, MAXIMO),
-        );
-      }
       return id;
     },
-    [cerrarToast, setAvisos],
+    [cerrarToast],
   );
 
-  // Avisos de conexión: solo toast, no se guardan en la bandeja.
+  useEffect(() => {
+    try {
+      localStorage.removeItem('gc.avisos');
+    } catch {
+      /* sin almacenamiento */
+    }
+  }, []);
+
+  // Avisos de conexión.
   useEffect(() => {
     const sinRed = () =>
       notificar({ tipo: 'conexion', titulo: 'Sin conexión', texto: 'Puedes seguir viendo lo que ya cargaste.', guardar: false, duracion: 5000 });
@@ -63,18 +57,7 @@ export default function NotificacionesProvider({ children }) {
     return () => mapa.forEach(clearTimeout);
   }, []);
 
-  const valor = useMemo(
-    () => ({
-      avisos,
-      sinLeer: avisos.filter((a) => !a.leido).length,
-      notificar,
-      marcarLeido: (id) => setAvisos((lista) => lista.map((a) => (a.id === id ? { ...a, leido: true } : a))),
-      marcarTodo: () => setAvisos((lista) => lista.map((a) => ({ ...a, leido: true }))),
-      eliminar: (id) => setAvisos((lista) => lista.filter((a) => a.id !== id)),
-      vaciar: () => setAvisos([]),
-    }),
-    [avisos, notificar, setAvisos],
-  );
+  const valor = useMemo(() => ({ notificar }), [notificar]);
 
   return (
     <NotificacionesContext value={valor}>

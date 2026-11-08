@@ -9,5 +9,7 @@ export const authApi = {
   olvidePassword: (email) => peticion('/auth/olvide-password', { metodo: 'POST', cuerpo: { email }, auth: false }),
   restablecerPassword: (token, password) =>
     peticion('/auth/restablecer-password', { metodo: 'POST', cuerpo: { token, password }, auth: false }),
+  /** El transportista invitado pone su contraseña; la cuenta queda verificada. */
+  activar: (token, password) => peticion('/auth/activar', { metodo: 'POST', cuerpo: { token, password }, auth: false }),
   yo: (signal) => obtener('/auth/yo', { signal }),
 };

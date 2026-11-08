@@ -1,6 +1,6 @@
 import { obtener, subirArchivo } from '../../common/api/cliente';
 
-/** Mi cuenta: nombre, foto, direcciones guardadas y avisos de existencias. */
+/** Mi cuenta: nombre, foto, direcciones guardadas, solicitud para vender y avisos de existencias. */
 export const cuentaApi = {
   actualizarPerfil: (nombre) => obtener('/cuenta/perfil', { metodo: 'PUT', cuerpo: { nombre } }),
   subirFoto: (archivo, alProgreso) => subirArchivo('/cuenta/foto', archivo, { alProgreso }).then((r) => r.datos),
@@ -12,6 +12,10 @@ export const cuentaApi = {
   actualizarDireccion: (id, d) => obtener(`/cuenta/direcciones/${id}`, { metodo: 'PUT', cuerpo: d }),
   predeterminada: (id) => obtener(`/cuenta/direcciones/${id}/predeterminada`, { metodo: 'PATCH' }),
   eliminarDireccion: (id) => obtener(`/cuenta/direcciones/${id}`, { metodo: 'DELETE' }),
+
+  /** Mi última solicitud para vender (null si nunca pedí). */
+  miSolicitud: (signal) => obtener('/solicitud-vendedor', { signal }),
+  pedirVender: (datos) => obtener('/solicitud-vendedor', { metodo: 'POST', cuerpo: datos }),
 
   /** Avisos que tengo del mueble: ids de color (null = el mueble sin color). */
   avisos: (muebleId, signal) => obtener(`/muebles/${muebleId}/avisame`, { signal }),

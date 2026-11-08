@@ -10,7 +10,7 @@ import Pagina from '../../common/components/Pagina';
 import { useConsulta } from '../../common/hooks/useConsulta';
 import { estiloCategoria } from '../../common/utils/categorias';
 import { precio, primerNombre } from '../../common/utils/formato';
-import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
+import { useAvisos } from '../../notificaciones/context/AvisosContext';
 import { catalogoApi } from '../api/catalogoApi';
 import ChipsCategorias from '../components/ChipsCategorias';
 import TarjetaMueble, { TarjetaEsqueleto } from '../components/TarjetaMueble';
@@ -59,7 +59,7 @@ function Portada({ mueble }) {
 
 export default function InicioPage() {
   const { usuario } = useSesion();
-  const { sinLeer } = useNotificaciones();
+  const { sinLeer } = useAvisos();
   const navegar = useNavigate();
   const categorias = useConsulta((s) => catalogoApi.categorias(s));
   const destacados = useConsulta((s) => catalogoApi.muebles({ size: 6, sort: 'creadoEn,desc' }, s));

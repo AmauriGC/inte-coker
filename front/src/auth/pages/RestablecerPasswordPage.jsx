@@ -8,7 +8,11 @@ import { useNotificaciones } from '../../notificaciones/context/NotificacionesCo
 import { authApi } from '../api/authApi';
 import MarcoCuenta from '../components/MarcoCuenta';
 
-export default function RestablecerPasswordPage() {
+/**
+ * Nueva contraseña con el token del enlace. activacion = la cuenta la creó un vendedor
+ * (transportista) y con esto queda lista para entrar.
+ */
+export default function RestablecerPasswordPage({ activacion = false }) {
   const [parametros] = useSearchParams();
   const token = parametros.get('token') ?? '';
   const navegar = useNavigate();
@@ -16,7 +20,7 @@ export default function RestablecerPasswordPage() {
   const [password, setPassword] = useState('');
   const [repetir, setRepetir] = useState('');
   const [noCoincide, setNoCoincide] = useState(false);
-  const { enviar, enviando, error, errores } = useEnvio(authApi.restablecerPassword);
+  const { enviar, enviando, error, errores } = useEnvio(activacion ? authApi.activar : authApi.restablecerPassword);
 
   async function alEnviar(e) {
     e.preventDefault();
@@ -26,7 +30,11 @@ export default function RestablecerPasswordPage() {
     }
     const r = await enviar(token, password);
     if (r.ok) {
-      notificar({ tipo: 'exito', titulo: 'Contraseña actualizada', texto: 'Ya puedes entrar con la nueva.' });
+      notificar(
+        activacion
+          ? { tipo: 'exito', titulo: 'Cuenta activada', texto: 'Entra con tu correo y la contraseña que elegiste.' }
+          : { tipo: 'exito', titulo: 'Contraseña actualizada', texto: 'Ya puedes entrar con la nueva.' },
+      );
       navegar('/entrar', { replace: true });
     }
   }
@@ -34,9 +42,13 @@ export default function RestablecerPasswordPage() {
   const errorGeneral = error && !errores.password ? error.message : null;
 
   return (
-    <MarcoCuenta titulo="Nueva contraseña" subtitulo="Elige una que no uses en otros sitios." volverA="/entrar">
+    <MarcoCuenta
+      titulo={activacion ? 'Activa tu cuenta' : 'Nueva contraseña'}
+      subtitulo={activacion ? 'Elige tu contraseña para ver las entregas que te asignen.' : 'Elige una que no uses en otros sitios.'}
+      volverA="/entrar"
+    >
       <form onSubmit={alEnviar} className="grid gap-4" noValidate>
-        {!token && <p className="rounded-2xl bg-[#F6DAD7] px-4 py-3 text-[13.5px] text-[#8C1D17]">El enlace está incompleto. Pide uno nuevo.</p>}
+        {!token && <p className="rounded-2xl bg-[#F6DAD7] px-4 py-3 text-[13.5px] text-[#8C1D17]">{activacion ? 'El enlace está incompleto. Pide a tu vendedor que te mande la invitación otra vez.' : 'El enlace está incompleto. Pide uno nuevo.'}</p>}
         {errorGeneral && <p role="alert" className="rounded-2xl bg-[#F6DAD7] px-4 py-3 text-[13.5px] text-[#8C1D17]">{errorGeneral}</p>}
         <Campo etiqueta="Contraseña nueva" type="password" autoComplete="new-password" icono={KeyRound} value={password} error={errores.password}
           ayuda="Al menos 8 caracteres, con una letra y un número." onChange={(e) => setPassword(e.target.value)} required />
@@ -48,9 +60,9 @@ export default function RestablecerPasswordPage() {
           }}
           required />
         <Boton type="submit" bloque cargando={enviando} disabled={!token} className="h-[52px]">
-          Guardar contraseña
+          {activacion ? 'Activar mi cuenta' : 'Guardar contraseña'}
         </Boton>
-        {errorGeneral && (
+        {errorGeneral && !activacion && (
           <Boton a="/olvide-password" variante="fantasma" bloque>
             Pedir otro enlace
           </Boton>

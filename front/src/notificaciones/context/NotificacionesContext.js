@@ -3,8 +3,8 @@ import { createContext, useContext } from 'react';
 export const NotificacionesContext = createContext(null);
 
 /**
- * notificar({ titulo, texto, tipo, accion, guardar }) muestra un toast y, salvo guardar:false,
- * lo deja en la bandeja de avisos. accion = { texto, alHacer } agrega un botón al toast.
+ * notificar({ titulo, texto, tipo, accion }) muestra un toast. accion = { texto, alHacer } agrega
+ * un botón. La bandeja de avisos es de la cuenta: ver AvisosContext.
  */
 export function useNotificaciones() {
   const contexto = useContext(NotificacionesContext);

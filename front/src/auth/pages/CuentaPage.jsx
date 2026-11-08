@@ -1,4 +1,4 @@
-import { BadgeCheck, BarChart3, ChevronRight, Columns3, MapPin, Pencil, Download, Heart, LogIn, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Truck, Users } from 'lucide-react';
+import { BadgeCheck, BarChart3, ChevronRight, Columns3, MapPin, Pencil, Download, Heart, LogIn, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Truck, UserPlus, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import { confirmar } from '../../common/alertas/alertas';
@@ -21,9 +21,11 @@ const ACCESOS = [
   { a: '/panel/muebles', texto: 'Mis muebles', detalle: 'Crea, sube modelos y publica', Icono: Package, permiso: 'MUEBLE_CREAR' },
   { a: '/panel/pedidos', texto: 'Pedidos', detalle: 'Atiende a tus clientes', Icono: ReceiptText, permiso: 'PEDIDO_ATENDER' },
   { a: '/panel/metricas', texto: 'Métricas', detalle: 'Ventas, zonas y conversión', Icono: BarChart3, permiso: 'METRICA_VER' },
+  { a: '/panel/transportistas', texto: 'Mis transportistas', detalle: 'Quién lleva tus envíos', Icono: Truck, permiso: 'TRANSPORTISTA_GESTIONAR' },
   { a: '/panel/perfil', texto: 'Mi perfil de vendedor', detalle: 'Foto, presentación y trabajos', Icono: Store, permiso: 'PERFIL_VENDEDOR_EDITAR' },
   { a: '/panel/resenas', texto: 'Reseñas', detalle: 'Modera las opiniones de clientes', Icono: MessageSquareText, permiso: 'RESENA_MODERAR' },
   { a: '/panel/categorias', texto: 'Categorías', detalle: 'Organiza el catálogo', Icono: Tags, permiso: 'CATEGORIA_GESTIONAR' },
+  { a: '/panel/solicitudes', texto: 'Solicitudes para vender', detalle: 'Aprueba a nuevos vendedores', Icono: UserPlus, permiso: 'USUARIO_GESTIONAR' },
   { a: '/panel/usuarios', texto: 'Usuarios', detalle: 'Roles y cuentas activas', Icono: Users, permiso: 'USUARIO_GESTIONAR' },
   { a: '/panel/roles', texto: 'Roles y permisos', detalle: 'Qué puede hacer cada rol', Icono: Shield, permiso: 'ROL_GESTIONAR' },
 ];
@@ -143,6 +145,9 @@ export default function CuentaPage() {
         )}
         {cuentaTienePermiso('PEDIDO_CREAR') && (
           <Fila a="/cuenta/direcciones" Icono={MapPin} texto="Mis direcciones" detalle="Para pedir con un toque" i={2} />
+        )}
+        {cuentaTienePermiso('PEDIDO_CREAR') && !roles.includes('VENDEDOR') && (
+          <Fila a="/cuenta/vender" Icono={Store} texto="Quiero vender" detalle="Publica tus muebles con 3D" i={3} />
         )}
         <Fila a="/comparar" Icono={Columns3} texto="Comparar muebles" detalle={comparando.length ? `${comparando.length} en tu lista` : 'Hasta 3, lado a lado'} i={3} />
         {accesos.map((x, i) => (
