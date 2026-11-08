@@ -12,3 +12,4 @@ Cada hallazgo lleva: número, severidad, dónde está, qué pasa y propuesta.
 | `ANALISIS_pedidos.md` | Compra de muebles y comunicación cliente-vendedor (decidido, fase 11) |
 | `ANALISIS_crecimiento.md` | Detalle 3D, reseñas, vendedores, colores, apartados, transporte y métricas (decidido, fases 12 a 19) |
 | `ANALISIS_seguridad.md` | Hallazgos de seguridad abiertos (por ejemplo, límite de intentos de login) |
+| `ANALISIS_push.md` | Notificaciones push reales con la app cerrada (por hacer) |
