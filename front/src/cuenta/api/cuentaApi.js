@@ -5,6 +5,10 @@ export const cuentaApi = {
   actualizarPerfil: (nombre) => obtener('/cuenta/perfil', { metodo: 'PUT', cuerpo: { nombre } }),
   subirFoto: (archivo, alProgreso) => subirArchivo('/cuenta/foto', archivo, { alProgreso }).then((r) => r.datos),
   quitarFoto: () => obtener('/cuenta/foto', { metodo: 'DELETE' }),
+  subirPortada: (archivo, alProgreso) => subirArchivo('/cuenta/portada', archivo, { alProgreso }).then((r) => r.datos),
+  quitarPortada: () => obtener('/cuenta/portada', { metodo: 'DELETE' }),
+  /** { actual, nueva, confirmacion } */
+  cambiarPassword: (datos) => obtener('/cuenta/password', { metodo: 'PUT', cuerpo: datos }),
 
   /** Todas devuelven la lista completa, con la predeterminada primero. */
   direcciones: (signal) => obtener('/cuenta/direcciones', { signal }),
