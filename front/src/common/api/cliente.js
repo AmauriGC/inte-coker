@@ -96,9 +96,12 @@ export async function peticion(ruta, { metodo = 'GET', cuerpo, consulta, auth = 
   return json;
 }
 
-/** Atajo: solo los datos. */
+/**
+ * Atajo: solo los datos. La API omite `datos` cuando es null (JsonInclude NON_NULL); aquí vuelve a ser
+ * null para que useConsulta no lo confunda con "todavía cargando" (undefined).
+ */
 export async function obtener(ruta, opciones) {
-  return (await peticion(ruta, opciones)).datos;
+  return (await peticion(ruta, opciones)).datos ?? null;
 }
 
 /**
