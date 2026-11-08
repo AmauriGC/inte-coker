@@ -60,6 +60,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 18 — Métricas: ventas, zonas, muebles y conversión
 - [x] Fase 19 — Más para el cliente
 - [x] Fase 20 — Avisos en la cuenta, solicitud de vendedor y transportistas del vendedor
+- [ ] Fase 21 — Cada rol con sus vistas: administrador supervisor y navegación por rol
 
 ## Fases documentadas
 
@@ -86,6 +87,7 @@ el JWT y se validan con `@PreAuthorize`.
 | 18 | `md/hechos/FASE_18_metricas.md` | hecho |
 | 19 | `md/hechos/FASE_19_cliente.md` | hecho |
 | 20 | `md/hechos/FASE_20_cuentas.md` | hecho |
+| 21 | `md/en_progreso/FASE_21_vistas_por_rol.md` | en progreso |
 
 ## Pendientes después de las fases
 
