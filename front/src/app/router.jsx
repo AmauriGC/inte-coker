@@ -20,6 +20,10 @@ import LayoutMovil from '../layout/LayoutMovil';
 import InicioPanel from '../layout/InicioPanel';
 import LayoutPanel from '../layout/LayoutPanel';
 import Raiz from '../layout/Raiz';
+import ErrorRuta from '../common/components/ErrorRuta';
+
+/** Cada pantalla con su errorElement: el error se muestra dentro del layout, sin perder la navegación. */
+const conError = (rutas) => rutas.map((r) => ({ ...r, errorElement: <ErrorRuta /> }));
 import AvisosPage from '../notificaciones/pages/AvisosPage';
 import MisPedidosPage from '../pedidos/pages/MisPedidosPage';
 import PedidoPage from '../pedidos/pages/PedidoPage';
@@ -30,10 +34,11 @@ import { CategoriasPage, MetricasPage, MiPerfilPage, PanelMueblesPage, PanelPedi
 export const router = createBrowserRouter([
   {
     element: <Raiz />,
+    errorElement: <ErrorRuta />,
     children: [
       {
         element: <LayoutMovil />,
-        children: [
+        children: conError([
           { index: true, element: <InicioPage /> },
           { path: 'catalogo', element: <CatalogoPage /> },
           { path: 'mueble/:slug', element: <DetallePage /> },
@@ -56,7 +61,7 @@ export const router = createBrowserRouter([
           { path: 'restablecer-password', element: <RestablecerPasswordPage /> },
           { path: 'activar', element: <RestablecerPasswordPage activacion /> },
           { path: '*', element: <NoEncontradoPage /> },
-        ],
+        ]),
       },
       {
         path: 'panel',
@@ -65,7 +70,7 @@ export const router = createBrowserRouter([
             <LayoutPanel />
           </RutaProtegida>
         ),
-        children: [
+        children: conError([
           { index: true, element: <InicioPanel /> },
           { path: 'muebles', element: <RutaProtegida permisos={['MUEBLE_CREAR']}><PanelMueblesPage /></RutaProtegida> },
           { path: 'muebles/:slug', element: <RutaProtegida permisos={['MUEBLE_CREAR']}><DetallePage enPanel /></RutaProtegida> },
@@ -79,7 +84,7 @@ export const router = createBrowserRouter([
           { path: 'solicitudes', element: <RutaProtegida permisos={['USUARIO_GESTIONAR']}><SolicitudesPage /></RutaProtegida> },
           { path: 'usuarios', element: <RutaProtegida permisos={['USUARIO_GESTIONAR']}><UsuariosPage /></RutaProtegida> },
           { path: 'roles', element: <RutaProtegida permisos={['ROL_GESTIONAR']}><RolesPage /></RutaProtegida> },
-        ],
+        ]),
       },
     ],
   },
