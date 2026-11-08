@@ -25,7 +25,8 @@ public record UsuarioResponse(
         List<String> permisos,
         Map<String, List<String>> permisosPorRol,
         Instant creadoEn,
-        String fotoUrl
+        String fotoUrl,
+        String portadaUrl
 ) {
 
     public static UsuarioResponse desde(Usuario usuario) {
@@ -49,7 +50,12 @@ public record UsuarioResponse(
                 permisos,
                 permisosPorRol,
                 usuario.getCreadoEn(),
-                usuario.getFotoRuta() == null ? null : RecursosEstaticosConfig.RUTA_PUBLICA + usuario.getFotoRuta()
+                url(usuario.getFotoRuta()),
+                url(usuario.getPortadaRuta())
         );
+    }
+
+    private static String url(String ruta) {
+        return ruta == null ? null : RecursosEstaticosConfig.RUTA_PUBLICA + ruta;
     }
 }

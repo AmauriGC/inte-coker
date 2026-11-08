@@ -4,6 +4,8 @@ import com.gc.back.archivo.entity.TipoArchivo;
 import com.gc.back.archivo.service.AlmacenamientoService;
 import com.gc.back.common.exception.RecursoNoEncontradoException;
 import com.gc.back.common.exception.ReglaNegocioException;
+import com.gc.back.correo.dto.AvisoCorreo;
+import com.gc.back.cuenta.dto.CambiarPasswordRequest;
 import com.gc.back.cuenta.dto.DireccionRequest;
 import com.gc.back.cuenta.dto.DireccionResponse;
 import com.gc.back.cuenta.dto.PerfilRequest;
@@ -14,6 +16,8 @@ import com.gc.back.usuario.dto.UsuarioResponse;
 import com.gc.back.usuario.entity.Usuario;
 import com.gc.back.usuario.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,8 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
- * La cuenta de quien tiene la sesión: nombre, foto y direcciones guardadas. Cualquier rol
- * puede usarla; la foto es la misma que muestra el perfil público del vendedor.
+ * La cuenta de quien tiene la sesión: nombre, foto, portada, contraseña y direcciones
+ * guardadas. Cualquier rol puede usarla; la foto y la portada son las mismas que muestra el
+ * perfil público del vendedor.
  */
 @Service
 @RequiredArgsConstructor
@@ -31,6 +36,8 @@ public class CuentaService {
     private final UsuarioService usuarioService;
     private final DireccionRepository direccionRepository;
     private final AlmacenamientoService almacenamiento;
+    private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher eventos;
 
     @Transactional
     public UsuarioResponse actualizarPerfil(PerfilRequest request, UsuarioPrincipal actual) {
@@ -39,20 +46,52 @@ public class CuentaService {
         return UsuarioResponse.desde(yo);
     }
 
+    /**
+     * Cambia la contraseña con la sesión abierta. Pide la actual (por si alguien toma el
+     * teléfono con la sesión abierta) y avisa por correo, por si no fue la persona.
+     */
     @Transactional
-    public UsuarioResponse subirFoto(MultipartFile archivo, UsuarioPrincipal actual) {
+    public void cambiarPassword(CambiarPasswordRequest request, UsuarioPrincipal actual) {
         Usuario yo = usuarioService.obtenerEntidad(actual.id());
-        String ruta = almacenamiento.guardar("usuarios/" + yo.getId(), "foto", archivo, TipoArchivo.IMAGEN);
-        almacenamiento.eliminar(yo.getFotoRuta());
-        yo.setFotoRuta(ruta);
+        if (!passwordEncoder.matches(request.actual(), yo.getPassword())) {
+            throw new ReglaNegocioException("Tu contraseña actual no es correcta");
+        }
+        if (!request.nueva().equals(request.confirmacion())) {
+            throw new ReglaNegocioException("La confirmación no coincide con la nueva contraseña");
+        }
+        if (passwordEncoder.matches(request.nueva(), yo.getPassword())) {
+            throw new ReglaNegocioException("La nueva contraseña debe ser distinta de la actual");
+        }
+        usuarioService.cambiarPassword(yo, request.nueva());
+        eventos.publishEvent(new AvisoCorreo(yo.getEmail(), yo.getNombre(), "Cambiaste tu contraseña",
+                "Tu contraseña cambió",
+                "Si no fuiste tú, restablécela desde \"¿Olvidaste tu contraseña?\" al entrar.",
+                "Ver mi perfil", "/cuenta/perfil", "info"));
+    }
+
+    /** Sube o reemplaza la foto (portada = false) o la portada (portada = true). */
+    @Transactional
+    public UsuarioResponse subirImagen(boolean portada, MultipartFile archivo, UsuarioPrincipal actual) {
+        Usuario yo = usuarioService.obtenerEntidad(actual.id());
+        String ruta = almacenamiento.guardar("usuarios/" + yo.getId(), portada ? "portada" : "foto", archivo, TipoArchivo.IMAGEN);
+        almacenamiento.eliminar(portada ? yo.getPortadaRuta() : yo.getFotoRuta());
+        if (portada) {
+            yo.setPortadaRuta(ruta);
+        } else {
+            yo.setFotoRuta(ruta);
+        }
         return UsuarioResponse.desde(yo);
     }
 
     @Transactional
-    public UsuarioResponse quitarFoto(UsuarioPrincipal actual) {
+    public UsuarioResponse quitarImagen(boolean portada, UsuarioPrincipal actual) {
         Usuario yo = usuarioService.obtenerEntidad(actual.id());
-        almacenamiento.eliminar(yo.getFotoRuta());
-        yo.setFotoRuta(null);
+        almacenamiento.eliminar(portada ? yo.getPortadaRuta() : yo.getFotoRuta());
+        if (portada) {
+            yo.setPortadaRuta(null);
+        } else {
+            yo.setFotoRuta(null);
+        }
         return UsuarioResponse.desde(yo);
     }
 
