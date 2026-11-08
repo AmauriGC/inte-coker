@@ -18,9 +18,9 @@ export default function LayoutMovil() {
   const lateral = conBarra && conMenu;
 
   return (
-    <div className={`min-h-dvh ${lateral ? 'lg:grid lg:grid-cols-[260px_1fr]' : ''}`}>
+    <div className={`min-h-dvh ${lateral ? 'lg:pl-[260px]' : ''}`}>
       {lateral && (
-        <aside className="sticky top-0 z-30 hidden h-dvh lg:block">
+        <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] lg:block">
           <MenuLateral />
         </aside>
       )}

@@ -16,8 +16,8 @@ function Cargando() {
 /** Panel de vendedor y administrador: menú lateral fijo en escritorio; bottom bar con "Menú" en móvil. */
 export default function LayoutPanel() {
   return (
-    <div className="min-h-dvh bg-crema lg:grid lg:grid-cols-[260px_1fr]">
-      <aside className="sticky top-0 z-30 hidden h-dvh lg:block">
+    <div className="min-h-dvh bg-crema lg:pl-[260px]">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] lg:block">
         <MenuLateral />
       </aside>
 
