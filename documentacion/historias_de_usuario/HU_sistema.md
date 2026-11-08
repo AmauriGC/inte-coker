@@ -13,7 +13,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| base | P0 | M | Hecha | 00, 01 | — |
+| base | P0 | M | Hecha | 00, 01 | #96 |
 
 **Criterios de aceptación**
 
@@ -27,10 +27,10 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| docs | Estándar de documentación y flujo de Git | #1 | — |
-| back | Proyecto base de Spring Boot y variables de entorno | #2 | — |
-| back | Base modular: respuestas, errores, CORS y Swagger | #5 | — |
-| docs | Plan de las fases 12 a 19 | #27 | — |
+| docs | Estándar de documentación y flujo de Git | #1 | #217 |
+| back | Proyecto base de Spring Boot y variables de entorno | #2 | #218 |
+| back | Base modular: respuestas, errores, CORS y Swagger | #5 | #219 |
+| docs | Plan de las fases 12 a 19 | #27 | #220 |
 
 **Depende de:** nada.
 
@@ -41,7 +41,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| auth | P0 | L | Hecha | 02, 04 | — |
+| auth | P0 | L | Hecha | 02, 04 | #97 |
 
 **Criterios de aceptación**
 
@@ -56,8 +56,8 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Roles, permisos, JWT, filtro, correos y datos iniciales | #6 | — |
-| front | `SesionProvider`, `RutaProtegida` y cliente de la API con renovación | #8 | — |
+| back | Roles, permisos, JWT, filtro, correos y datos iniciales | #6 | #221 |
+| front | `SesionProvider`, `RutaProtegida` y cliente de la API con renovación | #8 | #222 |
 
 **Depende de:** HU-S01.
 
@@ -68,7 +68,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| base | P0 | M | Hecha | 04 | — |
+| base | P0 | M | Hecha | 04 | #98 |
 
 **Criterios de aceptación**
 
@@ -81,7 +81,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| front | Vite, Tailwind con tokens, cliente de la API, splash, toasts y layout | #8 | — |
+| front | Vite, Tailwind con tokens, cliente de la API, splash, toasts y layout | #8 | #223 |
 
 **Depende de:** HU-S01.
 
@@ -92,7 +92,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| layout | P0 | M | Hecha | 21 | — |
+| layout | P0 | M | Hecha | 21 | #99 |
 
 **Criterios de aceptación**
 
@@ -107,11 +107,11 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| front | Selector de rol para cuentas con varios roles | #20, #21 | — |
-| front | Capas, desplegables y un solo breakpoint | #43 | — |
-| back | Administrador supervisor y vendedor de ejemplo | #50 | — |
-| front | `useNavegacion`, `MenuLateral` y `CajonMenu` | #51 | — |
-| front | Menú lateral fijo | #52 | — |
+| front | Selector de rol para cuentas con varios roles | #20, #21 | #224 |
+| front | Capas, desplegables y un solo breakpoint | #43 | #225 |
+| back | Administrador supervisor y vendedor de ejemplo | #50 | #226 |
+| front | `useNavegacion`, `MenuLateral` y `CajonMenu` | #51 | #227 |
+| front | Menú lateral fijo | #52 | #228 |
 
 **Depende de:** HU-S02.
 
@@ -124,7 +124,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| modelos | P1 | L | Hecha | 07, 12 | — |
+| modelos | P1 | L | Hecha | 07, 12 | #100 |
 
 **Criterios de aceptación**
 
@@ -137,11 +137,11 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| 3d | Modelos, renders y diseño de pantallas | #3 | — |
-| 3d | Renders sin sombra | #4 | — |
-| back | Semilla del catálogo con los modelos | #7 | — |
-| 3d | Cuatro muebles nuevos y semilla por slug | #12 | — |
-| 3d | Sillón Alba con material `GC_Color` | #28 | — |
+| 3d | Modelos, renders y diseño de pantallas | #3 | #229 |
+| 3d | Renders sin sombra | #4 | #230 |
+| back | Semilla del catálogo con los modelos | #7 | #231 |
+| 3d | Cuatro muebles nuevos y semilla por slug | #12 | #232 |
+| 3d | Sillón Alba con material `GC_Color` | #28 | #233 |
 
 **Depende de:** nada.
 
@@ -154,7 +154,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| infra | P1 | M | Hecha | 08 | — |
+| infra | P1 | M | Hecha | 08 | #101 |
 
 **Criterios de aceptación**
 
@@ -167,9 +167,9 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| infra | `UPLOADS_DIR` absoluto para IntelliJ | #11 | — |
-| infra | Dockerfiles multietapa y `docker-compose.yml` | #13 | — |
-| docs | Guía de Docker, compose y Jenkins | #16 | — |
+| infra | `UPLOADS_DIR` absoluto para IntelliJ | #11 | #234 |
+| infra | Dockerfiles multietapa y `docker-compose.yml` | #13 | #235 |
+| docs | Guía de Docker, compose y Jenkins | #16 | #236 |
 
 **Depende de:** HU-S01.
 
@@ -180,7 +180,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| infra | P1 | M | Hecha | 09 | — |
+| infra | P1 | M | Hecha | 09 | #102 |
 
 **Criterios de aceptación**
 
@@ -192,7 +192,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| infra | Imagen de Jenkins, JCasC, job multibranch y `Jenkinsfile` | #14 | — |
+| infra | Imagen de Jenkins, JCasC, job multibranch y `Jenkinsfile` | #14 | #237 |
 
 **Depende de:** HU-S05.
 
@@ -203,7 +203,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| infra | P1 | M | Pendiente | — | — |
+| infra | P1 | M | Pendiente | — | #103 |
 
 **Criterios de aceptación**
 
@@ -216,9 +216,9 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| infra | Túnel con certificado (por ejemplo Tailscale Funnel) | — | — |
-| infra | `FRONTEND_URL` y CORS para la dirección del túnel | — | — |
-| docs | Pasos en la guía de infraestructura | — | — |
+| infra | Túnel con certificado (por ejemplo Tailscale Funnel) | — | #238 |
+| infra | `FRONTEND_URL` y CORS para la dirección del túnel | — | #239 |
+| docs | Pasos en la guía de infraestructura | — | #240 |
 
 **Depende de:** HU-S05.
 
@@ -229,7 +229,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| infra | P2 | S | Pendiente | 09 | — |
+| infra | P2 | S | Pendiente | 09 | #104 |
 
 **Criterios de aceptación**
 
@@ -240,8 +240,8 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| infra | Webhook del repo hacia Jenkins por el túnel | — | — |
-| docs | Actualizar la fase 9 y la guía | — | — |
+| infra | Webhook del repo hacia Jenkins por el túnel | — | #241 |
+| docs | Actualizar la fase 9 y la guía | — | #242 |
 
 **Depende de:** HU-S06, HU-S08.
 
@@ -252,7 +252,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| infra | P0 | S | Pendiente | 09 | — |
+| infra | P0 | S | Pendiente | 09 | #105 |
 
 **Criterios de aceptación**
 
@@ -263,10 +263,10 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| infra | QA: fases 1 a 10 a `test` | #17 | — |
-| infra | Promover `develop` (fases 11 a 22) a `test` | — | — |
-| infra | Fusionar `test` a `main` | #18 | — |
-| infra | Etiqueta de la versión | — | — |
+| infra | QA: fases 1 a 10 a `test` | #17 | #243 |
+| infra | Promover `develop` (fases 11 a 22) a `test` | — | #244 |
+| infra | Fusionar `test` a `main` | #18 | #245 |
+| infra | Etiqueta de la versión | — | #246 |
 
 **Depende de:** HU-S06.
 
@@ -279,7 +279,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| auth | P1 | M | Pendiente | `ANALISIS_seguridad.md` #1 | — |
+| auth | P1 | M | Pendiente | `ANALISIS_seguridad.md` #1 | #106 |
 
 **Criterios de aceptación**
 
@@ -290,8 +290,8 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Contador por correo e IP con bloqueo temporal y prueba | — | — |
-| front | Mensaje de bloqueo en Entrar | — | — |
+| back | Contador por correo e IP con bloqueo temporal y prueba | — | #247 |
+| front | Mensaje de bloqueo en Entrar | — | #248 |
 
 **Depende de:** HU-S02.
 
@@ -302,7 +302,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| auth | P2 | M | Pendiente | `ANALISIS_seguridad.md` #2 | — |
+| auth | P2 | M | Pendiente | `ANALISIS_seguridad.md` #2 | #107 |
 
 **Criterios de aceptación**
 
@@ -313,8 +313,8 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Registro del `jti` y revisión en `/refresh` | — | — |
-| front | Opción en Perfil y seguridad | — | — |
+| back | Registro del `jti` y revisión en `/refresh` | — | #249 |
+| front | Opción en Perfil y seguridad | — | #250 |
 
 **Depende de:** HU-S02.
 
@@ -325,7 +325,7 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| auth | P2 | S | Pendiente | `ANALISIS_seguridad.md` #3 | — |
+| auth | P2 | S | Pendiente | `ANALISIS_seguridad.md` #3 | #108 |
 
 **Criterios de aceptación**
 
@@ -336,6 +336,6 @@ infraestructura y seguridad. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Verificación y recuperación por evento después del commit con `@Async` | — | — |
+| back | Verificación y recuperación por evento después del commit con `@Async` | — | #251 |
 
 **Depende de:** HU-S02.

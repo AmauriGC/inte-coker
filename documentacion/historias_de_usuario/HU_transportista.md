@@ -12,7 +12,7 @@ entrega y el cobro. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| auth | P1 | S | Hecha | 20 | — |
+| auth | P1 | S | Hecha | 20 | #86 |
 
 **Criterios de aceptación**
 
@@ -25,8 +25,8 @@ entrega y el cobro. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | `POST /api/auth/activar` con token de invitación | #45 | — |
-| front | `/activar` con la pantalla de contraseña | #46 | — |
+| back | `POST /api/auth/activar` con token de invitación | #45 | #193 |
+| front | `/activar` con la pantalla de contraseña | #46 | #194 |
 
 **Depende de:** HU-V05.
 
@@ -39,7 +39,7 @@ entrega y el cobro. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| entregas | P0 | M | Hecha | 17 | — |
+| entregas | P0 | M | Hecha | 17 | #87 |
 
 **Criterios de aceptación**
 
@@ -54,8 +54,8 @@ entrega y el cobro. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | `GET /api/entregas` y detalle, solo las propias | #37 | — |
-| front | `EntregasPage` y `EntregaPage`; bottom bar del transportista | #38 | — |
+| back | `GET /api/entregas` y detalle, solo las propias | #37 | #195 |
+| front | `EntregasPage` y `EntregaPage`; bottom bar del transportista | #38 | #196 |
 
 **Depende de:** HU-T01, HU-V05.
 
@@ -66,7 +66,7 @@ entrega y el cobro. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| entregas | P0 | S | Hecha | 17 | — |
+| entregas | P0 | S | Hecha | 17 | #88 |
 
 **Criterios de aceptación**
 
@@ -79,7 +79,7 @@ entrega y el cobro. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | `entregada` y `no-entregada` con motivo | #37 | — |
-| front | Botones de cierre en `EntregaPage` | #38 | — |
+| back | `entregada` y `no-entregada` con motivo | #37 | #197 |
+| front | Botones de cierre en `EntregaPage` | #38 | #198 |
 
 **Depende de:** HU-T02.

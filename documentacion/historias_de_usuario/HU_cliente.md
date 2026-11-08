@@ -12,7 +12,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| favoritos | P1 | M | Hecha | 05, 10 | — |
+| favoritos | P1 | M | Hecha | 05, 10 | #66 |
 
 **Criterios de aceptación**
 
@@ -27,9 +27,9 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| front | Favoritos en el dispositivo con aviso y Deshacer | #8 | — |
-| back | Módulo `favorito`: guardar, quitar, listar y sincronizar | #15 | — |
-| front | `FavoritosProvider` con modo cuenta y modo dispositivo | #15 | — |
+| front | Favoritos en el dispositivo con aviso y Deshacer | #8 | #133 |
+| back | Módulo `favorito`: guardar, quitar, listar y sincronizar | #15 | #134 |
+| front | `FavoritosProvider` con modo cuenta y modo dispositivo | #15 | #135 |
 
 **Depende de:** HU-I08.
 
@@ -42,7 +42,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| pedidos | P0 | L | Hecha | 11, 15, 17 | — |
+| pedidos | P0 | L | Hecha | 11, 15, 17 | #67 |
 
 **Criterios de aceptación**
 
@@ -57,13 +57,13 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Módulo `pedido`: pedido, existencias y máquina de estados | #23 | — |
-| front | "Comprar · precio" en el detalle y `HojaComprar` | #24 | — |
-| back | Color elegido en el pedido y descuento por color | #33 | — |
-| front | Color en `HojaComprar` sincronizado con el visor | #34 | — |
-| back | Método de pago obligatorio | #37 | — |
-| front | "¿Cómo vas a pagar?" en `HojaComprar` | #38 | — |
-| docs | Análisis de pedidos y cierre de la fase 11 | #22, #26 | — |
+| back | Módulo `pedido`: pedido, existencias y máquina de estados | #23 | #136 |
+| front | "Comprar · precio" en el detalle y `HojaComprar` | #24 | #137 |
+| back | Color elegido en el pedido y descuento por color | #33 | #138 |
+| front | Color en `HojaComprar` sincronizado con el visor | #34 | #139 |
+| back | Método de pago obligatorio | #37 | #140 |
+| front | "¿Cómo vas a pagar?" en `HojaComprar` | #38 | #141 |
+| docs | Análisis de pedidos y cierre de la fase 11 | #22, #26 | #142 |
 
 **Depende de:** HU-I08, HU-I02, HU-V01.
 
@@ -74,7 +74,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| pedidos | P1 | M | Hecha | 16 | — |
+| pedidos | P1 | M | Hecha | 16 | #68 |
 
 **Criterios de aceptación**
 
@@ -89,8 +89,8 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Estados `APARTADO` y `VENCIDO`, límite de 3 y vencimiento programado | #35 | — |
-| front | Botón "Apartar", línea de tiempo y tarjeta del apartado | #36 | — |
+| back | Estados `APARTADO` y `VENCIDO`, límite de 3 y vencimiento programado | #35 | #143 |
+| front | Botón "Apartar", línea de tiempo y tarjeta del apartado | #36 | #144 |
 
 **Depende de:** HU-C02.
 
@@ -101,7 +101,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| pedidos | P1 | M | Hecha | 11 | — |
+| pedidos | P1 | M | Hecha | 11 | #69 |
 
 **Criterios de aceptación**
 
@@ -115,8 +115,8 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Consultas, mensajes, no leídos y convertir consulta en pedido | #23 | — |
-| front | `HojaPreguntar` y `Conversacion` | #24 | — |
+| back | Consultas, mensajes, no leídos y convertir consulta en pedido | #23 | #145 |
+| front | `HojaPreguntar` y `Conversacion` | #24 | #146 |
 
 **Depende de:** HU-I08.
 
@@ -127,7 +127,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| pedidos | P0 | M | Hecha | 11, 17 | — |
+| pedidos | P0 | M | Hecha | 11, 17 | #70 |
 
 **Criterios de aceptación**
 
@@ -140,9 +140,9 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Mis compras y resumen de no leídos | #23 | — |
-| front | "Mis pedidos", detalle con línea de tiempo y contadores | #24 | — |
-| front | Botones de acciones sin desbordar el texto | #48 | — |
+| back | Mis compras y resumen de no leídos | #23 | #147 |
+| front | "Mis pedidos", detalle con línea de tiempo y contadores | #24 | #148 |
+| front | Botones de acciones sin desbordar el texto | #48 | #149 |
 
 **Depende de:** HU-C02.
 
@@ -153,7 +153,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| pedidos | P2 | S | Hecha | 19 | — |
+| pedidos | P2 | S | Hecha | 19 | #71 |
 
 **Criterios de aceptación**
 
@@ -166,8 +166,8 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Módulo `aviso` y correo con `ExistenciasCambiadas` | #41 | — |
-| front | Botón "Avísame cuando haya" en el detalle | #42 | — |
+| back | Módulo `aviso` y correo con `ExistenciasCambiadas` | #41 | #150 |
+| front | Botón "Avísame cuando haya" en el detalle | #42 | #151 |
 
 **Depende de:** HU-I08.
 
@@ -180,7 +180,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| resenas | P1 | M | Hecha | 13 | — |
+| resenas | P1 | M | Hecha | 13 | #72 |
 
 **Criterios de aceptación**
 
@@ -194,8 +194,8 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Me gusta y reseñas solo con pedido entregado; contadores en el mueble | #29 | — |
-| front | `BotonMeGusta`, `HojaResena` y "Califica tu mueble" | #30 | — |
+| back | Me gusta y reseñas solo con pedido entregado; contadores en el mueble | #29 | #152 |
+| front | `BotonMeGusta`, `HojaResena` y "Califica tu mueble" | #30 | #153 |
 
 **Depende de:** HU-C05.
 
@@ -207,7 +207,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| cuenta | P2 | S | Hecha | 19 | — |
+| cuenta | P2 | S | Hecha | 19 | #73 |
 
 **Criterios de aceptación**
 
@@ -220,8 +220,8 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Direcciones de la cuenta con predeterminada | #41 | — |
-| front | `DireccionesPage`, `HojaDireccion` y direcciones en `HojaComprar` | #42 | — |
+| back | Direcciones de la cuenta con predeterminada | #41 | #154 |
+| front | `DireccionesPage`, `HojaDireccion` y direcciones en `HojaComprar` | #42 | #155 |
 
 **Depende de:** HU-I08.
 
@@ -232,7 +232,7 @@ Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| cuenta | P1 | M | Hecha | 19, 21 | — |
+| cuenta | P1 | M | Hecha | 19, 21 | #74 |
 
 Aplica a cualquier rol con sesión.
 
@@ -247,10 +247,10 @@ Aplica a cualquier rol con sesión.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Módulo `cuenta`: nombre y foto | #41 | — |
-| front | `EditarPerfilPage` con foto y progreso | #42 | — |
-| back | Portada y `PUT /api/cuenta/password` con aviso | #53 | — |
-| front | Nuevo diseño del perfil, portada y `HojaPassword` | #52, #53 | — |
+| back | Módulo `cuenta`: nombre y foto | #41 | #156 |
+| front | `EditarPerfilPage` con foto y progreso | #42 | #157 |
+| back | Portada y `PUT /api/cuenta/password` con aviso | #53 | #158 |
+| front | Nuevo diseño del perfil, portada y `HojaPassword` | #52, #53 | #159 |
 
 **Depende de:** HU-I08.
 
@@ -260,7 +260,7 @@ Aplica a cualquier rol con sesión.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| cuenta | P1 | S | Hecha | 20 | — |
+| cuenta | P1 | S | Hecha | 20 | #75 |
 
 **Criterios de aceptación**
 
@@ -273,9 +273,9 @@ Aplica a cualquier rol con sesión.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | `SolicitudVendedor` del lado del cliente | #45 | — |
-| front | `QuieroVenderPage` con el estado de la solicitud | #46 | — |
-| front | "Quiero vender" ya no se queda cargando | #49 | — |
+| back | `SolicitudVendedor` del lado del cliente | #45 | #160 |
+| front | `QuieroVenderPage` con el estado de la solicitud | #46 | #161 |
+| front | "Quiero vender" ya no se queda cargando | #49 | #162 |
 
 **Depende de:** HU-I08.
 
@@ -288,7 +288,7 @@ Aplica a cualquier rol con sesión.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| notificaciones | P1 | M | Hecha | 20, 22 | — |
+| notificaciones | P1 | M | Hecha | 20, 22 | #76 |
 
 Aplica a cualquier rol con sesión.
 
@@ -303,9 +303,9 @@ Aplica a cualquier rol con sesión.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Módulo `notificacion`: un aviso por cada `AvisoCorreo` | #45 | — |
-| front | `AvisosPage` y `AvisosProvider` desde la API | #46 | — |
-| front | Insignia de avisos en el icono de la app | #55 | — |
+| back | Módulo `notificacion`: un aviso por cada `AvisoCorreo` | #45 | #163 |
+| front | `AvisosPage` y `AvisosProvider` desde la API | #46 | #164 |
+| front | Insignia de avisos en el icono de la app | #55 | #165 |
 
 **Depende de:** HU-I08.
 
@@ -316,7 +316,7 @@ Aplica a cualquier rol con sesión.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| notificaciones | P2 | L | Pendiente | `ANALISIS_push.md` | — |
+| notificaciones | P2 | L | Pendiente | `ANALISIS_push.md` | #77 |
 
 **Criterios de aceptación**
 
@@ -333,10 +333,10 @@ Aplica a cualquier rol con sesión.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| infra | Claves VAPID en `.env` y `.env.example` | — | — |
-| back | Módulo `push`: `SuscripcionPush`, endpoints y envío después del commit | — | — |
-| front | Service worker: `push`, `notificationclick` y `pushsubscriptionchange` | — | — |
-| front | Interruptor "Avisos en este teléfono" y permiso en Cuenta | — | — |
-| docs | Fase con lo hecho y prueba en el teléfono | — | — |
+| infra | Claves VAPID en `.env` y `.env.example` | — | #166 |
+| back | Módulo `push`: `SuscripcionPush`, endpoints y envío después del commit | — | #167 |
+| front | Service worker: `push`, `notificationclick` y `pushsubscriptionchange` | — | #168 |
+| front | Interruptor "Avisos en este teléfono" y permiso en Cuenta | — | #169 |
+| docs | Fase con lo hecho y prueba en el teléfono | — | #170 |
 
 **Depende de:** HU-C11, HU-S08 (HTTPS en la red local).

@@ -12,7 +12,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| catalogo | P0 | M | Hecha | 03, 05, 13, 19 | — |
+| catalogo | P0 | M | Hecha | 03, 05, 13, 19 | #56 |
 
 **Criterios de aceptación**
 
@@ -29,9 +29,9 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Catálogo público paginado con filtros, precio y orden; categorías públicas | #7 | — |
-| front | Catálogo con búsqueda, categorías y orden en la URL, "Ver más" y estados vacíos | #8 | — |
-| front | Inicio con portada animada, destacados, mejor calificados y vistos recientemente | #8, #30, #42 | — |
+| back | Catálogo público paginado con filtros, precio y orden; categorías públicas | #7 | #109 |
+| front | Catálogo con búsqueda, categorías y orden en la URL, "Ver más" y estados vacíos | #8 | #110 |
+| front | Inicio con portada animada, destacados, mejor calificados y vistos recientemente | #8, #30, #42 | #111 |
 
 **Depende de:** HU-S01, HU-S03.
 
@@ -42,7 +42,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| catalogo | P0 | L | Hecha | 03, 05, 12 | — |
+| catalogo | P0 | L | Hecha | 03, 05, 12 | #57 |
 
 **Criterios de aceptación**
 
@@ -59,9 +59,9 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Detalle por slug y archivos `/uploads/**` con tipo `.glb` y caché de 30 días | #7 | — |
-| front | `Visor3D` con `model-viewer` bajo demanda, progreso y cotas | #8 | — |
-| front | Detalle con el 3D protagonista, controles flotantes, pantalla completa y bottom bar | #28 | — |
+| back | Detalle por slug y archivos `/uploads/**` con tipo `.glb` y caché de 30 días | #7 | #112 |
+| front | `Visor3D` con `model-viewer` bajo demanda, progreso y cotas | #8 | #113 |
+| front | Detalle con el 3D protagonista, controles flotantes, pantalla completa y bottom bar | #28 | #114 |
 
 **Depende de:** HU-I01, HU-S04.
 
@@ -72,7 +72,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| catalogo | P1 | M | Hecha | 15 | — |
+| catalogo | P1 | M | Hecha | 15 | #58 |
 
 **Criterios de aceptación**
 
@@ -85,8 +85,8 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Colores del mueble en `MuebleResponse.variantes` | #33 | — |
-| front | `MuestrasColor` y cambio de `baseColorFactor` del material `GC_Color` en el visor | #34 | — |
+| back | Colores del mueble en `MuebleResponse.variantes` | #33 | #115 |
+| front | `MuestrasColor` y cambio de `baseColorFactor` del material `GC_Color` en el visor | #34 | #116 |
 
 **Depende de:** HU-I02, HU-V02.
 
@@ -97,7 +97,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| catalogo | P1 | M | Pendiente | 05 | — |
+| catalogo | P1 | M | Pendiente | 05 | #59 |
 
 **Criterios de aceptación**
 
@@ -110,8 +110,8 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| front | AR con `model-viewer` a escala real y explicación si no se admite | #8 | — |
-| front | Probar y ajustar el AR en Android e iPhone por HTTPS | — | — |
+| front | AR con `model-viewer` a escala real y explicación si no se admite | #8 | #117 |
+| front | Probar y ajustar el AR en Android e iPhone por HTTPS | — | #118 |
 
 **Depende de:** HU-I02, HU-S08 (HTTPS en la red local).
 
@@ -122,7 +122,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| catalogo | P2 | S | Hecha | 19 | — |
+| catalogo | P2 | S | Hecha | 19 | #60 |
 
 **Criterios de aceptación**
 
@@ -135,8 +135,8 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| front | Lista `gc.comparar`, botón en el detalle y `CompararPage` | #42 | — |
-| front | Listas del dispositivo y muestras de color separadas por cuenta | #44 | — |
+| front | Lista `gc.comparar`, botón en el detalle y `CompararPage` | #42 | #119 |
+| front | Listas del dispositivo y muestras de color separadas por cuenta | #44 | #120 |
 
 **Depende de:** HU-I02.
 
@@ -149,7 +149,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| vendedores | P1 | M | Hecha | 14 | — |
+| vendedores | P1 | M | Hecha | 14 | #61 |
 
 **Criterios de aceptación**
 
@@ -162,8 +162,8 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | `GET /api/vendedores/{slug}` con cifras, muebles y trabajos públicos | #31 | — |
-| front | `PerfilVendedorPage` y tarjeta del vendedor en el detalle | #32 | — |
+| back | `GET /api/vendedores/{slug}` con cifras, muebles y trabajos públicos | #31 | #121 |
+| front | `PerfilVendedorPage` y tarjeta del vendedor en el detalle | #32 | #122 |
 
 **Depende de:** HU-V06.
 
@@ -176,7 +176,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| resenas | P1 | M | Hecha | 13 | — |
+| resenas | P1 | M | Hecha | 13 | #62 |
 
 **Criterios de aceptación**
 
@@ -189,8 +189,8 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Reseñas públicas, resumen con distribución y orden por calificación | #29 | — |
-| front | `ResenasPage`, resumen en el detalle y estrella en las tarjetas | #30 | — |
+| back | Reseñas públicas, resumen con distribución y orden por calificación | #29 | #123 |
+| front | `ResenasPage`, resumen en el detalle y estrella en las tarjetas | #30 | #124 |
 
 **Depende de:** HU-C07.
 
@@ -203,7 +203,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| auth | P0 | M | Hecha | 02, 04, 21 | — |
+| auth | P0 | M | Hecha | 02, 04, 21 | #63 |
 
 **Criterios de aceptación**
 
@@ -218,9 +218,9 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Registro, verificación con token de un solo uso y reenvío; correo HTML | #6 | — |
-| front | Crear cuenta, "Revisa tu correo" y verificar | #8 | — |
-| front | La pestaña de verificación se cierra sola y avisa a la pestaña original | #54 | — |
+| back | Registro, verificación con token de un solo uso y reenvío; correo HTML | #6 | #125 |
+| front | Crear cuenta, "Revisa tu correo" y verificar | #8 | #126 |
+| front | La pestaña de verificación se cierra sola y avisa a la pestaña original | #54 | #127 |
 
 **Depende de:** HU-S02.
 
@@ -231,7 +231,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| auth | P0 | S | Hecha | 02, 04 | — |
+| auth | P0 | S | Hecha | 02, 04 | #64 |
 
 **Criterios de aceptación**
 
@@ -244,8 +244,8 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Login, refresh, olvidé y restablecer contraseña | #6 | — |
-| front | Entrar, olvidé y restablecer; renovación del token ante un 401 | #8 | — |
+| back | Login, refresh, olvidé y restablecer contraseña | #6 | #128 |
+| front | Entrar, olvidé y restablecer; renovación del token ante un 401 | #8 | #129 |
 
 **Depende de:** HU-S02.
 
@@ -258,7 +258,7 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| pwa | P1 | L | Hecha | 06, 22 | — |
+| pwa | P1 | L | Hecha | 06, 22 | #65 |
 
 **Criterios de aceptación**
 
@@ -275,8 +275,8 @@ tiene que entrar. Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| front | Manifest, iconos, service worker propio con sus estrategias y avisos | #9 | — |
-| front | Usar la app desde el teléfono en la red local | #10 | — |
-| front | Errores por ruta, instalar en iPhone, red lenta, capturas e insignia | #55 | — |
+| front | Manifest, iconos, service worker propio con sus estrategias y avisos | #9 | #130 |
+| front | Usar la app desde el teléfono en la red local | #10 | #131 |
+| front | Errores por ruta, instalar en iPhone, red lenta, capturas e insignia | #55 | #132 |
 
 **Depende de:** HU-I01.

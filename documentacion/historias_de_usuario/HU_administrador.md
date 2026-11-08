@@ -13,7 +13,7 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| categorias | P1 | S | Hecha | 03, 05 | — |
+| categorias | P1 | S | Hecha | 03, 05 | #89 |
 
 **Criterios de aceptación**
 
@@ -25,8 +25,8 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Módulo `categoria`: CRUD paginado | #7 | — |
-| front | `CategoriasPage` en el panel | #8 | — |
+| back | Módulo `categoria`: CRUD paginado | #7 | #199 |
+| front | `CategoriasPage` en el panel | #8 | #200 |
 
 **Depende de:** HU-S02.
 
@@ -39,7 +39,7 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| usuarios | P0 | M | Hecha | 02, 05, 20, 21 | — |
+| usuarios | P0 | M | Hecha | 02, 05, 20, 21 | #90 |
 
 **Criterios de aceptación**
 
@@ -53,10 +53,10 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Módulo `usuario`: listado, roles y estado | #6 | — |
-| front | `UsuariosPage` con roles múltiples y cuenta activa | #8 | — |
-| back | El rol Transportista solo lo da el vendedor; Usuarios lo respeta | #47 | — |
-| front | Chip de Transportista marcado con candado | #53 | — |
+| back | Módulo `usuario`: listado, roles y estado | #6 | #201 |
+| front | `UsuariosPage` con roles múltiples y cuenta activa | #8 | #202 |
+| back | El rol Transportista solo lo da el vendedor; Usuarios lo respeta | #47 | #203 |
+| front | Chip de Transportista marcado con candado | #53 | #204 |
 
 **Depende de:** HU-S02.
 
@@ -67,7 +67,7 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| usuarios | P1 | S | Hecha | 02, 05, 21 | — |
+| usuarios | P1 | S | Hecha | 02, 05, 21 | #91 |
 
 **Criterios de aceptación**
 
@@ -79,9 +79,9 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Módulo `rol`: roles, permisos y sincronización al arrancar | #6 | — |
-| front | `RolesPage` | #8 | — |
-| back | ADMIN con permisos fijos de supervisión | #50 | — |
+| back | Módulo `rol`: roles, permisos y sincronización al arrancar | #6 | #205 |
+| front | `RolesPage` | #8 | #206 |
+| back | ADMIN con permisos fijos de supervisión | #50 | #207 |
 
 **Depende de:** HU-S02.
 
@@ -92,7 +92,7 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| usuarios | P1 | S | Hecha | 20 | — |
+| usuarios | P1 | S | Hecha | 20 | #92 |
 
 **Criterios de aceptación**
 
@@ -105,8 +105,8 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Revisar, aprobar y rechazar solicitudes | #45 | — |
-| front | `SolicitudesPage` con filtros y motivo | #46 | — |
+| back | Revisar, aprobar y rechazar solicitudes | #45 | #208 |
+| front | `SolicitudesPage` con filtros y motivo | #46 | #209 |
 
 **Depende de:** HU-C10.
 
@@ -119,7 +119,7 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| resenas | P2 | S | Hecha | 13 | — |
+| resenas | P2 | S | Hecha | 13 | #93 |
 
 **Criterios de aceptación**
 
@@ -130,8 +130,8 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Listado de moderación y `PATCH /api/resenas/{id}/oculta` | #29 | — |
-| front | Moderación en `/panel/resenas` | #30 | — |
+| back | Listado de moderación y `PATCH /api/resenas/{id}/oculta` | #29 | #210 |
+| front | Moderación en `/panel/resenas` | #30 | #211 |
 
 **Depende de:** HU-C07.
 
@@ -144,7 +144,7 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| pedidos | P1 | M | Hecha | 11, 21 | — |
+| pedidos | P1 | M | Hecha | 11, 21 | #94 |
 
 **Criterios de aceptación**
 
@@ -157,9 +157,9 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | Todos los pedidos con búsqueda y cancelación con motivo | #23 | — |
-| front | Vista "Todos" en el panel de pedidos | #25 | — |
-| back | El administrador no compra ni atiende pedidos | #50 | — |
+| back | Todos los pedidos con búsqueda y cancelación con motivo | #23 | #212 |
+| front | Vista "Todos" en el panel de pedidos | #25 | #213 |
+| back | El administrador no compra ni atiende pedidos | #50 | #214 |
 
 **Depende de:** HU-C02.
 
@@ -172,7 +172,7 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Módulo | Prioridad | Tamaño | Estado | Fase | Tarjeta |
 |---|---|---|---|---|---|
-| metricas | P1 | S | Hecha | 18 | — |
+| metricas | P1 | S | Hecha | 18 | #95 |
 
 **Criterios de aceptación**
 
@@ -183,7 +183,7 @@ ni entrega (fase 21). Formato en `PLANTILLA_HISTORIA.md`.
 
 | Capa | Tarea | PR | Tarjeta |
 |---|---|---|---|
-| back | `tienda=true` con `METRICA_GLOBAL` | #39 | — |
-| front | Filtro "Toda la tienda" en Métricas | #40 | — |
+| back | `tienda=true` con `METRICA_GLOBAL` | #39 | #215 |
+| front | Filtro "Toda la tienda" en Métricas | #40 | #216 |
 
 **Depende de:** HU-V08.
