@@ -1,4 +1,4 @@
-import { ArrowLeft, BarChart3, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, Users } from 'lucide-react';
+import { ArrowLeft, BarChart3, LogOut, MessageSquareText, Package, ReceiptText, Shield, Store, Tags, UserPlus, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { NavLink, useNavigate } from 'react-router';
@@ -17,6 +17,7 @@ const SECCIONES = [
   { a: '/panel/perfil', texto: 'Mi perfil', Icono: Store, permisos: ['PERFIL_VENDEDOR_EDITAR'] },
   { a: '/panel/resenas', texto: 'Reseñas', Icono: MessageSquareText, permisos: ['RESENA_MODERAR'] },
   { a: '/panel/categorias', texto: 'Categorías', Icono: Tags, permisos: ['CATEGORIA_GESTIONAR'] },
+  { a: '/panel/solicitudes', texto: 'Solicitudes', Icono: UserPlus, permisos: ['USUARIO_GESTIONAR'] },
   { a: '/panel/usuarios', texto: 'Usuarios', Icono: Users, permisos: ['USUARIO_GESTIONAR'] },
   { a: '/panel/roles', texto: 'Roles y permisos', Icono: Shield, permisos: ['ROL_GESTIONAR'] },
 ];

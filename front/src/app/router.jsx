@@ -9,6 +9,7 @@ import CatalogoPage from '../catalogo/pages/CatalogoPage';
 import CompararPage from '../catalogo/pages/CompararPage';
 import DireccionesPage from '../cuenta/pages/DireccionesPage';
 import EditarPerfilPage from '../cuenta/pages/EditarPerfilPage';
+import QuieroVenderPage from '../cuenta/pages/QuieroVenderPage';
 import EntregaPage from '../entregas/pages/EntregaPage';
 import EntregasPage from '../entregas/pages/EntregasPage';
 import DetallePage from '../catalogo/pages/DetallePage';
@@ -23,7 +24,7 @@ import MisPedidosPage from '../pedidos/pages/MisPedidosPage';
 import PedidoPage from '../pedidos/pages/PedidoPage';
 import ResenasPage from '../resenas/pages/ResenasPage';
 import PerfilVendedorPage from '../vendedor/pages/PerfilVendedorPage';
-import { CategoriasPage, MetricasPage, MiPerfilPage, PanelMueblesPage, PanelPedidosPage, ResenasModeracionPage, RolesPage, UsuariosPage } from './paginasPanel';
+import { CategoriasPage, MetricasPage, MiPerfilPage, PanelMueblesPage, PanelPedidosPage, ResenasModeracionPage, RolesPage, SolicitudesPage, UsuariosPage } from './paginasPanel';
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
           { path: 'entregas/:id', element: <RutaProtegida permisos={['ENTREGA_REALIZAR']}><EntregaPage /></RutaProtegida> },
           { path: 'cuenta', element: <CuentaPage /> },
           { path: 'cuenta/perfil', element: <RutaProtegida><EditarPerfilPage /></RutaProtegida> },
+          { path: 'cuenta/vender', element: <RutaProtegida><QuieroVenderPage /></RutaProtegida> },
           { path: 'cuenta/direcciones', element: <RutaProtegida><DireccionesPage /></RutaProtegida> },
           { path: 'comparar', element: <CompararPage /> },
           { path: 'entrar', element: <LoginPage /> },
@@ -71,6 +73,7 @@ export const router = createBrowserRouter([
           { path: 'perfil', element: <RutaProtegida permisos={['PERFIL_VENDEDOR_EDITAR']}><MiPerfilPage /></RutaProtegida> },
           { path: 'resenas', element: <RutaProtegida permisos={['RESENA_MODERAR']}><ResenasModeracionPage /></RutaProtegida> },
           { path: 'categorias', element: <RutaProtegida permisos={['CATEGORIA_GESTIONAR']}><CategoriasPage /></RutaProtegida> },
+          { path: 'solicitudes', element: <RutaProtegida permisos={['USUARIO_GESTIONAR']}><SolicitudesPage /></RutaProtegida> },
           { path: 'usuarios', element: <RutaProtegida permisos={['USUARIO_GESTIONAR']}><UsuariosPage /></RutaProtegida> },
           { path: 'roles', element: <RutaProtegida permisos={['ROL_GESTIONAR']}><RolesPage /></RutaProtegida> },
         ],

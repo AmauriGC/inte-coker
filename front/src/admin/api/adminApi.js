@@ -10,6 +10,11 @@ export const adminApi = {
   permisos: (signal) => obtener('/roles/permisos', { signal }),
   cambiarPermisos: (id, permisos) => obtener(`/roles/${id}/permisos`, { metodo: 'PUT', cuerpo: { permisos } }),
 
+  /** Solicitudes para vender (estado: PENDIENTE, APROBADA, RECHAZADA o todas). */
+  solicitudes: ({ estado, page = 0, size = 20 } = {}, signal) => obtener('/solicitudes-vendedor', { consulta: { estado, page, size }, signal }),
+  aprobarSolicitud: (id) => obtener(`/solicitudes-vendedor/${id}/aprobar`, { metodo: 'POST' }),
+  rechazarSolicitud: (id, motivo) => obtener(`/solicitudes-vendedor/${id}/rechazar`, { metodo: 'POST', cuerpo: { motivo } }),
+
   categorias: ({ buscar } = {}, signal) => obtener('/categorias', { consulta: { buscar, size: 100 }, signal }),
   crearCategoria: (datos) => obtener('/categorias', { metodo: 'POST', cuerpo: datos }),
   actualizarCategoria: (id, datos) => obtener(`/categorias/${id}`, { metodo: 'PUT', cuerpo: datos }),
