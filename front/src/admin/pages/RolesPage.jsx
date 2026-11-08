@@ -39,12 +39,12 @@ function TarjetaRol({ rol, permisos, alGuardar, i }) {
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="font-display text-lg font-semibold">{datosRol(rol.nombre).nombre}</h2>
-          <p className="text-[13px] text-gris">{fijo ? 'Siempre conserva todos los permisos.' : rol.descripcion}</p>
+          <p className="text-[13px] text-gris">{fijo ? 'Permisos fijos de supervisión: ve toda la tienda, pero no compra, no vende ni entrega.' : rol.descripcion}</p>
         </div>
       </div>
       <ul className="mt-4 flex flex-wrap gap-2">
         {permisos.map((p) => {
-          const activo = fijo || seleccion.has(p.nombre);
+          const activo = seleccion.has(p.nombre);
           return (
             <li key={p.nombre}>
               <button

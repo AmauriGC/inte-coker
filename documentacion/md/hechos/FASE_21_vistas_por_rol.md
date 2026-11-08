@@ -1,7 +1,7 @@
 # FASE 21 · Cada rol con sus vistas: administrador supervisor y navegación por rol
 
 - Maestro: MAESTRO_proyecto.md
-- Estado: En progreso
+- Estado: Hecho
 - Fecha: 07/11/2026
 
 ## Objetivo
@@ -34,16 +34,32 @@ Decisiones tomadas con el usuario (07/11/2026):
     `VENDEDOR_DEMO_EMAIL` y `VENDEDOR_DEMO_PASSWORD` del `.env`.
   - `SemillaCatalogoService.sembrarFaltantes(vendedor)` siembra a su nombre y pasa a él los
     ejemplos que estaban a nombre de otra cuenta.
-- [ ] 21c · Front: navegación por rol
-  - Bottom bar por rol, menú lateral (cajón en móvil, fijo en escritorio) y Cuenta solo con
-    lo personal.
-- [ ] 21d · Docs
+- [x] 21c · Front: navegación por rol
+  - `layout/useNavegacion.js`: una sola lista de secciones, filtrada con los permisos del rol
+    activo. Da las pestañas de la bottom bar (cliente: Inicio, Catálogo, Favoritos, Avisos y
+    Cuenta; transportista: Entregas, Avisos y Cuenta; con panel: sus 3 secciones principales,
+    Avisos y Menú) y las secciones del menú lateral.
+  - Vendedor: Muebles, Pedidos y Métricas. Administrador: Métricas, Solicitudes y Usuarios;
+    Roles, Categorías, Reseñas y Pedidos (supervisión) van en el menú.
+  - `MenuLateral`: secciones del rol, Tienda (Inicio, Catálogo, Favoritos, Comparar), Avisos,
+    Mi cuenta, cambio de rol y cerrar sesión. Fijo en escritorio (`lg`) en el panel y también
+    en la parte pública para quien tiene panel; en móvil es `CajonMenu` (botón "Menú").
+  - `/panel` lleva a la primera sección del rol (`InicioPanel`); al entrar con un solo rol se
+    va al inicio de ese rol.
+  - Cuenta solo con lo personal; "Quiero vender" solo si la cuenta puede pedir y aún no
+    publica muebles. Roles muestra los permisos fijos de ADMIN.
+- [x] 21d · Docs
+  - Este documento y el maestro.
 
 ## Verificación
 
 - Back: `./mvnw verify` en verde. `CatalogoTest` comprueba que el administrador no gestiona
   ni publica muebles y que la semilla queda a nombre del vendedor de ejemplo; `PedidoTest`,
   que el administrador no pide y que ADMIN no tiene `PEDIDO_CREAR`.
+
+- Front: lint y build en verde. Revisado en el navegador como administrador: sidebar en
+  escritorio, bottom bar y cajón en móvil (390 px), Roles con los 8 permisos fijos y el
+  detalle de un mueble sin comprar, apartar ni preguntar.
 
 ## Notas
 
