@@ -1,4 +1,4 @@
-import { BadgeCheck, Search, Users } from 'lucide-react';
+import { BadgeCheck, Lock, Search, Users } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
 import { useSesion } from '../../auth/context/SesionContext';
@@ -42,8 +42,13 @@ function ChipsRoles({ usuario, alCambiar, ocupado }) {
         );
       })}
       {usuario.roles.includes('TRANSPORTISTA') && (
-        <span className="inline-flex h-8 items-center rounded-full border border-dashed border-borde px-3 text-[12.5px] font-semibold text-gris" title="Lo registró un vendedor">
+        <span
+          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-tinta bg-tinta px-3 text-[12.5px] font-semibold text-crema"
+          title="Lo registró su vendedor; solo él lo da de baja"
+        >
+          <Lock className="size-3.5" aria-hidden />
           {datosRol('TRANSPORTISTA').nombre}
+          <span className="sr-only"> (asignado por su vendedor)</span>
         </span>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronRight, Columns3, Download, Heart, LogIn, LogOut, MapPin, Pencil, ReceiptText, Store } from 'lucide-react';
+import { BadgeCheck, ChevronRight, Columns3, Download, Heart, KeyRound, LogIn, LogOut, MapPin, Pencil, ReceiptText, Store } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import { confirmar } from '../../common/alertas/alertas';
@@ -40,7 +40,7 @@ function Fila({ a, Icono, texto, detalle, cuenta = 0, i }) {
 }
 
 export default function CuentaPage() {
-  const { usuario, cuentaTienePermiso, salir, roles, multiRol, rolActivo, cambiarRol } = useSesion();
+  const { usuario, tienePermiso, cuentaTienePermiso, salir, roles, multiRol, rolActivo, cambiarRol } = useSesion();
   const { resumen } = usePedidos();
   const { notificar } = useNotificaciones();
   const { favoritos, enCuenta } = useFavoritos();
@@ -61,6 +61,9 @@ export default function CuentaPage() {
     );
   }
 
+  // Favoritos y Comparar son del catálogo: el transportista no lo tiene en su navegación.
+  const catalogo = tienePermiso('MUEBLE_VER');
+
   function elegirRol(rol) {
     cambiarRol(rol);
     notificar({ tipo: 'exito', titulo: `Ahora estás como ${datosRol(rol).nombre}`, texto: datosRol(rol).detalle, guardar: false });
@@ -79,6 +82,12 @@ export default function CuentaPage() {
       <Encabezado titulo="Cuenta" />
 
       <motion.section initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="relative overflow-hidden rounded-[28px] bg-tinta p-5 text-crema">
+        {usuario.portadaUrl && (
+          <>
+            <img src={usuario.portadaUrl} alt="" className="absolute inset-0 size-full object-cover" />
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-tinta via-tinta/75 to-tinta/35" />
+          </>
+        )}
         <div aria-hidden className="absolute -right-14 -top-16 size-48 rounded-full bg-[radial-gradient(circle,rgba(168,70,31,0.5),transparent_70%)]" />
         <div className="relative flex items-center gap-4">
           {usuario.fotoUrl ? (
@@ -116,7 +125,9 @@ export default function CuentaPage() {
       </motion.section>
 
       <ul className="mt-4 rounded-[24px] border border-linea bg-white p-1.5">
-        <Fila a="/favoritos" Icono={Heart} texto="Favoritos" detalle={`${favoritos.length} guardados en ${enCuenta ? 'tu cuenta' : 'este dispositivo'}`} i={0} />
+        {catalogo && (
+          <Fila a="/favoritos" Icono={Heart} texto="Favoritos" detalle={`${favoritos.length} guardados en ${enCuenta ? 'tu cuenta' : 'este dispositivo'}`} i={0} />
+        )}
         {cuentaTienePermiso('PEDIDO_CREAR') && (
           <Fila
             a="/pedidos"
@@ -133,7 +144,10 @@ export default function CuentaPage() {
         {cuentaTienePermiso('PEDIDO_CREAR') && !cuentaTienePermiso('MUEBLE_CREAR') && (
           <Fila a="/cuenta/vender" Icono={Store} texto="Quiero vender" detalle="Publica tus muebles con 3D" i={3} />
         )}
-        <Fila a="/comparar" Icono={Columns3} texto="Comparar muebles" detalle={comparando.length ? `${comparando.length} en tu lista` : 'Hasta 3, lado a lado'} i={4} />
+        {catalogo && (
+          <Fila a="/comparar" Icono={Columns3} texto="Comparar muebles" detalle={comparando.length ? `${comparando.length} en tu lista` : 'Hasta 3, lado a lado'} i={4} />
+        )}
+        <Fila a="/cuenta/perfil" Icono={KeyRound} texto="Perfil y seguridad" detalle="Foto, portada, nombre y contraseña" i={5} />
       </ul>
 
       {instalable && (
