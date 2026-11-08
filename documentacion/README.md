@@ -32,7 +32,7 @@ AGENTS.md -> ESTANDAR.md -> git/FLUJO_GIT.md -> md/analisis/
 | `back/` | Convenciones del back |
 | `front/` | Convenciones del front |
 | `infra/` | Guía de Docker, compose y Jenkins |
-| `historias_de_usuario/` | Historias por rol (pendiente) |
+| `historias_de_usuario/` | Historias por rol, sus tareas y el tablero |
 | `md/pendientes/` | Fases por iniciar |
 | `md/en_progreso/` | `MAESTRO_proyecto.md` |
 | `md/hechos/` | Fases terminadas (`FASE_01` a `FASE_10`) |
