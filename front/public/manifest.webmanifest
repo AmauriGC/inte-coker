@@ -8,7 +8,7 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#1D1B18",
   "theme_color": "#1D1B18",
   "categories": ["shopping", "lifestyle"],
@@ -16,6 +16,11 @@
     { "src": "/iconos/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/iconos/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/iconos/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "/capturas/catalogo-movil.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Catálogo de muebles en 3D" },
+    { "src": "/capturas/detalle-movil.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Visor 3D con colores, medidas y AR" },
+    { "src": "/capturas/catalogo-escritorio.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide", "label": "Catálogo en escritorio" }
   ],
   "shortcuts": [
     { "name": "Catálogo", "url": "/catalogo", "icons": [{ "src": "/iconos/icono-192.png", "sizes": "192x192" }] },

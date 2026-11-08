@@ -7,7 +7,7 @@ import EstadoVacio from '../../common/components/EstadoVacio';
 import { comparacion, useListaLocal } from '../../common/utils/listaLocal';
 import Pagina from '../../common/components/Pagina';
 import { useFavoritos } from '../../favoritos/context/FavoritosContext';
-import { instalar } from '../../pwa/estadoPwa';
+import { abrirHojaInstalar, instalar } from '../../pwa/estadoPwa';
 import { usePwa } from '../../pwa/usePwa';
 import Encabezado from '../../layout/Encabezado';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
@@ -44,7 +44,7 @@ export default function CuentaPage() {
   const { resumen } = usePedidos();
   const { notificar } = useNotificaciones();
   const { favoritos, enCuenta } = useFavoritos();
-  const { instalable } = usePwa();
+  const { instalable, ios } = usePwa();
   const navegar = useNavigate();
   const comparando = useListaLocal(comparacion);
 
@@ -150,8 +150,8 @@ export default function CuentaPage() {
         <Fila a="/cuenta/perfil" Icono={KeyRound} texto="Perfil y seguridad" detalle="Foto, portada, nombre y contraseña" i={5} />
       </ul>
 
-      {instalable && (
-        <Boton variante="secundario" bloque icono={Download} onClick={instalar} className="mt-4">
+      {(instalable || ios) && (
+        <Boton variante="secundario" bloque icono={Download} onClick={instalable ? instalar : abrirHojaInstalar} className="mt-4">
           Instalar la app
         </Boton>
       )}

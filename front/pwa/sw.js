@@ -5,7 +5,7 @@
  *
  * | Recurso                                  | Estrategia                         | Caché           |
  * |------------------------------------------|------------------------------------|-----------------|
- * | Navegación (páginas de la SPA)           | network-first, respaldo index.html | gc-estatico-v   |
+ * | Navegación (páginas de la SPA)           | network-first (3 s), respaldo index| gc-estatico-v   |
  * | /assets/* (archivos con hash)            | cache-first sin TTL                | gc-estatico-v   |
  * | Otros archivos propios (iconos, webp)    | cache-first con TTL de 7 días      | gc-estatico-v   |
  * | /uploads/** del back (glb e imágenes)    | cache-first, TTL 30 días, límite   | gc-archivos-v1  |
@@ -31,6 +31,8 @@ const TTL_ESTATICO = 7 * DIA;
 const TTL_API = DIA;
 const TTL_ARCHIVOS = 30 * DIA;
 const CABECERA_FECHA = 'x-sw-fecha';
+// Con señal débil, a los 3 s se abre la app guardada en lugar de seguir esperando a la red.
+const ESPERA_NAVEGACION_MS = 3000;
 
 // ---------- Ciclo de vida ----------
 
@@ -94,9 +96,14 @@ const sePuedeGuardar = (r) => r && r.ok && (r.type === 'basic' || r.type === 'co
 
 // ---------- Estrategias ----------
 
-/** Cache-first: usa la copia si existe (y sigue fresca); si no, red y guarda. */
+/**
+ * Cache-first: usa la copia si existe (y sigue fresca); si no, red y guarda.
+ * ignoreVary: la precarga guarda sin cabecera Origin y los <script type="module"> sí la mandan;
+ * si el servidor responde "Vary: Origin" (vite preview, algunos CDN) la copia no se encontraría
+ * y sin conexión la app quedaría en blanco. Un archivo estático no cambia según quién lo pide.
+ */
 async function cacheFirst(request, { nombreCache, ttl, limite }) {
-  const enCache = await caches.match(request);
+  const enCache = await caches.match(request, { ignoreVary: true });
   if (enCache && (!ttl || esFresca(enCache, ttl))) return enCache;
   try {
     const red = await fetch(request);
@@ -130,12 +137,20 @@ async function networkFirstApi(request) {
   }
 }
 
-/** Páginas: network-first; sin red responde el index.html precargado (la SPA resuelve la ruta). */
+/**
+ * Páginas: network-first con límite. Si la red no responde en 3 s (o falla) y hay index.html
+ * guardado, se usa ese (la SPA resuelve la ruta); si no hay copia, se sigue esperando a la red.
+ */
 async function navegacion(request) {
+  const red = fetch(request);
+  red.catch(() => {}); // si gana la copia y luego la red falla, que no quede un rechazo suelto
+  const respaldo = new Promise((resolver) => {
+    setTimeout(async () => resolver(await caches.match('/index.html', { ignoreVary: true })), ESPERA_NAVEGACION_MS);
+  });
   try {
-    return await fetch(request);
+    return await Promise.race([red, respaldo.then((copia) => copia ?? red)]);
   } catch {
-    return (await caches.match('/index.html')) ?? Response.error();
+    return (await caches.match('/index.html', { ignoreVary: true })) ?? Response.error();
   }
 }
 

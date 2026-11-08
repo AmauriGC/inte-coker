@@ -61,6 +61,7 @@ el JWT y se validan con `@PreAuthorize`.
 - [x] Fase 19 — Más para el cliente
 - [x] Fase 20 — Avisos en la cuenta, solicitud de vendedor y transportistas del vendedor
 - [x] Fase 21 — Cada rol con sus vistas: administrador supervisor y navegación por rol
+- [x] Fase 22 — PWA más sólida: errores por ruta, instalar en iPhone, red lenta, capturas e insignia
 
 ## Fases documentadas
 
@@ -88,12 +89,14 @@ el JWT y se validan con `@PreAuthorize`.
 | 19 | `md/hechos/FASE_19_cliente.md` | hecho |
 | 20 | `md/hechos/FASE_20_cuentas.md` | hecho |
 | 21 | `md/hechos/FASE_21_vistas_por_rol.md` | hecho |
+| 22 | `md/hechos/FASE_22_pwa.md` | hecho |
 
 ## Pendientes después de las fases
 
 | Tema | Nota |
 |---|---|
 | AR en el teléfono | "Verlo en mi sala": WebXR y Scene Viewer piden HTTPS; probar con un túnel (por ejemplo Tailscale) |
+| Notificaciones push | Avisos del sistema con la app cerrada (Web Push con VAPID); propuesta en `md/analisis/ANALISIS_push.md`; pide HTTPS |
 | Webhook de GitHub | Jenkins escanea cada 2 minutos; con un túnel público se puede usar webhook |
 
 El maestro pasa a `hechos/` cuando se cierren estos pendientes o se descarten.
