@@ -221,6 +221,8 @@ class PedidoTest extends PruebaIntegracion {
                 .andExpect(jsonPath("$.datos.totalElementos").value(1))
                 .andExpect(jsonPath("$.datos.contenido[0].lado").value("SUPERVISOR"))
                 .andExpect(jsonPath("$.datos.contenido[0].acciones", containsInAnyOrder("CANCELADO")));
+        // El administrador supervisa: no pide, no escribe en la conversación ni atiende.
+        pedir(mueble, 1, ENTREGA, admin).andExpect(status().isForbidden());
         escribir(id, "Soy admin", admin).andExpect(status().isForbidden());
         cambiar(id, "ACEPTADO", null, admin).andExpect(status().isForbidden());
         cambiar(id, "CANCELADO", null, admin)
@@ -272,7 +274,8 @@ class PedidoTest extends PruebaIntegracion {
         String admin = "Bearer " + accessToken(ADMIN_EMAIL, ADMIN_PASSWORD);
         mvc.perform(get("/api/roles").header(HttpHeaders.AUTHORIZATION, admin))
                 .andExpect(jsonPath("$.datos[?(@.nombre == 'CLIENTE')].permisos[*]", hasItem("PEDIDO_CREAR")))
-                .andExpect(jsonPath("$.datos[?(@.nombre == 'ADMIN')].permisos[*]", hasItem("PEDIDO_CREAR")))
+                .andExpect(jsonPath("$.datos[?(@.nombre == 'ADMIN')].permisos[*]", not(hasItem("PEDIDO_CREAR"))))
+                .andExpect(jsonPath("$.datos[?(@.nombre == 'ADMIN')].permisos[*]", hasItem("PEDIDO_SUPERVISAR")))
                 .andExpect(jsonPath("$.datos[?(@.nombre == 'VENDEDOR')].permisos[*]", not(hasItem("PEDIDO_CREAR"))));
     }
 

@@ -6,12 +6,21 @@ import java.util.Set;
 /**
  * Roles que siempre existen. Se crean al arrancar con sus permisos iniciales; un permiso
  * nuevo del sistema se agrega a los roles base que lo traen aquí.
- * Después, ROL_GESTIONAR puede cambiar los permisos de VENDEDOR y CLIENTE;
- * ADMIN siempre conserva todos.
+ * Después, ROL_GESTIONAR puede cambiar los permisos de VENDEDOR y CLIENTE.
+ * ADMIN tiene permisos fijos de supervisión: ve todo, pero no compra, no vende, no atiende
+ * pedidos ni entrega, para que nadie se salte los pasos de clientes y vendedores.
  */
 public enum RolBase {
 
-    ADMIN("Administra usuarios, roles y categorías", EnumSet.allOf(PermisoBase.class)),
+    ADMIN("Supervisa la tienda: métricas, usuarios, roles, solicitudes, categorías, reseñas y pedidos", EnumSet.of(
+            PermisoBase.MUEBLE_VER,
+            PermisoBase.FAVORITO_GESTIONAR,
+            PermisoBase.CATEGORIA_GESTIONAR,
+            PermisoBase.USUARIO_GESTIONAR,
+            PermisoBase.ROL_GESTIONAR,
+            PermisoBase.PEDIDO_SUPERVISAR,
+            PermisoBase.RESENA_MODERAR,
+            PermisoBase.METRICA_GLOBAL)),
     VENDEDOR("Publica sus muebles y modelos 3D y atiende sus pedidos", EnumSet.of(
             PermisoBase.MUEBLE_VER,
             PermisoBase.MUEBLE_CREAR,
