@@ -145,6 +145,13 @@ public class UsuarioService {
         if (usuario.getId().equals(idActual) && !quedaAdmin) {
             throw new ReglaNegocioException("No puedes quitarte el rol ADMIN a ti mismo");
         }
+        // Un transportista siempre pertenece a un vendedor: solo nace desde su panel. Quitarlo sí se puede.
+        String transportista = RolBase.TRANSPORTISTA.name();
+        boolean yaLoTenia = usuario.getRoles().stream().anyMatch(r -> transportista.equals(r.getNombre()));
+        boolean loPide = roles.stream().anyMatch(r -> transportista.equals(r.getNombre()));
+        if (loPide && !yaLoTenia) {
+            throw new ReglaNegocioException("Los transportistas los registra cada vendedor desde su panel");
+        }
         usuario.setRoles(roles);
         return UsuarioResponse.desde(usuario);
     }

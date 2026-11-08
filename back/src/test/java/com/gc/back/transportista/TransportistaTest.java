@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -80,6 +81,29 @@ class TransportistaTest extends PruebaIntegracion {
                         .contentType(MediaType.APPLICATION_JSON).content("{\"activo\":false}"))
                 .andExpect(jsonPath("$.datos.activo").value(false));
         login(CHOFER, PASSWORD).andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void elAdministradorNoDaElRolTransportista() throws Exception {
+        String vendedor = usuarioConRoles("vende.rol@prueba.com", "VENDEDOR");
+        usuarioConRoles("cliente.rol@prueba.com", "CLIENTE");
+        transportistaDe(vendedor, "chofer.rol@prueba.com");
+        String admin = "Bearer " + accessToken(ADMIN_EMAIL, ADMIN_PASSWORD);
+
+        roles(admin, "cliente.rol@prueba.com", "\"CLIENTE\",\"TRANSPORTISTA\"")
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value("Los transportistas los registra cada vendedor desde su panel"));
+        // A quien ya es transportista se le pueden sumar o quitar otros roles.
+        roles(admin, "chofer.rol@prueba.com", "\"TRANSPORTISTA\",\"CLIENTE\"").andExpect(status().isOk());
+        roles(admin, "chofer.rol@prueba.com", "\"CLIENTE\"").andExpect(status().isOk());
+    }
+
+    private ResultActions roles(String admin, String email, String roles) throws Exception {
+        String lista = mvc.perform(get("/api/usuarios").param("buscar", email).header(HttpHeaders.AUTHORIZATION, admin))
+                .andReturn().getResponse().getContentAsString();
+        Integer id = JsonPath.read(lista, "$.datos.contenido[0].id");
+        return mvc.perform(put("/api/usuarios/{id}/roles", id).header(HttpHeaders.AUTHORIZATION, admin)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"roles\":[" + roles + "]}"));
     }
 
     private ResultActions registrar(String token, String json) throws Exception {
