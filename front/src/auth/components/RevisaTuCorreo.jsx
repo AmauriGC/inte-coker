@@ -1,14 +1,50 @@
-import { Mail, RefreshCw } from 'lucide-react';
+import { BadgeCheck, Mail, RefreshCw } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Boton from '../../common/components/Boton';
 import { useNotificaciones } from '../../notificaciones/context/NotificacionesContext';
 import { authApi } from '../api/authApi';
+import { escucharVerificada } from '../verificacion';
 
-/** Estado "Revisa tu correo" tras registrarse o cuando falta verificar la cuenta. */
+/**
+ * Estado "Revisa tu correo" tras registrarse o cuando falta verificar la cuenta. Si la cuenta
+ * se verifica en otra pestaña (el enlace del correo), cambia sola a "Cuenta verificada".
+ */
 export default function RevisaTuCorreo({ email, alVolver, textoVolver = 'Ya verifiqué, entrar' }) {
   const { notificar } = useNotificaciones();
   const [enviando, setEnviando] = useState(false);
+  const [verificada, setVerificada] = useState(false);
+
+  useEffect(
+    () =>
+      escucharVerificada(() => {
+        setVerificada(true);
+        notificar({ tipo: 'exito', titulo: 'Cuenta verificada', texto: 'Ya puedes entrar.', guardar: false });
+      }),
+    [notificar],
+  );
+
+  if (verificada) {
+    return (
+      <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="text-center" role="status">
+        <motion.span
+          initial={{ scale: 0.5 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 12 }}
+          className="mx-auto grid size-16 place-items-center rounded-3xl bg-salvia-suave text-salvia"
+        >
+          <BadgeCheck className="size-7" />
+        </motion.span>
+        <h2 className="mt-4 font-display text-xl font-semibold">¡Cuenta verificada!</h2>
+        <p className="mx-auto mt-1.5 max-w-xs text-[14px] leading-relaxed text-gris">
+          Ya activaste <span className="font-semibold text-tinta">{email}</span>. Entra con tu contraseña.
+        </p>
+        <Boton bloque onClick={alVolver} className="mt-6">
+          Entrar
+        </Boton>
+      </motion.div>
+    );
+  }
 
   async function reenviar() {
     setEnviando(true);
