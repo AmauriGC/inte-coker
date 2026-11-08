@@ -5,6 +5,7 @@ import { router } from './app/router';
 import SesionProvider from './auth/context/SesionProvider';
 import FavoritosProvider from './favoritos/context/FavoritosProvider';
 import Splash from './layout/Splash';
+import AvisosProvider from './notificaciones/context/AvisosProvider';
 import NotificacionesProvider from './notificaciones/context/NotificacionesProvider';
 import PedidosProvider from './pedidos/context/PedidosProvider';
 import AvisosPwa from './pwa/AvisosPwa';
@@ -26,7 +27,9 @@ export default function App() {
         <SesionProvider>
           <FavoritosProvider>
             <PedidosProvider>
-              <RouterProvider router={router} />
+              <AvisosProvider>
+                <RouterProvider router={router} />
+              </AvisosProvider>
             </PedidosProvider>
           </FavoritosProvider>
         </SesionProvider>

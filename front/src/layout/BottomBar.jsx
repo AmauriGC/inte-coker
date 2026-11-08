@@ -2,7 +2,7 @@ import { Bell, Heart, House, LayoutGrid, Truck, User } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { NavLink } from 'react-router';
 import { useSesion } from '../auth/context/SesionContext';
-import { useNotificaciones } from '../notificaciones/context/NotificacionesContext';
+import { useAvisos } from '../notificaciones/context/AvisosContext';
 import { usePedidos } from '../pedidos/context/PedidosContext';
 
 const ENLACES = [
@@ -24,7 +24,7 @@ const ENLACES_TRANSPORTISTA = [
 export default function BottomBar() {
   const { tienePermiso } = useSesion();
   const enlaces = tienePermiso('ENTREGA_REALIZAR') && !tienePermiso('PEDIDO_CREAR') ? ENLACES_TRANSPORTISTA : ENLACES;
-  const { sinLeer } = useNotificaciones();
+  const { sinLeer } = useAvisos();
   const { resumen } = usePedidos();
   // Cuenta lleva el punto de "Mis pedidos" (mensajes nuevos de vendedores).
   const cuentas = { avisos: sinLeer, pedidos: resumen.comprasSinLeer };
